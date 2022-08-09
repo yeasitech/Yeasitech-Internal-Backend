@@ -4,7 +4,7 @@ const User = db.user;
 const { signupSchema } = require("./validation/user.validation");
 const bcrypt = require("bcryptjs");
 
-//create new user
+//create new user dfs
 
 exports.createUser = async (request, response) => {
   const { error } = signupSchema.validate(request.body);
