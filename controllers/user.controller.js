@@ -9,7 +9,9 @@ const bcrypt = require("bcryptjs");
 exports.createUser = async (request, response) => {
   const { error } = signupSchema.validate(request.body);
   if (error) {
-    response.status(200).json({ ack: 1, msg: error.details[0].message });
+    response
+      .status(200)
+      .json({ status: "error", msg: error.details[0].message });
     return;
   }
   const user = request.body;
@@ -19,7 +21,7 @@ exports.createUser = async (request, response) => {
     });
     if (checkForIfExists) {
       response.status(200).json({
-        ack: 0,
+        status: "error",
         msg: "User exists with this email",
       });
     } else {
