@@ -6,10 +6,13 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       primaryKey: true,
     },
-    fullName: DataTypes.STRING,
+    firstName: DataTypes.STRING,
+    middleName: DataTypes.STRING,
+    lastName: DataTypes.STRING,
     email: DataTypes.STRING,
     password: DataTypes.STRING,
     isAdmin: DataTypes.BOOLEAN,
+    isActive: DataTypes.BOOLEAN,
     isVerified: DataTypes.BOOLEAN,
   });
   return User;
