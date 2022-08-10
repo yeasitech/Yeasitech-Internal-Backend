@@ -31,7 +31,7 @@ db.sequelize = sequelize;
 db.user = require("./user.model")(sequelize, DataTypes);
 
 // sequelize
-//   .sync({ force: false })
+//   .sync({ alter: true, force: false })
 //   .then(() => {
 //     console.log(`database is syncing`);
 //   })
