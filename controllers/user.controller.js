@@ -1,15 +1,21 @@
 const db = require("../models/index");
 const jwt = require("jsonwebtoken");
 const User = db.user;
-const { signupSchema, loginSchema } = require("./validation/user.validation");
+const {
+  createEmployeeSchema,
+  loginSchema,
+  addEmployeeSchema,
+} = require("./validation/user.validation");
 const bcrypt = require("bcryptjs");
 
 //create new user
 
 exports.createUser = async (request, response) => {
-  const { error } = signupSchema.validate(request.body);
+  const { error } = createEmployeeSchema.validate(request.body);
+
   if (error) {
     response.status(200).json({ ack: 1, msg: error.details[0].message });
+    console.log(`efdh`, error);
     return;
   }
   const user = request.body;
@@ -19,7 +25,7 @@ exports.createUser = async (request, response) => {
     });
     if (checkForIfExists) {
       response.status(200).json({
-        ack: 0,
+        sattus: "error",
         msg: "User exists with this email",
       });
     } else {
@@ -99,5 +105,35 @@ exports.logIn = async (request, response) => {
     } catch (error) {
       response.status(500).json({ msg: error.message || "Server error" });
     }
+  }
+};
+
+exports.addEmployeeSchema = async (request, response) => {
+  const { email } = request.body;
+  console.log(`abcdefgh`, email);
+  const { error } = addEmployeeSchema.validate({ email });
+
+  if (error) {
+    response.status(400).json({ ack: 0, msg: error.details[0].message });
+
+    return;
+  }
+  try {
+    let user = await User.findOne({
+      where: {
+        email,
+      },
+    });
+    if (!user) throw new Error("employee not exists");
+    else {
+      const updatedUser = await user.update(request.body);
+      response.status(200).json({
+        msg: "data inserted successfully",
+        data: updatedUser,
+      });
+    }
+  } catch (error) {
+    console.log("error", error);
+    response.status(500).json({ ack: 1, msg: error.message || "Server error" });
   }
 };

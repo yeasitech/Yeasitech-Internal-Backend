@@ -7,7 +7,7 @@ const cors = require("cors");
 
 const port = process.env.PORT;
 const models = require("./models/index");
-var corsOptions = { origin: `https://localhost:${port}` };
+var corsOptions = { origin: "*" };
 app.use(cors(corsOptions));
 
 app.use(express.json());
