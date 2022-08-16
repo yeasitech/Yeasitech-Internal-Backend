@@ -29,9 +29,12 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 db.user = require("./user.model")(sequelize, DataTypes);
+db.education = require("./education.model")(sequelize, DataTypes);
+db.salary = require("./salary.model")(sequelize, DataTypes);
+db.leave = require("./leave.model")(sequelize, DataTypes);
 
 // sequelize
-//   .sync({ force: false })
+//   .sync({ alter: true, force: false })
 //   .then(() => {
 //     console.log(`database is syncing`);
 //   })
