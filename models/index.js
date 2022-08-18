@@ -29,7 +29,9 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 db.user = require("./user.model")(sequelize, DataTypes);
-db.education = require("./education.model")(sequelize, DataTypes);
+db.employeeDetails = require("./employeeDetails.model")(sequelize, DataTypes);
+db.educationModel = require("./education.model")(sequelize, DataTypes);
+db.experience = require("./experience.model")(sequelize, DataTypes);
 db.salary = require("./salary.model")(sequelize, DataTypes);
 db.leave = require("./leave.model")(sequelize, DataTypes);
 

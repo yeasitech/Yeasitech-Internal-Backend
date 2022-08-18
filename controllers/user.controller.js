@@ -1,12 +1,17 @@
 const db = require("../models/index");
 const jwt = require("jsonwebtoken");
 const User = db.user;
+const employeeDetails = db.employeeDetails;
+const educationModel = db.educationModel;
+const experienceModel = db.experience;
 const {
   createEmployeeSchema,
   loginSchema,
-  addEmployeeSchema,
+  employeeDetailsSchema,
 } = require("./validation/user.validation");
 const bcrypt = require("bcryptjs");
+//const educationModel = require("../models/education.model");
+const employeeDetailsModel = require("../models/employeeDetails.model");
 
 //create new user
 
@@ -25,7 +30,7 @@ exports.createUser = async (request, response) => {
     });
     if (checkForIfExists) {
       response.status(200).json({
-        sattus: "error",
+        status: "error",
         msg: "User exists with this email",
       });
     } else {
@@ -107,26 +112,35 @@ exports.logIn = async (request, response) => {
     }
   }
 };
+//add employeeDetails
+exports.employeeDetails = async (request, response) => {
+  // const email = request.body.email;
+  const { id, email } = request.body;
 
-exports.addEmployeeSchema = async (request, response) => {
-  const { email } = request.body;
-  console.log(`abcdefgh`, email);
-  const { error } = addEmployeeSchema.validate({ email });
+  const { error } = employeeDetailsSchema.validate({ email });
+  // console.log({ id });
 
   if (error) {
-    response.status(400).json({ ack: 0, msg: error.details[0].message });
+    response
+      .status(400)
+      .json({ error: "invalid email Id", msg: error.details[0].message });
 
     return;
   }
   try {
-    let user = await User.findOne({
-      where: {
-        email,
-      },
-    });
+    let user = await User.findByPk(id);
+    console.log(user);
     if (!user) throw new Error("employee not exists");
     else {
-      const updatedUser = await user.update(request.body);
+      const {} = request.body;
+
+      delete info.id;
+      const updatedUser = await employeeDetails.create(
+        {
+          userId: id,
+        },
+        { where: { email } }
+      );
       response.status(200).json({
         msg: "data inserted successfully",
         data: updatedUser,
@@ -137,3 +151,96 @@ exports.addEmployeeSchema = async (request, response) => {
     response.status(500).json({ ack: 1, msg: error.message || "Server error" });
   }
 };
+
+exports.employeeDetails = async (request, response) => {
+  const { id, personal, education, experience } = request.body;
+  const { email } = request.body.personal;
+  console.log(`123445566`, email);
+  const { error } = employeeDetailsSchema.validate({ email });
+  if (error) {
+    response
+      .status(400)
+      .json({ error: "invalid email Id", msg: error.details[0].message });
+
+    return;
+  }
+  //const { id, personal, education, experience } = request.body;
+  try {
+    let user = await User.findOne({ where: { email: email } });
+    console.log(`qwertyui`, user.email);
+    if (email !== user.email) throw new Error(`employee not exists`);
+    else {
+      //personal details
+      if (!personal) throw new Error(`please provide personal details`);
+      else {
+        // const count = await User.count();
+        // personal.employeeId = `YT-${count}`;
+        personal.userId = user.id;
+        await employeeDetails.create({
+          ...personal,
+        });
+      }
+      // response.status(200).json({ data: forPersonal });
+
+      // Eduaction Details
+      if (!education) throw new Error(`please provide education details`);
+      else {
+        education.userId = user.id;
+        const forEducation = education.map((item) => ({
+          ...item,
+        }));
+        console.log(forEducation[0].percentage);
+
+        await forEducation.map((data) => {
+          educationModel.create(data);
+        });
+      }
+      //experience details
+      if (!experience) throw new Error(`please provide experience details`);
+      else {
+        experience.userId = user.id;
+        const forExperience = experience.map((item) => ({
+          ...item,
+        }));
+        //console.log(forExperience[0]);
+
+        await forExperience.map((data) => {
+          experienceModel.create(data);
+        });
+      }
+      return response
+        .status(200)
+        .json({ status: "success", msg: "Employee updated successfully" });
+    }
+  } catch (error) {
+    console.log("error", error);
+    response
+      .status(500)
+      .json({ status: `error`, msg: error.message || "Server error" });
+  }
+};
+
+// const employeeExperience = [
+//   {
+//     employeeName: request.body.employeeName,
+//     designation: request.body.designation,
+//     salary: request.body.salary,
+//     dateOfJoining: request.body.dateOfJoining,
+//     dateOfLeaving: request.body.dateOfJoining,
+//     workedOrganization: request.body.workedOrganization,
+//     userId: request.body.userId,
+//   },
+// ];
+//const data = employeeExperience.map((item) => {});
+//};
+
+// const PrevoiusCompanies=[{
+//   name:"",
+//   designation:""
+// }]
+
+// data = PrevoiusCompanies.map(item=>({name: "", email: "", ...item}))
+
+// data.map(item=>{
+//   educationModel.create(item)
+// })

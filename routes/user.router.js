@@ -4,5 +4,5 @@ const userRouter = Router();
 
 userRouter.post("/createEmployee", userController.createUser);
 userRouter.post("/login", userController.logIn);
-userRouter.post("/addEmployee", userController.addEmployeeSchema);
+userRouter.post("/employeeOnboarding", userController.employeeDetails);
 module.exports = userRouter;

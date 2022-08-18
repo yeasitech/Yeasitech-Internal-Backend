@@ -1,27 +1,23 @@
 module.exports = (sequelize, DataTypes) => {
-  const education = sequelize.define("education", {
+  const educationDetails = sequelize.define("educationDetails", {
     id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
-      allowNull: false,
+      type: DataTypes.INTEGER,
       primaryKey: true,
+      autoIncrement: true,
+      allowNull: false,
     },
-    schoolName: DataTypes.STRING,
-    secondaryPercentage: DataTypes.INTEGER,
-    secondaryPassoutYear: DataTypes.INTEGER,
-    higherSecondarySpecialization: DataTypes.STRING,
-    higherSecondaryPercentage: DataTypes.INTEGER,
-    higherSecondaryPassoutYear: DataTypes.INTEGER,
-    diplomaCollegeName: DataTypes.STRING,
-    diplomaSpecialation: DataTypes.STRING,
-    diplomaPassoutYear: DataTypes.STRING,
-    graduationCollegeName: DataTypes.STRING,
-    graduationSpecialization: DataTypes.STRING,
-    graduationpercentage: DataTypes.INTEGER,
-    graduationPassout: DataTypes.INTEGER,
-    mastersCollegeName: DataTypes.STRING,
-    mastersSpecialization: DataTypes.STRING,
-    masterspercentage: DataTypes.INTEGER,
+    userId: { type: DataTypes.UUID },
+    schoolOrcollegeName: DataTypes.STRING,
+    percentage: DataTypes.STRING,
+    passoutYear: DataTypes.STRING,
+    specialization: DataTypes.STRING,
+    type: DataTypes.STRING, // X / XII / Graduation / Master / PHD
   });
-  return education;
+  educationDetails.associate = function (models) {
+    educationDetails.belongsTo(models.User, {
+      foreignKey: "userId",
+    });
+  };
+
+  return educationDetails;
 };
