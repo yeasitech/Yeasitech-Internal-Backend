@@ -34,12 +34,12 @@ exports.createUser = async (request, response) => {
         msg: "User exists with this email",
       });
     } else {
-      const hash = bcrypt.hashSync(user.password, 10);
+      // const hash = bcrypt.hashSync(user.password, 10);
       const userRecord = {
         firstName: user.firstName,
         middleName: user.middleName,
         lastName: user.lastName,
-        password: hash,
+        //password: hash,
         email: user.email,
         isActive: 1,
       };
@@ -155,7 +155,7 @@ exports.employeeDetails = async (request, response) => {
 exports.employeeDetails = async (request, response) => {
   const { id, personal, education, experience } = request.body;
   const { email } = request.body.personal;
-  console.log(`123445566`, email);
+
   const { error } = employeeDetailsSchema.validate({ email });
   if (error) {
     response
@@ -164,48 +164,51 @@ exports.employeeDetails = async (request, response) => {
 
     return;
   }
-  //const { id, personal, education, experience } = request.body;
+
   try {
     let user = await User.findOne({ where: { email: email } });
-    console.log(`qwertyui`, user.email);
+
     if (email !== user.email) throw new Error(`employee not exists`);
     else {
       //personal details
       if (!personal) throw new Error(`please provide personal details`);
       else {
-        // const count = await User.count();
-        // personal.employeeId = `YT-${count}`;
         personal.userId = user.id;
+        let getAllEmployee = await employeeDetails.findAll({
+          order: [["employeeId", "DESC"]],
+          limit: 1,
+        });
+        console.log(`GETALLEMPLOYEE`, getAllEmployee.length);
+        let employeeIdToSave;
+        if (getAllEmployee.length === 0) {
+          employeeId = `YT-1`;
+        } else {
+          let { employeeId } = getAllEmployee[0].dataValues;
+          console.log(`employeeId`, employeeId);
+
+          let employeeIdNumber = parseInt(employeeId.split("-")[1]);
+          employeeIdToSave = `YT-${employeeIdNumber + 1}`;
+        }
         await employeeDetails.create({
           ...personal,
+          userId: user.id,
+          employeeId: employeeIdToSave,
         });
       }
-      // response.status(200).json({ data: forPersonal });
 
       // Eduaction Details
       if (!education) throw new Error(`please provide education details`);
       else {
-        education.userId = user.id;
-        const forEducation = education.map((item) => ({
-          ...item,
-        }));
-        console.log(forEducation[0].percentage);
-
-        await forEducation.map((data) => {
-          educationModel.create(data);
+        await education.map((data) => {
+          educationModel.create({ ...data, userId: user.id });
         });
       }
+
       //experience details
       if (!experience) throw new Error(`please provide experience details`);
       else {
-        experience.userId = user.id;
-        const forExperience = experience.map((item) => ({
-          ...item,
-        }));
-        //console.log(forExperience[0]);
-
-        await forExperience.map((data) => {
-          experienceModel.create(data);
+        await experience.map((data) => {
+          experienceModel.create({ ...data, userId: user.id });
         });
       }
       return response
@@ -219,28 +222,3 @@ exports.employeeDetails = async (request, response) => {
       .json({ status: `error`, msg: error.message || "Server error" });
   }
 };
-
-// const employeeExperience = [
-//   {
-//     employeeName: request.body.employeeName,
-//     designation: request.body.designation,
-//     salary: request.body.salary,
-//     dateOfJoining: request.body.dateOfJoining,
-//     dateOfLeaving: request.body.dateOfJoining,
-//     workedOrganization: request.body.workedOrganization,
-//     userId: request.body.userId,
-//   },
-// ];
-//const data = employeeExperience.map((item) => {});
-//};
-
-// const PrevoiusCompanies=[{
-//   name:"",
-//   designation:""
-// }]
-
-// data = PrevoiusCompanies.map(item=>({name: "", email: "", ...item}))
-
-// data.map(item=>{
-//   educationModel.create(item)
-// })

@@ -4,7 +4,7 @@ const createEmployeeSchema = Joi.object({
   middleName: Joi.string().max(30).label("middleName").min(0),
   lastName: Joi.string().max(30).required().label("lastName"),
 
-  password: Joi.string().label("Password"),
+  // password: Joi.string().label("Password"),
   email: Joi.string()
     .email({
       minDomainSegments: 2,

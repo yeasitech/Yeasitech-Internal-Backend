@@ -36,7 +36,7 @@ db.salary = require("./salary.model")(sequelize, DataTypes);
 db.leave = require("./leave.model")(sequelize, DataTypes);
 
 // sequelize
-//   .sync({ alter: true, force: false })
+//   .sync({ alter: true })
 //   .then(() => {
 //     console.log(`database is syncing`);
 //   })
