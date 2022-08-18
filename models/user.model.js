@@ -10,31 +10,23 @@ module.exports = (sequelize, DataTypes) => {
     middleName: DataTypes.STRING,
     lastName: DataTypes.STRING,
     email: DataTypes.STRING,
-    contactNo: DataTypes.STRING,
-    emargencyContactNo: DataTypes.STRING,
     password: DataTypes.STRING,
-    employeeId: DataTypes.STRING,
-    permanentAddress: DataTypes.STRING,
-    currentAddress: DataTypes.STRING,
-    gender: DataTypes.STRING,
-    dateOfBirth: DataTypes.STRING,
-    guardianName: DataTypes.STRING,
-    previousCompanyName: DataTypes.STRING,
-    previousCompanyDesignation: DataTypes.STRING,
-    employeeImage: DataTypes.STRING,
-    aadharNumber: DataTypes.STRING,
-    aadharFrontImage: DataTypes.STRING,
-    aadharBackImage: DataTypes.STRING,
-    voterIdNo: DataTypes.STRING,
-    voterIdImage: DataTypes.STRING,
-    panNo: DataTypes.STRING,
-    panImage: DataTypes.STRING,
-    passportNo: DataTypes.STRING,
-    passportImage: DataTypes.STRING,
     isAdmin: DataTypes.BOOLEAN,
     isActive: DataTypes.BOOLEAN,
     isVerified: DataTypes.BOOLEAN,
   });
+
+  User.associate = function (models) {
+    User.hasOne(models.employeeDetails, {
+      foreignKey: "userId",
+    });
+    User.hasMany(models.educationDetails, {
+      foreignKey: "userId",
+    });
+    User.hasMany(models.experienceDetails, {
+      foreignKey: "userId",
+    });
+  };
 
   return User;
 };

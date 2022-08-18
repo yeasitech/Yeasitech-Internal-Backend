@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       primaryKey: true,
     },
-    previousCompanySalary: DataTypes.INTEGER,
+    previousSalary: DataTypes.INTEGER,
     currentSalary: DataTypes.INTEGER,
     dateOfIncrement: DataTypes.INTEGER,
   });
