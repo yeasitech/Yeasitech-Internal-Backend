@@ -20,8 +20,14 @@ exports.createUser = async (request, response) => {
   const { error } = createEmployeeSchema.validate(request.body);
 
   if (error) {
+<<<<<<< HEAD
     response.status(200).json({ ack: 1, msg: error.details[0].message });
 
+=======
+    response
+      .status(200)
+      .json({ status: "error", msg: error.details[0].message });
+>>>>>>> 4c9797e54f738cb064c7166db310918cf0fde24c
     return;
   }
   const user = request.body;
