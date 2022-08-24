@@ -1,5 +1,7 @@
+const { user } = require("./index");
+
 module.exports = (sequelize, DataTypes) => {
-  const employeeDetails = sequelize.define("employeeDetails", {
+  const EmployeeDetails = sequelize.define("EmployeeDetails", {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     userId: DataTypes.UUID,
     contactNo: DataTypes.STRING,
@@ -10,6 +12,8 @@ module.exports = (sequelize, DataTypes) => {
     dateOfBirth: DataTypes.STRING,
     guardianName: DataTypes.STRING,
     employeeId: DataTypes.STRING,
+    department: DataTypes.STRING,
+    designation: DataTypes.STRING,
     employeeImage: DataTypes.STRING,
     aadharNumber: DataTypes.STRING,
     aadharFrontImage: DataTypes.STRING,
@@ -24,10 +28,10 @@ module.exports = (sequelize, DataTypes) => {
     passportFrontImage: DataTypes.STRING,
     passportBackImage: DataTypes.STRING,
   });
-  employeeDetails.associate = function (models) {
-    employeeDetails.belongsTo(models.User, {
-      foreignKey: "userId",
-    });
-  };
-  return employeeDetails;
+  // EmployeeDetails.associate = function (models) {
+  //   EmployeeDetails.belongsTo(models.User, {
+  //     foreignKey: "userId",
+  //   });
+  // };
+  return EmployeeDetails;
 };

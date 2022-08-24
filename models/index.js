@@ -28,12 +28,24 @@ const db = {};
 
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
-db.user = require("./user.model")(sequelize, DataTypes);
-db.employeeDetails = require("./employeeDetails.model")(sequelize, DataTypes);
-db.educationModel = require("./education.model")(sequelize, DataTypes);
-db.experience = require("./experience.model")(sequelize, DataTypes);
-db.salary = require("./salary.model")(sequelize, DataTypes);
-db.leave = require("./leave.model")(sequelize, DataTypes);
+db.User = require("./user.model")(sequelize, DataTypes);
+db.EmployeeDetails = require("./employeeDetails.model")(sequelize, DataTypes);
+db.EducationDetails = require("./education.model")(sequelize, DataTypes);
+db.EmployeeExperience = require("./experience.model")(sequelize, DataTypes);
+db.Salary = require("./salary.model")(sequelize, DataTypes);
+db.Leave = require("./leave.model")(sequelize, DataTypes);
+
+db.User.hasOne(db.EmployeeDetails, { foreignKey: "userId" });
+db.EmployeeDetails.belongsTo(db.User, { foreignKey: "userId" });
+
+db.User.hasMany(db.EmployeeExperience, { foreignKey: "userId" });
+db.EmployeeExperience.belongsTo(db.User, { foreignKey: "userId" });
+
+db.User.hasMany(db.EducationDetails, { foreignKey: "userId" });
+db.EducationDetails.belongsTo(db.User, { foreignKey: "userId" });
+
+db.User.hasMany(db.Salary, { foreignKey: "userId" });
+db.Salary.belongsTo(db.User, { foreignKey: "userId" });
 
 // sequelize
 //   .sync({ alter: true })

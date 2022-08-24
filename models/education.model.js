@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  const educationDetails = sequelize.define("educationDetails", {
+  const EducationDetails = sequelize.define("EducationDetails", {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -13,11 +13,11 @@ module.exports = (sequelize, DataTypes) => {
     specialization: DataTypes.STRING,
     type: DataTypes.STRING, // X / XII / Graduation / Master / PHD
   });
-  educationDetails.associate = function (models) {
-    educationDetails.belongsTo(models.User, {
-      foreignKey: "userId",
-    });
-  };
+  // EducationDetails.associate = function (models) {
+  //   EducationDetails.belongsTo(models.User, {
+  //     foreignKey: "userId",
+  //   });
+  // };
 
-  return educationDetails;
+  return EducationDetails;
 };

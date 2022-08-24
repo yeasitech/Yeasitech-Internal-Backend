@@ -1,13 +1,15 @@
 module.exports = (sequelize, DataTypes) => {
-  const salary = sequelize.define("salary", {
+  const Salary = sequelize.define("Salary", {
     id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
-      allowNull: false,
+      type: DataTypes.INTEGER,
       primaryKey: true,
+      autoIncrement: true,
+      allowNull: false,
     },
-    previousSalary: DataTypes.INTEGER,
-    currentSalary: DataTypes.INTEGER,
-    dateOfIncrement: DataTypes.INTEGER,
+    userId: DataTypes.UUID,
+    previousSalary: DataTypes.STRING,
+    currentSalary: DataTypes.STRING,
+    dateOfIncrement: DataTypes.STRING,
   });
+  return Salary;
 };

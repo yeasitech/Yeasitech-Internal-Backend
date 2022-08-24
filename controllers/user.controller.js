@@ -1,17 +1,18 @@
+const sequelize = require("sequelize");
 const db = require("../models/index");
 const jwt = require("jsonwebtoken");
-const User = db.user;
-const employeeDetails = db.employeeDetails;
-const educationModel = db.educationModel;
-const experienceModel = db.experience;
+const User = db.User;
+const EmployeeDetails = db.EmployeeDetails;
+const EducationModel = db.EducationDetails;
+const ExperienceModel = db.EmployeeExperience;
+const Salary = db.Salary;
 const {
   createEmployeeSchema,
   loginSchema,
   employeeDetailsSchema,
 } = require("./validation/user.validation");
 const bcrypt = require("bcryptjs");
-//const educationModel = require("../models/education.model");
-const employeeDetailsModel = require("../models/employeeDetails.model");
+const { request, response } = require("express");
 
 //create new user
 
@@ -19,9 +20,14 @@ exports.createUser = async (request, response) => {
   const { error } = createEmployeeSchema.validate(request.body);
 
   if (error) {
+<<<<<<< HEAD
+    response.status(200).json({ ack: 1, msg: error.details[0].message });
+
+=======
     response
       .status(200)
       .json({ status: "error", msg: error.details[0].message });
+>>>>>>> 4c9797e54f738cb064c7166db310918cf0fde24c
     return;
   }
   const user = request.body;
@@ -31,11 +37,11 @@ exports.createUser = async (request, response) => {
     });
     if (checkForIfExists) {
       response.status(200).json({
-        status: "error",
+        ack: 0,
         msg: "User exists with this email",
       });
     } else {
-      // const hash = bcrypt.hashSync(user.password, 10);
+      //const hash = bcrypt.hashSync(user.password, 10);
       const userRecord = {
         firstName: user.firstName,
         middleName: user.middleName,
@@ -45,13 +51,11 @@ exports.createUser = async (request, response) => {
         isActive: 1,
       };
       const userData = await User.create(userRecord);
-      response.status(200).json({ status: "success", data: userData });
+      response.status(200).json({ ack: 1,msg:"successfully created", data: userData });
     }
   } catch (error) {
     console.error("Error => ", error);
-    response
-      .status(500)
-      .json({ status: "error", msg: error.message || "Server error" });
+    response.status(500).json({ ack: 0, msg: error.message || "Server error" });
   }
 };
 
@@ -59,9 +63,7 @@ exports.createUser = async (request, response) => {
 exports.logIn = async (request, response) => {
   const { error } = loginSchema.validate(request.body);
   if (error) {
-    response
-      .status(200)
-      .json({ status: "error", msg: error.details[0].message });
+    response.status(200).json({ ack: 1, msg: error.details[0].message });
     return false;
   } else {
     try {
@@ -71,7 +73,7 @@ exports.logIn = async (request, response) => {
       if (checkForIfExists) {
         if (!checkForIfExists.dataValues.isActive) {
           response.status(200).json({
-            status: "error",
+            ack: 0,
             msg: "User disabled, Please contact us through our website",
           });
           return false;
@@ -92,39 +94,42 @@ exports.logIn = async (request, response) => {
           ); // expires in 30 days
           delete checkForIfExists.dataValues.password;
           response.status(200).json({
+            ack:1,
             status: "success",
             msg: "Logged in Successfully",
             data: { user: checkForIfExists, token },
           });
         } else {
           response.status(200).json({
+            ack:0,
             status: "error",
             msg: "Invalid email or password",
           });
         }
       } else {
         response.status(200).json({
+          ack:0,
           status: "error",
           msg: "Email ID not registered",
         });
       }
     } catch (error) {
-      response.status(500).json({ msg: error.message || "Server error" });
+      response
+        .status(500)
+        .json({ ack: 0, msg: error.message || "Server error" });
     }
   }
 };
 //add employeeDetails
 exports.employeeDetails = async (request, response) => {
-  // const email = request.body.email;
   const { id, email } = request.body;
 
   const { error } = employeeDetailsSchema.validate({ email });
-  // console.log({ id });
 
   if (error) {
     response
       .status(400)
-      .json({ error: "invalid email Id", msg: error.details[0].message });
+      .json({ error: "invalid email Id",ack:1 ,msg: error.details[0].message });
 
     return;
   }
@@ -136,20 +141,21 @@ exports.employeeDetails = async (request, response) => {
       const {} = request.body;
 
       delete info.id;
-      const updatedUser = await employeeDetails.create(
+      const updatedUser = await EmployeeDetails.create(
         {
           userId: id,
         },
         { where: { email } }
       );
       response.status(200).json({
+        ack:1,
         msg: "data inserted successfully",
         data: updatedUser,
       });
     }
   } catch (error) {
     console.log("error", error);
-    response.status(500).json({ ack: 1, msg: error.message || "Server error" });
+    response.status(500).json({ ack: 0, msg: error.message || "Server error" });
   }
 };
 
@@ -161,7 +167,7 @@ exports.employeeDetails = async (request, response) => {
   if (error) {
     response
       .status(400)
-      .json({ error: "invalid email Id", msg: error.details[0].message });
+      .json({ack:1, error: "invalid email Id", msg: error.details[0].message });
 
     return;
   }
@@ -175,33 +181,36 @@ exports.employeeDetails = async (request, response) => {
       if (!personal) throw new Error(`please provide personal details`);
       else {
         personal.userId = user.id;
-        let getAllEmployee = await employeeDetails.findAll({
+        let getAllEmployee = await EmployeeDetails.findAll({
           order: [["employeeId", "DESC"]],
           limit: 1,
         });
-        console.log(`GETALLEMPLOYEE`, getAllEmployee.length);
         let employeeIdToSave;
         if (getAllEmployee.length === 0) {
-          employeeId = `YT-1`;
+          let employeeId = `YT-1`;
+          await EmployeeDetails.create({
+            ...personal,
+            userId: user.id,
+            employeeId: employeeId,
+          });
         } else {
           let { employeeId } = getAllEmployee[0].dataValues;
-          console.log(`employeeId`, employeeId);
 
           let employeeIdNumber = parseInt(employeeId.split("-")[1]);
           employeeIdToSave = `YT-${employeeIdNumber + 1}`;
+          await EmployeeDetails.create({
+            ...personal,
+            userId: user.id,
+            employeeId: employeeIdToSave,
+          });
         }
-        await employeeDetails.create({
-          ...personal,
-          userId: user.id,
-          employeeId: employeeIdToSave,
-        });
       }
 
       // Eduaction Details
       if (!education) throw new Error(`please provide education details`);
       else {
         await education.map((data) => {
-          educationModel.create({ ...data, userId: user.id });
+          EducationModel.create({ ...data, userId: user.id });
         });
       }
 
@@ -209,17 +218,88 @@ exports.employeeDetails = async (request, response) => {
       if (!experience) throw new Error(`please provide experience details`);
       else {
         await experience.map((data) => {
-          experienceModel.create({ ...data, userId: user.id });
+          ExperienceModel.create({ ...data, userId: user.id });
         });
       }
       return response
         .status(200)
-        .json({ status: "success", msg: "Employee updated successfully" });
+        .json({ack:1, status: "success", msg: "Employee updated successfully" });
     }
   } catch (error) {
     console.log("error", error);
     response
       .status(500)
-      .json({ status: `error`, msg: error.message || "Server error" });
+      .json({ack:0, status: `error`, msg: error.message || "Server error" });
+  }
+};
+exports.allUser = async (request, response) => {
+  const { count, rows } = await User.findAndCountAll({});
+
+  response.status(200).json({ ack:1,data: {userInfo:rows,totalEmployee: count } });
+};
+
+exports.oneEmployeeDetails = async (request, response) => {
+  const id = request.params.id;
+  try {
+    const detailsOfEmployee = await User.findOne({
+      include: [
+        { model: EmployeeDetails },
+        { model: EducationModel },
+        { model: ExperienceModel },
+      ],
+      where: { id: id },
+      order: [
+        [{ model: EducationModel }, "passoutYear", "DESC"],
+        [{ model: ExperienceModel }, "dateOfLeaving"],
+      ],
+    });
+
+    response.status(200).json({ ack:1,data: detailsOfEmployee });
+  } catch (error) {
+    console.log("error", error);
+    response
+      .status(500)
+      .json({ack:0, status: `error`, msg: error.message || "Server error" });
+  }
+};
+
+exports.employeeSalary = async (request, response) => {
+  const { userId, salary } = request.body;
+  console.log(salary);
+  try {
+    const userData = await User.findOne({ where: { id: userId } });
+    if (!userData) throw new Error(`employee not exists`);
+    else {
+      await salary.map((data) => {
+        Salary.create({
+          ...data,
+          previousSalary: parseInt(data.previousSalary),
+          currentSalary: parseInt(data.currentSalary),
+          userId: userId,
+        });
+      });
+
+      response
+        .status(200)
+        .json({ ack:1,status: "successful", msg: "salary updated successfully" });
+    }
+  } catch (error) {
+    response
+      .status(500)
+      .json({ ack:0,status: `error`, msg: error.message || `server Error` });
+  }
+};
+
+exports.editProfile = async (request, response) => {
+  const { id, user } = request.body;
+  console.log(id);
+  try {
+    const userData = await User.findOne({ where: { id: id } });
+    console.log(userData);
+  } catch (error) {
+    //console.log(`12345678765432`, error);
+    response
+      .status(500)
+      .json({ status: `error`, msg: error.message || `server Error` });
   }
 };
