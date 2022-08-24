@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  const employeeExperience = sequelize.define("employeeExperience", {
+  const EmployeeExperience = sequelize.define("EmployeeExperience", {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     userId: DataTypes.UUID,
     // employeeName: DataTypes.STRING,
@@ -9,10 +9,10 @@ module.exports = (sequelize, DataTypes) => {
     dateOfJoining: DataTypes.STRING,
     dateOfLeaving: DataTypes.STRING,
   });
-  employeeExperience.associate = function (models) {
-    employeeExperience.belongsTo(models.User, {
-      foreignKey: "userId",
-    });
-  };
-  return employeeExperience;
+  // EmployeeExperience.associate = function (models) {
+  //   EmployeeExperience.belongsTo(models.User, {
+  //     foreignKey: "userId",
+  //   });
+  // };
+  return EmployeeExperience;
 };
