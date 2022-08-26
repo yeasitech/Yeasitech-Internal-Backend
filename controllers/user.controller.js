@@ -1,4 +1,3 @@
-const sequelize = require("sequelize");
 const db = require("../models/index");
 const jwt = require("jsonwebtoken");
 const User = db.User;
@@ -12,7 +11,6 @@ const {
   employeeDetailsSchema,
 } = require("./validation/user.validation");
 const bcrypt = require("bcryptjs");
-const { request, response } = require("express");
 
 //create new user
 
@@ -20,14 +18,8 @@ exports.createUser = async (request, response) => {
   const { error } = createEmployeeSchema.validate(request.body);
 
   if (error) {
-<<<<<<< HEAD
     response.status(200).json({ ack: 1, msg: error.details[0].message });
-
-=======
-    response
-      .status(200)
-      .json({ status: "error", msg: error.details[0].message });
->>>>>>> 4c9797e54f738cb064c7166db310918cf0fde24c
+    console.log(`efdh`, error);
     return;
   }
   const user = request.body;
@@ -46,12 +38,17 @@ exports.createUser = async (request, response) => {
         firstName: user.firstName,
         middleName: user.middleName,
         lastName: user.lastName,
+        dateOfJoining: user.dateOfJoining,
+        department: user.department,
+        designation: user.designation,
         //password: hash,
         email: user.email,
         isActive: 1,
       };
       const userData = await User.create(userRecord);
-      response.status(200).json({ ack: 1,msg:"successfully created", data: userData });
+      response
+        .status(200)
+        .json({ ack: 1, msg: "successfully created", data: userData });
     }
   } catch (error) {
     console.error("Error => ", error);
@@ -94,21 +91,21 @@ exports.logIn = async (request, response) => {
           ); // expires in 30 days
           delete checkForIfExists.dataValues.password;
           response.status(200).json({
-            ack:1,
+            ack: 1,
             status: "success",
             msg: "Logged in Successfully",
             data: { user: checkForIfExists, token },
           });
         } else {
           response.status(200).json({
-            ack:0,
+            ack: 0,
             status: "error",
             msg: "Invalid email or password",
           });
         }
       } else {
         response.status(200).json({
-          ack:0,
+          ack: 0,
           status: "error",
           msg: "Email ID not registered",
         });
@@ -121,43 +118,45 @@ exports.logIn = async (request, response) => {
   }
 };
 //add employeeDetails
-exports.employeeDetails = async (request, response) => {
-  const { id, email } = request.body;
+// exports.employeeDetails = async (request, response) => {
+//   const { id, email } = request.body;
 
-  const { error } = employeeDetailsSchema.validate({ email });
+//   const { error } = employeeDetailsSchema.validate({ email });
 
-  if (error) {
-    response
-      .status(400)
-      .json({ error: "invalid email Id",ack:1 ,msg: error.details[0].message });
+//   if (error) {
+//     response.status(400).json({
+//       error: "invalid email Id",
+//       ack: 1,
+//       msg: error.details[0].message,
+//     });
 
-    return;
-  }
-  try {
-    let user = await User.findByPk(id);
-    console.log(user);
-    if (!user) throw new Error("employee not exists");
-    else {
-      const {} = request.body;
+//     return;
+//   }
+//   try {
+//     let user = await User.findByPk(id);
+//     console.log(user);
+//     if (!user) throw new Error("employee not exists");
+//     else {
+//       const {} = request.body;
 
-      delete info.id;
-      const updatedUser = await EmployeeDetails.create(
-        {
-          userId: id,
-        },
-        { where: { email } }
-      );
-      response.status(200).json({
-        ack:1,
-        msg: "data inserted successfully",
-        data: updatedUser,
-      });
-    }
-  } catch (error) {
-    console.log("error", error);
-    response.status(500).json({ ack: 0, msg: error.message || "Server error" });
-  }
-};
+//       delete info.id;
+//       const updatedUser = await EmployeeDetails.create(
+//         {
+//           userId: id,
+//         },
+//         { where: { email } }
+//       );
+//       response.status(200).json({
+//         ack: 1,
+//         msg: "data inserted successfully",
+//         data: updatedUser,
+//       });
+//     }
+//   } catch (error) {
+//     console.log("error", error);
+//     response.status(500).json({ ack: 0, msg: error.message || "Server error" });
+//   }
+// };
 
 exports.employeeDetails = async (request, response) => {
   const { id, personal, education, experience } = request.body;
@@ -165,9 +164,11 @@ exports.employeeDetails = async (request, response) => {
 
   const { error } = employeeDetailsSchema.validate({ email });
   if (error) {
-    response
-      .status(400)
-      .json({ack:1, error: "invalid email Id", msg: error.details[0].message });
+    response.status(400).json({
+      ack: 1,
+      error: "invalid email Id",
+      msg: error.details[0].message,
+    });
 
     return;
   }
@@ -221,21 +222,25 @@ exports.employeeDetails = async (request, response) => {
           ExperienceModel.create({ ...data, userId: user.id });
         });
       }
-      return response
-        .status(200)
-        .json({ack:1, status: "success", msg: "Employee updated successfully" });
+      return response.status(200).json({
+        ack: 1,
+        status: "success",
+        msg: "Employee updated successfully",
+      });
     }
   } catch (error) {
     console.log("error", error);
     response
       .status(500)
-      .json({ack:0, status: `error`, msg: error.message || "Server error" });
+      .json({ ack: 0, status: `error`, msg: error.message || "Server error" });
   }
 };
 exports.allUser = async (request, response) => {
-  const { count, rows } = await User.findAndCountAll({});
+  const { count, rows } = await User.findAndCountAll({
+    include: [{ model: EmployeeDetails }],
+  });
 
-  response.status(200).json({ ack:1,data: {userInfo:rows,totalEmployee: count } });
+  response.status(200).json({ ack: 1, data: { rows, count } });
 };
 
 exports.oneEmployeeDetails = async (request, response) => {
@@ -254,12 +259,11 @@ exports.oneEmployeeDetails = async (request, response) => {
       ],
     });
 
-    response.status(200).json({ ack:1,data: detailsOfEmployee });
+    response.status(200).json({ ack: 1, data: detailsOfEmployee });
   } catch (error) {
-    console.log("error", error);
     response
       .status(500)
-      .json({ack:0, status: `error`, msg: error.message || "Server error" });
+      .json({ ack: 0, status: `error`, msg: error.message || "Server error" });
   }
 };
 
@@ -279,27 +283,34 @@ exports.employeeSalary = async (request, response) => {
         });
       });
 
-      response
-        .status(200)
-        .json({ ack:1,status: "successful", msg: "salary updated successfully" });
+      response.status(200).json({
+        ack: 1,
+        status: "successful",
+        msg: "salary created successfully",
+      });
     }
   } catch (error) {
     response
       .status(500)
-      .json({ ack:0,status: `error`, msg: error.message || `server Error` });
+      .json({ ack: 0, status: `error`, msg: error.message || `server Error` });
   }
 };
 
-exports.editProfile = async (request, response) => {
-  const { id, user } = request.body;
-  console.log(id);
-  try {
-    const userData = await User.findOne({ where: { id: id } });
-    console.log(userData);
-  } catch (error) {
-    //console.log(`12345678765432`, error);
-    response
-      .status(500)
-      .json({ status: `error`, msg: error.message || `server Error` });
-  }
-};
+// exports.editProfile = async (request, response) => {
+//   const { user, personal, education, experience } = request.body;
+//   const id = request.params.id;
+//   try {
+//     if (!id) throw new Error(`user not registered`);
+//     else {
+//       await user.map((data) => {
+//         console.log(`123456789`, data);
+//         User.update({ ...data }, { where: { id } });
+
+//         response.send({ msg: `successfully updated` });
+//       });
+//     }
+//   } catch (error) {
+//     response
+//       .status(500)
+//       .json({ ack: 0, status: `error`, msg: error.message || `server Error` });
+//   }
