@@ -1,4 +1,3 @@
-const sequelize = require("sequelize");
 const db = require("../models/index");
 const jwt = require("jsonwebtoken");
 const User = db.User;
@@ -12,7 +11,6 @@ const {
   employeeDetailsSchema,
 } = require("./validation/user.validation");
 const bcrypt = require("bcryptjs");
-const { request, response } = require("express");
 
 //create new user
 
@@ -20,9 +18,9 @@ exports.createUser = async (request, response) => {
   const { error } = createEmployeeSchema.validate(request.body);
 
   if (error) {
-    response
-      .status(200)
-      .json({ status: "error", msg: error.details[0].message });
+    response.status(200).json({ ack: 1, msg: error.details[0].message });
+    console.log(`efdh`, error);
+
     return;
   }
   const user = request.body;
@@ -41,6 +39,9 @@ exports.createUser = async (request, response) => {
         firstName: user.firstName,
         middleName: user.middleName,
         lastName: user.lastName,
+        dateOfJoining: user.dateOfJoining,
+        department: user.department,
+        designation: user.designation,
         //password: hash,
         email: user.email,
         isActive: 1,
@@ -117,46 +118,7 @@ exports.logIn = async (request, response) => {
     }
   }
 };
-//add employeeDetails
-exports.employeeDetails = async (request, response) => {
-  const { id, email } = request.body;
 
-  const { error } = employeeDetailsSchema.validate({ email });
-
-  if (error) {
-    response.status(400).json({
-      error: "invalid email Id",
-      ack: 1,
-      msg: error.details[0].message,
-    });
-
-    return;
-  }
-  try {
-    let user = await User.findByPk(id);
-    console.log(user);
-    if (!user) throw new Error("employee not exists");
-    else {
-      const {} = request.body;
-
-      delete info.id;
-      const updatedUser = await EmployeeDetails.create(
-        {
-          userId: id,
-        },
-        { where: { email } }
-      );
-      response.status(200).json({
-        ack: 1,
-        msg: "data inserted successfully",
-        data: updatedUser,
-      });
-    }
-  } catch (error) {
-    console.log("error", error);
-    response.status(500).json({ ack: 0, msg: error.message || "Server error" });
-  }
-};
 
 exports.employeeDetails = async (request, response) => {
   const { id, personal, education, experience } = request.body;
@@ -236,11 +198,14 @@ exports.employeeDetails = async (request, response) => {
   }
 };
 exports.allUser = async (request, response) => {
-  const { count, rows } = await User.findAndCountAll({});
+  const { count, rows } = await User.findAndCountAll({
+    include: [{ model: EmployeeDetails }],
+  });
 
-  response
-    .status(200)
-    .json({ ack: 1, data: { userInfo: rows, totalEmployee: count } });
+
+  
+  response.status(200).json({ ack: 1, data: { rows, count } });
+
 };
 
 exports.oneEmployeeDetails = async (request, response) => {
@@ -261,7 +226,6 @@ exports.oneEmployeeDetails = async (request, response) => {
 
     response.status(200).json({ ack: 1, data: detailsOfEmployee });
   } catch (error) {
-    console.log("error", error);
     response
       .status(500)
       .json({ ack: 0, status: `error`, msg: error.message || "Server error" });
@@ -286,7 +250,7 @@ exports.employeeSalary = async (request, response) => {
 
       response.status(200).json({
         ack: 1,
-        status: "successful",
+        
         msg: "salary updated successfully",
       });
     }
@@ -294,19 +258,9 @@ exports.employeeSalary = async (request, response) => {
     response
       .status(500)
       .json({ ack: 0, status: `error`, msg: error.message || `server Error` });
+
   }
 };
 
-exports.editProfile = async (request, response) => {
-  const { id, user } = request.body;
-  console.log(id);
-  try {
-    const userData = await User.findOne({ where: { id: id } });
-    console.log(userData);
-  } catch (error) {
-    //console.log(`12345678765432`, error);
-    response
-      .status(500)
-      .json({ status: `error`, msg: error.message || `server Error` });
-  }
+
 };

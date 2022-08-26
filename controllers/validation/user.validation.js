@@ -3,7 +3,9 @@ const createEmployeeSchema = Joi.object({
   firstName: Joi.string().max(30).required().label("firstName"),
   middleName: Joi.string().max(30).label("middleName").min(0),
   lastName: Joi.string().max(30).required().label("lastName"),
-
+  dateOfJoining: Joi.string().max(30).required().label("dateOfJoining"),
+  department: Joi.string().max(30).required().label("department"),
+  designation: Joi.string().max(30).required().label("designation"),
   //password: Joi.string().label("Password"),
   email: Joi.string()
     .email({
