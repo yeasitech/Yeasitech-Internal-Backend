@@ -117,46 +117,6 @@ exports.logIn = async (request, response) => {
     }
   }
 };
-//add employeeDetails
-// exports.employeeDetails = async (request, response) => {
-//   const { id, email } = request.body;
-
-//   const { error } = employeeDetailsSchema.validate({ email });
-
-//   if (error) {
-//     response.status(400).json({
-//       error: "invalid email Id",
-//       ack: 1,
-//       msg: error.details[0].message,
-//     });
-
-//     return;
-//   }
-//   try {
-//     let user = await User.findByPk(id);
-//     console.log(user);
-//     if (!user) throw new Error("employee not exists");
-//     else {
-//       const {} = request.body;
-
-//       delete info.id;
-//       const updatedUser = await EmployeeDetails.create(
-//         {
-//           userId: id,
-//         },
-//         { where: { email } }
-//       );
-//       response.status(200).json({
-//         ack: 1,
-//         msg: "data inserted successfully",
-//         data: updatedUser,
-//       });
-//     }
-//   } catch (error) {
-//     console.log("error", error);
-//     response.status(500).json({ ack: 0, msg: error.message || "Server error" });
-//   }
-// };
 
 exports.employeeDetails = async (request, response) => {
   const { id, personal, education, experience } = request.body;
@@ -295,22 +255,3 @@ exports.employeeSalary = async (request, response) => {
       .json({ ack: 0, status: `error`, msg: error.message || `server Error` });
   }
 };
-
-// exports.editProfile = async (request, response) => {
-//   const { user, personal, education, experience } = request.body;
-//   const id = request.params.id;
-//   try {
-//     if (!id) throw new Error(`user not registered`);
-//     else {
-//       await user.map((data) => {
-//         console.log(`123456789`, data);
-//         User.update({ ...data }, { where: { id } });
-
-//         response.send({ msg: `successfully updated` });
-//       });
-//     }
-//   } catch (error) {
-//     response
-//       .status(500)
-//       .json({ ack: 0, status: `error`, msg: error.message || `server Error` });
-//   }
