@@ -20,12 +20,10 @@ exports.getDepartment = async (request, response) => {
   response.status(200).json({ ack: 1, data: allDept });
 };
 exports.getDesignation = async (request, response) => {
-  const { department } = request.body;
-
-  const allDept = await DepartmentModel.findAll({
-    where: { department: department },
-    attributes: [],
-    include: { model: Desigantion, attributes: ["designation"] },
+  const { departmentId } = request.body;
+  const allDept = await Desigantion.findAll({
+    where: { departmentId: departmentId },
+    attributes: ["designation"],
   });
   // console.log(`qwertyui`, allDept[0].dataValues.id);
 
