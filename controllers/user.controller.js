@@ -125,7 +125,6 @@ exports.logIn = async (request, response) => {
   }
 };
 
-
 exports.employeeDetails = async (request, response) => {
   const { personal, education, experience } = request.body;
   const { email } = request.body.personal;
@@ -209,10 +208,7 @@ exports.allUser = async (request, response) => {
     include: [{ model: EmployeeDetails }],
   });
 
-
-  
   response.status(200).json({ ack: 1, data: { rows, count } });
-
 };
 
 exports.oneEmployeeDetails = async (request, response) => {
@@ -258,7 +254,7 @@ exports.employeeSalary = async (request, response) => {
 
       response.status(200).json({
         ack: 1,
-        
+
         msg: "salary updated successfully",
       });
     }
@@ -266,9 +262,5 @@ exports.employeeSalary = async (request, response) => {
     response
       .status(500)
       .json({ ack: 0, status: `error`, msg: error.message || `server Error` });
-
   }
-};
-
-
 };
