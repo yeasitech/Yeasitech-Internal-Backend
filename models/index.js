@@ -37,6 +37,7 @@ db.Department = require("./department.model")(sequelize, DataTypes);
 
 db.User.hasOne(db.EmployeeDetails, { foreignKey: "userId" });
 db.EmployeeDetails.belongsTo(db.User, { foreignKey: "userId" });
+db.User.belongsTo(db.Department, { foreignKey: "departmentId" });
 
 db.User.hasMany(db.EmployeeExperience, { foreignKey: "userId" });
 db.EmployeeExperience.belongsTo(db.User, { foreignKey: "userId" });

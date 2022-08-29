@@ -1,8 +1,8 @@
 const userController = require("../controllers/user.controller");
-const deptController = require("../controllers/department.controller");
+const departmentController = require("../controllers/department.controller");
 const { Router } = require("express");
 const userRouter = Router();
-//const deptRouter = Router();
+const departmentRouter = Router();
 //userRouter
 userRouter.post("/createEmployee", userController.createUser);
 userRouter.post("/login", userController.logIn);
@@ -16,5 +16,8 @@ userRouter.post("/employeeSalary", userController.employeeSalary);
 
 //deptRouter
 
-userRouter.post("/dept", deptController.department);
-module.exports = userRouter;
+departmentRouter.post("/dept", departmentController.department);
+departmentRouter.post("/designation", departmentController.designation);
+departmentRouter.get("/getAllDepartment", departmentController.getDepartment);
+departmentRouter.get("/getAllDesignation", departmentController.getDesignation);
+module.exports = { userRouter, departmentRouter };

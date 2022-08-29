@@ -5,6 +5,7 @@ const EmployeeDetails = db.EmployeeDetails;
 const EducationModel = db.EducationDetails;
 const ExperienceModel = db.EmployeeExperience;
 const Salary = db.Salary;
+const DepartmentModel = db.Department;
 const {
   createEmployeeSchema,
   loginSchema,
@@ -23,6 +24,10 @@ exports.createUser = async (request, response) => {
     return;
   }
   const user = request.body;
+  const allDept = await DepartmentModel.findOne({
+    where: { department: user.department },
+  });
+  console.log(`qwertyyuiop`, allDept);
   try {
     const checkForIfExists = await User.findOne({
       where: { email: request.body.email },
@@ -40,6 +45,7 @@ exports.createUser = async (request, response) => {
         lastName: user.lastName,
         dateOfJoining: user.dateOfJoining,
         department: user.department,
+        departmentId: allDept.id,
         designation: user.designation,
         //password: hash,
         email: user.email,
@@ -119,7 +125,7 @@ exports.logIn = async (request, response) => {
 };
 
 exports.employeeDetails = async (request, response) => {
-  const { id, personal, education, experience } = request.body;
+  const { personal, education, experience } = request.body;
   const { email } = request.body.personal;
 
   const { error } = employeeDetailsSchema.validate({ email });
@@ -135,6 +141,7 @@ exports.employeeDetails = async (request, response) => {
 
   try {
     let user = await User.findOne({ where: { email: email } });
+    console.log(`1234567890`, user);
 
     if (email !== user.email) throw new Error(`employee not exists`);
     else {
@@ -205,18 +212,19 @@ exports.allUser = async (request, response) => {
 
 exports.oneEmployeeDetails = async (request, response) => {
   const id = request.params.id;
+
   try {
     const detailsOfEmployee = await User.findOne({
+      where: { id: id },
       include: [
         { model: EmployeeDetails },
         { model: EducationModel },
         { model: ExperienceModel },
       ],
-      where: { id: id },
-      order: [
-        [{ model: EducationModel }, "passoutYear", "DESC"],
-        [{ model: ExperienceModel }, "dateOfLeaving"],
-      ],
+      // order: [
+      //   [{ model: EducationModel }, "passoutYear", "DESC"],
+      //   [{ model: ExperienceModel }, "dateOfLeaving"],
+      // ],
     });
 
     response.status(200).json({ ack: 1, data: detailsOfEmployee });
