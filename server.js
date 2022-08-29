@@ -1,5 +1,5 @@
 require("dotenv").config();
-const userRouter = require("./routes/user.router");
+const { userRouter, departmentRouter } = require("./routes/user.router");
 const express = require("express");
 const app = express();
 const cors = require("cors");
@@ -12,6 +12,7 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 app.use("/user", userRouter);
+app.use("/public", departmentRouter);
 
 app.listen(port, () => {
   console.log(`server is listening to the port :${port}`);
