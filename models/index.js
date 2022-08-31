@@ -32,12 +32,13 @@ db.EducationDetails = require("./education.model")(sequelize, DataTypes);
 db.EmployeeExperience = require("./experience.model")(sequelize, DataTypes);
 db.Salary = require("./salary.model")(sequelize, DataTypes);
 db.Leave = require("./leave.model")(sequelize, DataTypes);
-db.Desigantion = require("./designation.model")(sequelize, DataTypes);
+db.Designation = require("./designation.model")(sequelize, DataTypes);
 db.Department = require("./department.model")(sequelize, DataTypes);
 
 db.User.hasOne(db.EmployeeDetails, { foreignKey: "userId" });
 db.EmployeeDetails.belongsTo(db.User, { foreignKey: "userId" });
 db.User.belongsTo(db.Department, { foreignKey: "departmentId" });
+db.User.belongsTo(db.Designation, { foreignKey: "designationId" });
 
 db.User.hasMany(db.EmployeeExperience, { foreignKey: "userId" });
 db.EmployeeExperience.belongsTo(db.User, { foreignKey: "userId" });
@@ -51,8 +52,8 @@ db.Salary.belongsTo(db.User, { foreignKey: "userId" });
 db.Department.hasOne(db.EmployeeDetails, { foreignKey: "departmentId" });
 db.EmployeeDetails.belongsTo(db.Department, { foreignKey: "departmentId" });
 
-db.Department.hasMany(db.Desigantion, { foreignKey: "departmentId" });
-db.Desigantion.belongsTo(db.Department, { foreignKey: "departmentId" });
+db.Department.hasMany(db.Designation, { foreignKey: "departmentId" });
+db.Designation.belongsTo(db.Department, { foreignKey: "departmentId" });
 
 // sequelize
 //   .sync({ alter: true })
