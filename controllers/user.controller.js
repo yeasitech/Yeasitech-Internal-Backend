@@ -4,8 +4,9 @@ const User = db.User;
 const EmployeeDetails = db.EmployeeDetails;
 const EducationModel = db.EducationDetails;
 const ExperienceModel = db.EmployeeExperience;
-const Salary = db.Salary;
+
 const DepartmentModel = db.Department;
+const DesignationModel = db.Designation;
 const {
   createEmployeeSchema,
   loginSchema,
@@ -25,10 +26,15 @@ exports.createUser = async (request, response) => {
     return;
   }
   const user = request.body;
+  if (!user) throw new Error(`user doesn't exists`);
   const allDept = await DepartmentModel.findOne({
     where: { department: user.department },
   });
-  console.log(`qwertyyuiop`, allDept);
+  console.log(`*******`, allDept);
+  const allDesignation = await DesignationModel.findOne({
+    where: { designation: user.designation },
+  });
+
   try {
     const checkForIfExists = await User.findOne({
       where: { email: request.body.email },
@@ -45,9 +51,8 @@ exports.createUser = async (request, response) => {
         middleName: user.middleName,
         lastName: user.lastName,
         dateOfJoining: user.dateOfJoining,
-        department: user.department,
         departmentId: allDept.id,
-        designation: user.designation,
+        designationId: allDesignation.id,
         //password: hash,
         email: user.email,
         isActive: 1,
@@ -233,34 +238,5 @@ exports.oneEmployeeDetails = async (request, response) => {
     response
       .status(500)
       .json({ ack: 0, status: `error`, msg: error.message || "Server error" });
-  }
-};
-
-exports.employeeSalary = async (request, response) => {
-  const { userId, salary } = request.body;
-  console.log(salary);
-  try {
-    const userData = await User.findOne({ where: { id: userId } });
-    if (!userData) throw new Error(`employee not exists`);
-    else {
-      await salary.map((data) => {
-        Salary.create({
-          ...data,
-          previousSalary: parseInt(data.previousSalary),
-          currentSalary: parseInt(data.currentSalary),
-          userId: userId,
-        });
-      });
-
-      response.status(200).json({
-        ack: 1,
-
-        msg: "salary updated successfully",
-      });
-    }
-  } catch (error) {
-    response
-      .status(500)
-      .json({ ack: 0, status: `error`, msg: error.message || `server Error` });
   }
 };
