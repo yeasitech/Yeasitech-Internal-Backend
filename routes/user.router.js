@@ -30,4 +30,8 @@ departmentRouter.delete(
   "/deleteDepartment",
   departmentController.deleteDepartment
 );
+departmentRouter.put(
+  "/updateDepartment/:id",
+  departmentController.editDepartment
+);
 module.exports = { userRouter, departmentRouter };
