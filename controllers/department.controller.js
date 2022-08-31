@@ -11,12 +11,31 @@ exports.createDepartment = async (request, response) => {
 exports.deleteDepartment = async (request, response) => {
   const id = request.params.id;
   // console.log(`*********`, id);
+  // const designation = await DesignationModel.findAll({
+  //   where: { departmentId: id },
+  // });
+  //console.log(`123456`, designation.id);
   try {
     if (!id && id.length < 0) throw new Error(`invalid department id`);
     else {
-      const departmentToDelete = await DepartmentModel.destroy({
-        where: { id: id },
-      });
+      // Promise.all([
+      DesignationModel.destroy({
+        where: { departmentId: id },
+      })
+        .then(() => {
+          DepartmentModel.destroy({
+            where: { id: id },
+          })
+            .then(() => {})
+            .catch((e) => {
+              throw e;
+            });
+        })
+        .catch((e) => {
+          throw e;
+        });
+
+      // ]);
       response.status(200).json({ ack: 1, msg: `successfully deleted` });
     }
   } catch (error) {
@@ -119,22 +138,45 @@ exports.deleteDesignation = async (request, response) => {
   }
 };
 
-exports.getAllDepartment = async (request, response) => {
+exports.getAllDepartmentPagiantion = async (request, response) => {
   const { elements, page } = request.query;
   const limit = parseInt(elements);
   console.log(`qwertyui`, limit);
   const offset = parseInt(limit * (page - 1));
   try {
-    const { count, rows: DepartmentModel } =
-      await DepartmentModel.findAndCountAll({
-        limit,
-        offset,
-        order: [["createdAt", "DESC"]],
-      });
+    const { count, rows } = await DepartmentModel.findAndCountAll({
+      limit,
+      offset,
+      //order: [["createdAt", "AESC"]],
+    });
     response.status(200).json({
       ack: 1,
       data: DepartmentModel,
-      elementCount: DepartmentModel.length,
+      elementCount: rows,
+      totalElements: count,
+      page: parseInt(page),
+      elementsPerPage: limit,
+    });
+  } catch (error) {
+    response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
+  }
+};
+
+exports.getAllDesignationPagiantion = async (request, response) => {
+  const { elements, page } = request.query;
+  const limit = parseInt(elements);
+  console.log(`qwertyui`, limit);
+  const offset = parseInt(limit * (page - 1));
+  try {
+    const { count, rows } = await DesignationModel.findAndCountAll({
+      limit,
+      offset,
+      //order: [["createdAt", "AESC"]],
+    });
+    response.status(200).json({
+      ack: 1,
+      data: DesignationModel,
+      elementCount: rows,
       totalElements: count,
       page: parseInt(page),
       elementsPerPage: limit,
