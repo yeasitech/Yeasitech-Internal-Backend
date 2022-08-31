@@ -27,11 +27,23 @@ departmentRouter.get(
   departmentController.getDesignation
 );
 departmentRouter.delete(
-  "/deleteDepartment",
+  "/deleteDepartment/:id",
   departmentController.deleteDepartment
 );
 departmentRouter.put(
   "/updateDepartment/:id",
   departmentController.editDepartment
+);
+departmentRouter.put(
+  "/updateDesignation",
+  departmentController.editDesignation
+);
+departmentRouter.delete(
+  "/deleteDesignation",
+  departmentController.deleteDesignation
+);
+departmentRouter.get(
+  "/getAllDepartment",
+  departmentController.getAllDepartment
 );
 module.exports = { userRouter, departmentRouter };

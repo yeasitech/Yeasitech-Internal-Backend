@@ -9,7 +9,7 @@ exports.createDepartment = async (request, response) => {
 };
 
 exports.deleteDepartment = async (request, response) => {
-  const { id } = request.body;
+  const id = request.params.id;
   // console.log(`*********`, id);
   try {
     if (!id && id.length < 0) throw new Error(`invalid department id`);
@@ -53,9 +53,7 @@ exports.getDepartment = async (request, response) => {
 
 exports.createDesignation = async (request, response) => {
   const { department } = request.body;
-  const allDepartments = await DepartmentModel.findOne({
-    where: { department: department },
-  });
+  const allDepartments = await DepartmentModel.findByPk(+department);
   console.log(`qwertyu`, allDepartments.id);
   let user = request.body;
   const userRecord = {
@@ -71,11 +69,76 @@ exports.getDesignation = async (request, response) => {
   const departmentId = request.params.departmentId;
   console.log(`1234567`, departmentId);
   try {
-    const allDept = await Desigantion.findAll({
-      where: { departmentId: departmentId },
-      attributes: ["designation"],
+    const allDept = await DesignationModel.findAll({
+      where: { departmentId: +departmentId },
+      attributes: ["designation", "id"],
     });
     response.status(200).json({ ack: 1, data: allDept });
+  } catch (error) {
+    response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
+  }
+};
+
+exports.editDesignation = async (request, response) => {
+  const { id } = request.body;
+
+  const designation = request.body.designation;
+  try {
+    if (!id && id.length <= 0) throw new Error(`invalid department `);
+    else {
+      const updatedDesignation = await DesignationModel.update(
+        { designation },
+        {
+          where: { id: id },
+        }
+      );
+
+      response
+        .status(200)
+        .json({ ack: 1, msg: `Successfully Updated designation` });
+    }
+  } catch (error) {
+    response.status(500).json({ ack: 0, msg: error.message || "Server Error" });
+  }
+};
+
+exports.deleteDesignation = async (request, response) => {
+  const { id } = request.body;
+
+  try {
+    if (!id && id.length < 0) throw new Error(`invalid department id`);
+    else {
+      const designationToDelete = await DesignationModel.destroy({
+        where: { id: id },
+      });
+
+      response.status(200).json({ ack: 1, msg: `successfully deleted` });
+    }
+  } catch (error) {
+    response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
+  }
+};
+
+exports.getAllDepartment = async (request, response) => {
+  const { elements, page } = request.query;
+  const limit = parseInt(elements);
+  console.log(`qwertyui`, limit);
+  const offset = parseInt(limit * (page - 1));
+  try {
+    const { count, rows: DepartmentModel } =
+      await DepartmentModel.findAndCountAll({
+        limit,
+        offset,
+        order: [["createdAt", "DESC"]],
+      });
+    response.status(200).json({
+      ack: 1,
+      data: DepartmentModel,
+      elementCount: DepartmentModel.length,
+      totalElements: count,
+      page: parseInt(page),
+      elementsPerPage: limit,
+    });
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
   }
