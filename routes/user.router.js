@@ -43,7 +43,11 @@ departmentRouter.delete(
   departmentController.deleteDesignation
 );
 departmentRouter.get(
-  "/getAllDepartment",
-  departmentController.getAllDepartment
+  "/getAllDepartmentPagiantion",
+  departmentController.getAllDepartmentPagiantion
+);
+departmentRouter.get(
+  "/getAllDesignationPagiantion",
+  departmentController.getAllDesignationPagiantion
 );
 module.exports = { userRouter, departmentRouter };

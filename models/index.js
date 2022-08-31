@@ -52,9 +52,17 @@ db.Salary.belongsTo(db.User, { foreignKey: "userId" });
 db.Department.hasOne(db.EmployeeDetails, { foreignKey: "departmentId" });
 db.EmployeeDetails.belongsTo(db.Department, { foreignKey: "departmentId" });
 
-db.Department.hasMany(db.Designation, { foreignKey: "departmentId" });
+db.Department.hasMany(db.Designation, {
+  foreignKey: "departmentId",
+  onDelete: "cascade",
+  hooks: true,
+});
 db.Designation.belongsTo(db.Department, { foreignKey: "departmentId" });
 
+// Donor.hasMany(Donation, {
+//   foreignKey: "donorId",
+//   onDelete: "cascade",
+// });
 // sequelize
 //   .sync({ alter: true })
 //   .then(() => {

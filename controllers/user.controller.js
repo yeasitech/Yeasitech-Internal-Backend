@@ -27,7 +27,9 @@ exports.createUser = async (request, response) => {
   }
   const user = request.body;
   if (!user) throw new Error(`user doesn't exists`);
-  const allDept = await DepartmentModel.findByPk(+user.department);
+  const allDept = await DepartmentModel.findOne({
+    where: { department: user.department },
+  });
 
   const allDesignation = await DesignationModel.findOne({
     where: { designation: user.designation },
