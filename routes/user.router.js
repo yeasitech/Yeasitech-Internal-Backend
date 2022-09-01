@@ -35,7 +35,7 @@ departmentRouter.put(
   departmentController.editDepartment
 );
 departmentRouter.put(
-  "/updateDesignation",
+  "/updateDesignation/:id",
   departmentController.editDesignation
 );
 departmentRouter.delete(
@@ -49,5 +49,9 @@ departmentRouter.get(
 departmentRouter.get(
   "/getAllDesignationPagiantion",
   departmentController.getAllDesignationPagiantion
+);
+departmentRouter.get(
+  "/getAllDepartmentDesignation",
+  departmentController.getAllDepartmentDesignation
 );
 module.exports = { userRouter, departmentRouter };
