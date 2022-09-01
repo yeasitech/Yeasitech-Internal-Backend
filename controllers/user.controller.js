@@ -27,9 +27,7 @@ exports.createUser = async (request, response) => {
   }
   const user = request.body;
   if (!user) throw new Error(`user doesn't exists`);
-  const allDept = await DepartmentModel.findOne({
-    where: { department: user.department },
-  });
+  const allDept = await DepartmentModel.findByPk(+user.department);
 
   const allDesignation = await DesignationModel.findOne({
     where: { designation: user.designation },
@@ -51,8 +49,8 @@ exports.createUser = async (request, response) => {
         middleName: user.middleName,
         lastName: user.lastName,
         dateOfJoining: user.dateOfJoining,
-        departmentId: allDept.id,
-        designationId: allDesignation.id,
+        departmentId: +allDept.id,
+        designationId: +allDesignation.id,
         //password: hash,
         email: user.email,
         isActive: 1,
@@ -209,12 +207,37 @@ exports.employeeDetails = async (request, response) => {
   }
 };
 exports.allUser = async (request, response) => {
-  const { count, rows } = await User.findAndCountAll({
-    include: [{ model: EmployeeDetails }],
-  });
-
-  response.status(200).json({ ack: 1, data: { rows, count } });
+  const { elements, page } = request.query;
+  const limit = parseInt(elements);
+  console.log(`qwertyui`, limit);
+  const offset = parseInt(limit * (page - 1));
+  try {
+    const { count, rows } = await User.findAndCountAll({
+      limit,
+      offset,
+      include: [{ model: EmployeeDetails }],
+    });
+    response.status(200).json({ ack: 1, data: User, EmployeeDetails });
+  } catch (error) {}
 };
+
+// try {
+//   const { count, rows } = await DepartmentModel.findAndCountAll({
+//     limit,
+//     offset,
+//     //order: [["createdAt", "AESC"]],
+//   });
+//   response.status(200).json({
+//     ack: 1,
+//     data: DepartmentModel,
+//     elementCount: rows,
+//     totalElements: count,
+//     page: parseInt(page),
+//     elementsPerPage: limit,
+//   });
+// } catch (error) {
+//   response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
+// }
 
 exports.oneEmployeeDetails = async (request, response) => {
   const id = request.params.id;
