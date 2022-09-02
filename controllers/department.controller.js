@@ -19,21 +19,13 @@ exports.deleteDepartment = async (request, response) => {
     if (!id && id.length < 0) throw new Error(`invalid department id`);
     else {
       // Promise.all([
-      DesignationModel.destroy({
+      await DesignationModel.destroy({
         where: { departmentId: id },
-      })
-        .then(() => {
-          DepartmentModel.destroy({
-            where: { id: id },
-          })
-            .then(() => {})
-            .catch((e) => {
-              throw e;
-            });
-        })
-        .catch((e) => {
-          throw e;
-        });
+      });
+
+      await DepartmentModel.destroy({
+        where: { id: id },
+      });
 
       // ]);
       response.status(200).json({ ack: 1, msg: `successfully deleted` });
@@ -148,7 +140,7 @@ exports.getAllDepartmentDesignation = async (request, response) => {
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
   }
 };
-exports.getAllDepartmentPagiantion = async (request, response) => {
+exports.getAllDepartmentPagination = async (request, response) => {
   const { elements, page } = request.query;
   const limit = parseInt(elements);
 
@@ -172,7 +164,7 @@ exports.getAllDepartmentPagiantion = async (request, response) => {
   }
 };
 
-exports.getAllDesignationPagiantion = async (request, response) => {
+exports.getAllDesignationPagination = async (request, response) => {
   const { elements, page } = request.query;
   const limit = parseInt(elements);
   console.log(`qwertyui`, limit);
