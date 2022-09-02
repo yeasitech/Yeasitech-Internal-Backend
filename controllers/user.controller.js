@@ -145,7 +145,7 @@ exports.employeeDetails = async (request, response) => {
 
   try {
     let user = await User.findOne({ where: { email: email } });
-    console.log(`1234567890`, user);
+    console.log(`1234567890`, user.email);
 
     if (email !== user.email) throw new Error(`employee not exists`);
     else {
@@ -207,37 +207,15 @@ exports.employeeDetails = async (request, response) => {
   }
 };
 exports.allUser = async (request, response) => {
-  const { elements, page } = request.query;
-  const limit = parseInt(elements);
-  console.log(`qwertyui`, limit);
-  const offset = parseInt(limit * (page - 1));
   try {
-    const { count, rows } = await User.findAndCountAll({
-      limit,
-      offset,
+    const allData = await User.findAll({
       include: [{ model: EmployeeDetails }],
     });
-    response.status(200).json({ ack: 1, data: User, EmployeeDetails });
-  } catch (error) {}
+    response.status(200).json({ ack: 1, data: allData });
+  } catch (error) {
+    response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
+  }
 };
-
-// try {
-//   const { count, rows } = await DepartmentModel.findAndCountAll({
-//     limit,
-//     offset,
-//     //order: [["createdAt", "AESC"]],
-//   });
-//   response.status(200).json({
-//     ack: 1,
-//     data: DepartmentModel,
-//     elementCount: rows,
-//     totalElements: count,
-//     page: parseInt(page),
-//     elementsPerPage: limit,
-//   });
-// } catch (error) {
-//   response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
-// }
 
 exports.oneEmployeeDetails = async (request, response) => {
   const id = request.params.id;
@@ -261,5 +239,29 @@ exports.oneEmployeeDetails = async (request, response) => {
     response
       .status(500)
       .json({ ack: 0, status: `error`, msg: error.message || "Server error" });
+  }
+};
+exports.getAllEmployeePagination = async (request, response) => {
+  const { elements, page } = request.query;
+
+  const limit = parseInt(elements);
+  const offset = parseInt(limit * (page - 1));
+
+  try {
+    const { count, rows } = await User.findAndCountAll({
+      limit,
+      offset,
+      //order: [["createdAt", "AESC"]],
+    });
+    response.status(200).json({
+      ack: 1,
+      data: rows,
+      elementCount: rows.length,
+      totalElements: count,
+      page: parseInt(page),
+      elementsPerPage: limit,
+    });
+  } catch (error) {
+    response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
   }
 };

@@ -14,7 +14,10 @@ userRouter.get("/employeeDetails/:id", userController.oneEmployeeDetails);
 userRouter.post("/employeeSalary", salaryController.employeeSalary);
 
 userRouter.get("/getEmployeeSalary/:userId", salaryController.getSalary);
-
+userRouter.get(
+  "/getAllEmployeePagination",
+  userController.getAllEmployeePagination
+);
 //userRouter.put("/editProfile/:id", userController.editProfile);
 
 //deptRouter
@@ -44,14 +47,15 @@ departmentRouter.delete(
 );
 departmentRouter.get(
   "/getAllDepartmentPagiantion",
-  departmentController.getAllDepartmentPagiantion
+  departmentController.getAllDepartmentPagination
 );
 departmentRouter.get(
   "/getAllDesignationPagiantion",
-  departmentController.getAllDesignationPagiantion
+  departmentController.getAllDesignationPagination
 );
 departmentRouter.get(
   "/getAllDepartmentDesignation",
   departmentController.getAllDepartmentDesignation
 );
+
 module.exports = { userRouter, departmentRouter };
