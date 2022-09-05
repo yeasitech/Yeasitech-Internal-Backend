@@ -25,8 +25,7 @@ exports.deleteDepartment = async (request, response) => {
       //await User.destroy({ where: { departmentId: id } });
       await DepartmentModel.destroy({
         where: { id: id },
-        onDelete: "cascade",
-        onUpdate: "cascade",
+        // onDelete: "cascade",
       });
 
       // ]);
@@ -117,13 +116,14 @@ exports.editDesignation = async (request, response) => {
 };
 
 exports.deleteDesignation = async (request, response) => {
-  const { id } = request.body;
+  const designationid = request.params.designationid;
 
   try {
-    if (!id && id.length < 0) throw new Error(`invalid department id`);
+    if (!designationid && designationid.length < 0)
+      throw new Error(`invalid department id`);
     else {
       const designationToDelete = await DesignationModel.destroy({
-        where: { id: id },
+        where: { id: designationid },
       });
 
       response.status(200).json({ ack: 1, msg: `successfully deleted` });
@@ -193,20 +193,26 @@ exports.getAllDesignationPagination = async (request, response) => {
   }
 };
 exports.editDepartmentDesignation = async (request, response) => {
-  const id = request.params.id;
-  const { designation, departmentid } = request.body;
+  const designationid = request.params.designationid;
+  const { designation, departmentId } = request.body;
 
-  const allDesignations = await DesignationModel.findByPk(id);
-  const updateDepartmentDesignation = await DesignationModel.update(
-    { designation: designation, departmentId: departmentid },
-    {
-      where: { id: id },
-    }
-  );
+  const allDesignations = await DesignationModel.findByPk(designationid);
 
-  console.log(`%%%%%%%%%%`, updateDepartmentDesignation);
-  response
-    .status(200)
+  try {
+    if (!allDesignations || allDesignations === null)
+      throw new Error(`invalid designation`);
+    const updateDepartmentDesignation = await DesignationModel.update(
+      { designation: designation, departmentId: departmentId },
+      {
+        where: { id: designationid },
+      }
+    );
 
-    .json({ ack: 1, msg: `successfully updated designation` });
+    response
+      .status(200)
+
+      .json({ ack: 1, msg: `successfully updated designation` });
+  } catch (error) {
+    response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
+  }
 };
