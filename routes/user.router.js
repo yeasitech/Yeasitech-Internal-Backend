@@ -1,9 +1,11 @@
 const userController = require("../controllers/user.controller");
 const departmentController = require("../controllers/department.controller");
 const salaryController = require("../controllers/salary.controller");
+const holidayController = require("../controllers/holiday.controller");
 const { Router } = require("express");
 const userRouter = Router();
 const departmentRouter = Router();
+const holidayRouter = Router();
 //userRouter
 userRouter.post("/createEmployee", userController.createUser);
 userRouter.post("/login", userController.logIn);
@@ -42,15 +44,15 @@ departmentRouter.put(
   departmentController.editDesignation
 );
 departmentRouter.delete(
-  "/deleteDesignation",
+  "/deleteDesignation/:designationid",
   departmentController.deleteDesignation
 );
 departmentRouter.get(
-  "/getAllDepartmentPagiantion",
+  "/getAllDepartmentPagination",
   departmentController.getAllDepartmentPagination
 );
 departmentRouter.get(
-  "/getAllDesignationPagiantion",
+  "/getAllDesignationPagination",
   departmentController.getAllDesignationPagination
 );
 departmentRouter.get(
@@ -58,7 +60,12 @@ departmentRouter.get(
   departmentController.getAllDepartmentDesignation
 );
 departmentRouter.put(
-  "/editDepartmentDesignation/:id",
+  "/editDepartmentDesignation/:designationid",
   departmentController.editDepartmentDesignation
 );
-module.exports = { userRouter, departmentRouter };
+
+//holiday
+holidayRouter.post("/createHoliday", holidayController.createHoliday);
+holidayRouter.get("/getAllHoliday", holidayController.getAllHoliday);
+holidayRouter.put("/updateHoliday", holidayController.getAllHoliday);
+module.exports = { userRouter, departmentRouter, holidayRouter };
