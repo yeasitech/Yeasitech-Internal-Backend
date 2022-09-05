@@ -36,3 +36,9 @@ exports.updateHoliday = async (request, response) => {
   );
   response.status(200).json({ ack: 1, msg: `successfully updated holiday` });
 };
+
+exports.deleteHoliday = async (request, response) => {
+  const holidayId = request.params.holidayId;
+  const deleteHoliday = await Holiday.destroy({ where: { id: holidayId } });
+  response.status(200).json({ ack: 1, msg: `successfully deleted holiday` });
+};

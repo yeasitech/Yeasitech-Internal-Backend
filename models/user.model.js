@@ -1,4 +1,3 @@
-const { employeeDetails } = require("./index");
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define("User", {
     id: {

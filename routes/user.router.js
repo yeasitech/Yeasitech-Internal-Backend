@@ -67,5 +67,9 @@ departmentRouter.put(
 //holiday
 holidayRouter.post("/createHoliday", holidayController.createHoliday);
 holidayRouter.get("/getAllHoliday", holidayController.getAllHoliday);
-holidayRouter.put("/updateHoliday", holidayController.getAllHoliday);
+holidayRouter.put("/updateHoliday/:HolidayId", holidayController.updateHoliday);
+holidayRouter.delete(
+  "/deleteHoliday/:holidayId",
+  holidayController.deleteHoliday
+);
 module.exports = { userRouter, departmentRouter, holidayRouter };
