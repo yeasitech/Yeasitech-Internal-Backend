@@ -5,6 +5,8 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       autoIncrement: true,
       allowNull: false,
+      onDelete: "cascade",
+      onUpdate: "cascade",
     },
 
     department: DataTypes.STRING,

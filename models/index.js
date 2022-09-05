@@ -35,40 +35,54 @@ db.Leave = require("./leave.model")(sequelize, DataTypes);
 db.Designation = require("./designation.model")(sequelize, DataTypes);
 db.Department = require("./department.model")(sequelize, DataTypes);
 
-db.User.hasOne(db.EmployeeDetails, { foreignKey: "userId" });
+db.User.hasOne(db.EmployeeDetails, {
+  foreignKey: "userId",
+});
 db.EmployeeDetails.belongsTo(db.User, { foreignKey: "userId" });
-db.User.belongsTo(db.Department, { foreignKey: "departmentId" });
-db.User.belongsTo(db.Designation, { foreignKey: "designationId" });
+db.User.belongsTo(db.Department, {
+  foreignKey: "departmentId",
+});
+db.User.belongsTo(db.Designation, {
+  foreignKey: "designationId",
+});
 
-db.User.hasMany(db.EmployeeExperience, { foreignKey: "userId" });
-db.EmployeeExperience.belongsTo(db.User, { foreignKey: "userId" });
+db.User.hasMany(db.EmployeeExperience, {
+  foreignKey: "userId",
+});
+db.EmployeeExperience.belongsTo(db.User, {
+  foreignKey: "userId",
+});
 
-db.User.hasMany(db.EducationDetails, { foreignKey: "userId" });
-db.EducationDetails.belongsTo(db.User, { foreignKey: "userId" });
+db.User.hasMany(db.EducationDetails, {
+  foreignKey: "userId",
+});
+db.EducationDetails.belongsTo(db.User, {
+  foreignKey: "userId",
+});
 
 db.User.hasMany(db.Salary, { foreignKey: "userId" });
 db.Salary.belongsTo(db.User, { foreignKey: "userId" });
 
-db.Department.hasOne(db.EmployeeDetails, { foreignKey: "departmentId" });
-db.EmployeeDetails.belongsTo(db.Department, { foreignKey: "departmentId" });
+db.Department.hasOne(db.EmployeeDetails, {
+  foreignKey: "departmentId",
+});
+db.EmployeeDetails.belongsTo(db.Department, {
+  foreignKey: "departmentId",
+});
 
 db.Department.hasMany(db.Designation, {
   foreignKey: "departmentId",
-  onDelete: "cascade",
-  hooks: true,
 });
-db.Designation.belongsTo(db.Department, { foreignKey: "departmentId" });
+db.Designation.belongsTo(db.Department, {
+  foreignKey: "departmentId",
+});
 
-// Donor.hasMany(Donation, {
-//   foreignKey: "donorId",
-//   onDelete: "cascade",
-// });
-// sequelize
-//   .sync({ alter: true })
-//   .then(() => {
-//     console.log(`database is syncing`);
-//   })
-//   .catch((err) => {
-//     console.log(err);
-//   });
+sequelize
+  .sync({ alter: true })
+  .then(() => {
+    console.log(`database is syncing`);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
 module.exports = db;

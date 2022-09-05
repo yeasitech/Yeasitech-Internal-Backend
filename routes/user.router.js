@@ -57,5 +57,8 @@ departmentRouter.get(
   "/getAllDepartmentDesignation",
   departmentController.getAllDepartmentDesignation
 );
-
+departmentRouter.put(
+  "/editDepartmentDesignation/:id",
+  departmentController.editDepartmentDesignation
+);
 module.exports = { userRouter, departmentRouter };

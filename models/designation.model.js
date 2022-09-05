@@ -5,9 +5,11 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       autoIncrement: true,
       allowNull: false,
+      onDelete: "cascade",
+      onUpdate: "cascade",
     },
     designation: DataTypes.STRING,
-    departmentId: DataTypes.INTEGER,
+    departmentId: { type: DataTypes.INTEGER, allowNull: true },
   });
   return Designation;
 };

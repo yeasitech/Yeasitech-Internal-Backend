@@ -1,5 +1,5 @@
 const db = require("../models/index");
-
+const User = db.User;
 const DepartmentModel = db.Department;
 const DesignationModel = db.Designation;
 
@@ -19,18 +19,21 @@ exports.deleteDepartment = async (request, response) => {
     if (!id && id.length < 0) throw new Error(`invalid department id`);
     else {
       // Promise.all([
-      await DesignationModel.destroy({
-        where: { departmentId: id },
-      });
-
+      // await DesignationModel.destroy({
+      //   where: { departmentId: id },
+      // });
+      //await User.destroy({ where: { departmentId: id } });
       await DepartmentModel.destroy({
         where: { id: id },
+        onDelete: "cascade",
+        onUpdate: "cascade",
       });
 
       // ]);
       response.status(200).json({ ack: 1, msg: `successfully deleted` });
     }
   } catch (error) {
+    console.error(error);
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
   }
 };
@@ -188,4 +191,22 @@ exports.getAllDesignationPagination = async (request, response) => {
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
   }
+};
+exports.editDepartmentDesignation = async (request, response) => {
+  const id = request.params.id;
+  const { designation, departmentid } = request.body;
+
+  const allDesignations = await DesignationModel.findByPk(id);
+  const updateDepartmentDesignation = await DesignationModel.update(
+    { designation: designation, departmentId: departmentid },
+    {
+      where: { id: id },
+    }
+  );
+
+  console.log(`%%%%%%%%%%`, updateDepartmentDesignation);
+  response
+    .status(200)
+
+    .json({ ack: 1, msg: `successfully updated designation` });
 };
