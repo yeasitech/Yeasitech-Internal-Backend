@@ -3,6 +3,7 @@ const {
   userRouter,
   departmentRouter,
   holidayRouter,
+  leaveRouter,
 } = require("./routes/user.router");
 const express = require("express");
 const app = express();
@@ -18,6 +19,7 @@ app.use(express.json());
 app.use("/user", userRouter);
 app.use("/public", departmentRouter);
 app.use("/public", holidayRouter);
+app.use("/public", leaveRouter);
 
 app.listen(port, () => {
   console.log(`server is listening to the port :${port}`);

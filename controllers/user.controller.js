@@ -32,7 +32,7 @@ exports.createUser = async (request, response) => {
   const allDesignation = await DesignationModel.findOne({
     where: { designation: user.designation },
   });
-
+  // console.log(`<<<<<<<<<`, allDesignation.id);
   try {
     const checkForIfExists = await User.findOne({
       where: { email: request.body.email },
@@ -51,7 +51,7 @@ exports.createUser = async (request, response) => {
         dateOfJoining: user.dateOfJoining,
         departmentId: +allDept.id,
         designationId: +allDesignation.id,
-        //password: hash,
+        // password: hash,
         email: user.email,
         isActive: 1,
       };
@@ -69,6 +69,7 @@ exports.createUser = async (request, response) => {
 // Log In User
 exports.logIn = async (request, response) => {
   const { error } = loginSchema.validate(request.body);
+  console.log(`>>>>>>>>>`, request.userId);
   if (error) {
     response.status(200).json({ ack: 1, msg: error.details[0].message });
     return false;
@@ -240,6 +241,16 @@ exports.oneEmployeeDetails = async (request, response) => {
       .status(500)
       .json({ ack: 0, status: `error`, msg: error.message || "Server error" });
   }
+};
+exports.getEmployeeByDesignation = async (request, response) => {
+  const designationId = request.params.designationId;
+  const getEmployee = await User.findAll({
+    where: { designationId: designationId },
+  });
+  response
+    .status(200)
+
+    .json({ ack: 1, msg: getEmployee });
 };
 exports.getAllEmployeePagination = async (request, response) => {
   const { elements, page } = request.query;

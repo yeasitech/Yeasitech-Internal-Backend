@@ -1,16 +1,31 @@
+// module.exports = (sequelize, DataTypes) => {
+//   const Leave = sequelize.define("Leave", {
+//     id: {
+//       type: DataTypes.INTEGER,
+//       allowNull: false,
+//       primaryKey: true,
+//     },
+//     dateOfApplication: DataTypes.DATEONLY,
+//     dateOfLeave: DataTypes.DATEONLY,
+//     reasonOfLeave: DataTypes.DATEONLY,
+//     approved: DataTypes.BOOLEAN,
+//     rejected: DataTypes.BOOLEAN,
+//   });
+//   return Leave;
+// };
+
 module.exports = (sequelize, DataTypes) => {
-  const leave = sequelize.define("leave", {
+  const Leave = sequelize.define("Leave", {
     id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
+      type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
     },
-    dateOfApplication: DataTypes.INTEGER,
-    dateOfLeave: DataTypes.INTEGER,
-    reasonOfLeave: DataTypes.INTEGER,
+    leaveDateFron: DataTypes.DATEONLY,
+    leaveDateFronTo: DataTypes.DATEONLY,
+    reasonOfLeave: DataTypes.DATEONLY,
     approved: DataTypes.BOOLEAN,
     rejected: DataTypes.BOOLEAN,
   });
-  return leave;
+  return Leave;
 };

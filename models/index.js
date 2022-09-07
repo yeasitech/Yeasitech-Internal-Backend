@@ -35,6 +35,7 @@ db.Leave = require("./leave.model")(sequelize, DataTypes);
 db.Designation = require("./designation.model")(sequelize, DataTypes);
 db.Department = require("./department.model")(sequelize, DataTypes);
 db.Holiday = require("./holiday.model")(sequelize, DataTypes);
+db.LeaveType = require("./leaveType.model")(sequelize, DataTypes);
 
 db.User.hasOne(db.EmployeeDetails, {
   foreignKey: "userId",

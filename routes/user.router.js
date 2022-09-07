@@ -2,74 +2,116 @@ const userController = require("../controllers/user.controller");
 const departmentController = require("../controllers/department.controller");
 const salaryController = require("../controllers/salary.controller");
 const holidayController = require("../controllers/holiday.controller");
+const leaveController = require("../controllers/leave.controller");
+const Authorization = require("../middleware/isAuth");
 const { Router } = require("express");
 const userRouter = Router();
 const departmentRouter = Router();
 const holidayRouter = Router();
+const leaveRouter = Router();
 //userRouter
-userRouter.post("/createEmployee", userController.createUser);
+userRouter.post("/createEmployee", Authorization, userController.createUser);
 userRouter.post("/login", userController.logIn);
 userRouter.post("/employeeOnboarding", userController.employeeDetails);
-userRouter.get("/allEmployeeDetails", userController.allUser);
-userRouter.get("/employeeDetails/:id", userController.oneEmployeeDetails);
-
-userRouter.post("/employeeSalary", salaryController.employeeSalary);
-
-userRouter.get("/getEmployeeSalary/:userId", salaryController.getSalary);
+userRouter.get("/getEmployee", Authorization, userController.allUser);
 userRouter.get(
-  "/getAllEmployeePagination",
-  userController.getAllEmployeePagination
+  "/employeeDetails/:id",
+  Authorization,
+  userController.oneEmployeeDetails
+);
+
+userRouter.post(
+  "/employeeSalary",
+  Authorization,
+  salaryController.employeeSalary
+);
+
+userRouter.get("/salary/:userId", Authorization, salaryController.getSalary);
+userRouter.get("/list", Authorization, userController.getAllEmployeePagination);
+userRouter.get(
+  "/designation/:designationId",
+  Authorization,
+  userController.getEmployeeByDesignation
 );
 //userRouter.put("/editProfile/:id", userController.editProfile);
 
 //deptRouter
 
-departmentRouter.post("/dept", departmentController.createDepartment);
-departmentRouter.post("/designation", departmentController.createDesignation);
-departmentRouter.get("/getAllDepartment", departmentController.getDepartment);
+departmentRouter.post(
+  "/dept",
+  Authorization,
+  departmentController.createDepartment
+);
+departmentRouter.post(
+  "/designation",
+  Authorization,
+  departmentController.createDesignation
+);
 departmentRouter.get(
-  "/getAllDesignation/:departmentId",
+  "/department",
+  Authorization,
+  departmentController.getDepartment
+);
+departmentRouter.get(
+  "/designation/:departmentId",
+  Authorization,
   departmentController.getDesignation
 );
 departmentRouter.delete(
-  "/deleteDepartment/:id",
+  "/department/:id",
+  Authorization,
   departmentController.deleteDepartment
 );
 departmentRouter.put(
-  "/updateDepartment/:id",
+  "/department/:id",
+  Authorization,
   departmentController.editDepartment
 );
 departmentRouter.put(
-  "/updateDesignation/:id",
+  "/designation/:id",
+  Authorization,
   departmentController.editDesignation
 );
 departmentRouter.delete(
-  "/deleteDesignation/:designationid",
+  "/designation/:designationid",
+  Authorization,
   departmentController.deleteDesignation
 );
 departmentRouter.get(
-  "/getAllDepartmentPagination",
+  "/departmentist",
+  Authorization,
   departmentController.getAllDepartmentPagination
 );
 departmentRouter.get(
-  "/getAllDesignationPagination",
+  "/designationList",
+  Authorization,
   departmentController.getAllDesignationPagination
 );
 departmentRouter.get(
-  "/getAllDepartmentDesignation",
+  "/list",
+  Authorization,
   departmentController.getAllDepartmentDesignation
 );
 departmentRouter.put(
-  "/editDepartmentDesignation/:designationid",
+  "/:designationid",
+  Authorization,
   departmentController.editDepartmentDesignation
 );
 
 //holiday
-holidayRouter.post("/createHoliday", holidayController.createHoliday);
-holidayRouter.get("/getAllHoliday", holidayController.getAllHoliday);
-holidayRouter.put("/updateHoliday/:HolidayId", holidayController.updateHoliday);
+holidayRouter.post("/", Authorization, holidayController.createHoliday);
+holidayRouter.get("/list", Authorization, holidayController.getAllHoliday);
+holidayRouter.put(
+  "/updateHoliday/:HolidayId",
+  Authorization,
+  holidayController.updateHoliday
+);
 holidayRouter.delete(
-  "/deleteHoliday/:holidayId",
+  "/:holidayId",
+  Authorization,
   holidayController.deleteHoliday
 );
-module.exports = { userRouter, departmentRouter, holidayRouter };
+//leave
+leaveRouter.post("/", Authorization, leaveController.typesOfLeave);
+leaveRouter.get("/list", Authorization, leaveController.getAlltypesOfLeave);
+module.exports = { userRouter, departmentRouter, holidayRouter, leaveRouter };
