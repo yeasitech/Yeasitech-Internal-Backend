@@ -167,6 +167,17 @@ exports.getAllDepartmentPagination = async (request, response) => {
   }
 };
 
+exports.getEmployeeByDesignation = async (request, response) => {
+  const designationId = request.params.designationId;
+  const getEmployee = await User.findAll({
+    where: { designationId: designationId },
+  });
+  response
+    .status(200)
+
+    .json({ ack: 1, msg: getEmployee });
+};
+
 exports.getAllDesignationPagination = async (request, response) => {
   const { elements, page } = request.query;
   const limit = parseInt(elements);
