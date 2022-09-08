@@ -6,11 +6,12 @@ const leaveController = require("../controllers/leave.controller");
 const Authorization = require("../middleware/isAuth");
 const { Router } = require("express");
 const userRouter = Router();
+const salaryRouter = Router();
 const departmentRouter = Router();
 const holidayRouter = Router();
 const leaveRouter = Router();
 //userRouter
-userRouter.post("/createEmployee", Authorization, userController.createUser);
+userRouter.post("/createEmployee", userController.createUser);
 userRouter.post("/login", userController.logIn);
 userRouter.post("/employeeOnboarding", userController.employeeDetails);
 userRouter.get("/getEmployee", Authorization, userController.allUser);
@@ -19,20 +20,20 @@ userRouter.get(
   Authorization,
   userController.oneEmployeeDetails
 );
-
-userRouter.post(
-  "/employeeSalary",
-  Authorization,
-  salaryController.employeeSalary
-);
-
-userRouter.get("/salary/:userId", Authorization, salaryController.getSalary);
-userRouter.get("/list", Authorization, userController.getAllEmployeePagination);
 userRouter.get(
   "/designation/:designationId",
   Authorization,
   userController.getEmployeeByDesignation
 );
+userRouter.get("/list", Authorization, userController.getAllEmployeePagination);
+//salary
+salaryRouter.post(
+  "/employeeSalary",
+  Authorization,
+  salaryController.employeeSalary
+);
+
+salaryRouter.get("/:userId", Authorization, salaryController.getSalary);
 //userRouter.put("/editProfile/:id", userController.editProfile);
 
 //deptRouter
@@ -78,7 +79,7 @@ departmentRouter.delete(
   departmentController.deleteDesignation
 );
 departmentRouter.get(
-  "/departmentist",
+  "/departmentList",
   Authorization,
   departmentController.getAllDepartmentPagination
 );
@@ -112,6 +113,12 @@ holidayRouter.delete(
   holidayController.deleteHoliday
 );
 //leave
-leaveRouter.post("/", Authorization, leaveController.typesOfLeave);
+leaveRouter.post("/leaveList", Authorization, leaveController.typesOfLeave);
 leaveRouter.get("/list", Authorization, leaveController.getAlltypesOfLeave);
-module.exports = { userRouter, departmentRouter, holidayRouter, leaveRouter };
+module.exports = {
+  userRouter,
+  departmentRouter,
+  holidayRouter,
+  leaveRouter,
+  salaryRouter,
+};
