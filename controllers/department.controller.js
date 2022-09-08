@@ -167,16 +167,7 @@ exports.getAllDepartmentPagination = async (request, response) => {
   }
 };
 
-exports.getEmployeeByDesignation = async (request, response) => {
-  const designationId = request.params.designationId;
-  const getEmployee = await User.findAll({
-    where: { designationId: designationId },
-  });
-  response
-    .status(200)
 
-    .json({ ack: 1, msg: getEmployee });
-};
 
 exports.getAllDesignationPagination = async (request, response) => {
   const { elements, page } = request.query;
@@ -227,3 +218,6 @@ exports.editDepartmentDesignation = async (request, response) => {
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
   }
 };
+exports.getAllDesignation=async (request,response)=>{
+  
+}
