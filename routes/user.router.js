@@ -59,6 +59,10 @@ departmentRouter.get(
   Authorization,
   departmentController.getDesignation
 );
+departmentRouter.get(
+  "/getAllDesignation",
+  departmentController.getAllDesignation
+);
 departmentRouter.delete(
   "/department/:id",
   Authorization,
