@@ -13,6 +13,8 @@ const {
   employeeDetailsSchema,
 } = require("./validation/user.validation");
 const bcrypt = require("bcryptjs");
+const { request } = require("express");
+const { Op } = require("sequelize");
 
 //create new user
 
@@ -275,4 +277,67 @@ exports.getAllEmployeePagination = async (request, response) => {
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
   }
+};
+
+exports.searchUser = async (request, response) => {
+  const { firstName, employeeId, designationId, elements, page } =
+    request.query;
+  // const {  } = request.query;
+  const limit = parseInt(elements);
+  const offset = parseInt(limit * (page - 1));
+  if (
+    !firstName &&
+    !employeeId &&
+    employeeId === null &&
+    !designationId &&
+    designationId === null
+  ) {
+    throw new Error(`please give search criteria `);
+  }
+
+  // if (firstName) {
+  //   const userData = await User.findAll({ where: { firstName: firstName } });
+  // } else if (employeeId) {
+  //   const userData = await EmployeeDetails.findAll({
+  //     where: { employeeId: employeeId },
+  //   });
+  // } else if (designationId) {
+  //   const userData = await User.findAll({
+  //     where: { designationId: designationId },
+  //   });
+  // }
+  //let where={};
+  let employeeWhere = {};
+  let includes = [];
+  let where = {};
+
+  if (firstName && firstName !== "") {
+    where["firstName"] = { [Op.like]: `%${firstName}%` };
+  }
+  if (designationId && designationId !== null) {
+    where["designationId"] = designationId;
+  }
+
+  if (employeeId && employeeId !== "") {
+    employeeWhere["employeeId"] = { [Op.like]: `%${employeeId}%` };
+    includes.push({ model: EmployeeDetails, where: { ...employeeWhere } });
+  }
+  if (employeeId && employeeId !== "" && designationId) {
+    employeeWhere["employeeId"] = { [Op.like]: `%${employeeId}%` };
+    includes.push({ model: EmployeeDetails, where: { ...employeeWhere } });
+  }
+
+  // if (firstName) {
+  const UserData = await User.findAll({
+    where: { ...where },
+    include: [...includes],
+    offset,
+    limit,
+  });
+
+  // const employeeData = await EmployeeDetails.findAll({
+  //   where: { employeeId: employeeId },
+  // });
+  response.status(200).json({ msg: UserData });
+  // }
 };
