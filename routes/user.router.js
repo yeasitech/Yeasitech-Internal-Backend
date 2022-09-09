@@ -26,6 +26,7 @@ userRouter.get(
   userController.getEmployeeByDesignation
 );
 userRouter.get("/list", Authorization, userController.getAllEmployeePagination);
+userRouter.get("/searchEmpList", userController.searchUser);
 //salary
 salaryRouter.post(
   "/employeeSalary",
@@ -74,7 +75,7 @@ departmentRouter.put(
   departmentController.editDesignation
 );
 departmentRouter.delete(
-  "/designation/:designationid",
+  "/designation/:designationId",
   Authorization,
   departmentController.deleteDesignation
 );
@@ -94,7 +95,7 @@ departmentRouter.get(
   departmentController.getAllDepartmentDesignation
 );
 departmentRouter.put(
-  "/:designationid",
+  "/editBoth/:designationid",
   Authorization,
   departmentController.editDepartmentDesignation
 );

@@ -116,14 +116,14 @@ exports.editDesignation = async (request, response) => {
 };
 
 exports.deleteDesignation = async (request, response) => {
-  const designationid = request.params.designationid;
+  const designationId = request.params.designationId;
 
   try {
     if (!designationid && designationid.length < 0)
       throw new Error(`invalid department id`);
     else {
       const designationToDelete = await DesignationModel.destroy({
-        where: { id: designationid },
+        where: { id: designationId },
       });
 
       response.status(200).json({ ack: 1, msg: `successfully deleted` });
@@ -166,8 +166,6 @@ exports.getAllDepartmentPagination = async (request, response) => {
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
   }
 };
-
-
 
 exports.getAllDesignationPagination = async (request, response) => {
   const { elements, page } = request.query;
@@ -213,11 +211,9 @@ exports.editDepartmentDesignation = async (request, response) => {
     response
       .status(200)
 
-      .json({ ack: 1, msg: `successfully updated designation` });
+      .json({ ack: 1, msg: `successfully updated department&designation` });
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
   }
 };
-exports.getAllDesignation=async (request,response)=>{
-  
-}
+exports.getAllDesignation = async (request, response) => {};
