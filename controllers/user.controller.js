@@ -1,19 +1,20 @@
 const db = require("../models/index");
 const jwt = require("jsonwebtoken");
-const User = db.User;
-const EmployeeDetails = db.EmployeeDetails;
-const EducationModel = db.EducationDetails;
-const ExperienceModel = db.EmployeeExperience;
+const {
+  User,
+  EmployeeDetails,
+  EducationModel,
+  DepartmentModel,
+  DesignationModel,
+} = require("../models/index");
 
-const DepartmentModel = db.Department;
-const DesignationModel = db.Designation;
 const {
   createEmployeeSchema,
   loginSchema,
   employeeDetailsSchema,
 } = require("./validation/user.validation");
 const bcrypt = require("bcryptjs");
-const { request } = require("express");
+
 const { Op } = require("sequelize");
 
 //create new user
@@ -34,7 +35,7 @@ exports.createUser = async (request, response) => {
   const allDesignation = await DesignationModel.findOne({
     where: { designation: user.designation },
   });
-  // console.log(`<<<<<<<<<`, allDesignation.id);
+
   try {
     const checkForIfExists = await User.findOne({
       where: { email: request.body.email },
@@ -55,6 +56,7 @@ exports.createUser = async (request, response) => {
         designationId: +allDesignation.id,
         // password: hash,
         email: user.email,
+        employeeType: user.employeeType,
         isActive: 1,
       };
       const userData = await User.create(userRecord);
@@ -130,7 +132,7 @@ exports.logIn = async (request, response) => {
     }
   }
 };
-
+//employee onBoarding
 exports.employeeDetails = async (request, response) => {
   const { personal, education, experience } = request.body;
   const { email } = request.body.personal;
@@ -209,6 +211,7 @@ exports.employeeDetails = async (request, response) => {
       .json({ ack: 0, status: `error`, msg: error.message || "Server error" });
   }
 };
+// get all user details
 exports.allUser = async (request, response) => {
   try {
     const allData = await User.findAll({
@@ -220,6 +223,7 @@ exports.allUser = async (request, response) => {
   }
 };
 
+// single employee details
 exports.oneEmployeeDetails = async (request, response) => {
   const id = request.params.id;
 
@@ -228,7 +232,7 @@ exports.oneEmployeeDetails = async (request, response) => {
       where: { id: id },
       include: [
         { model: EmployeeDetails },
-        { model: EducationModel },
+        { model: EducationModel, order: `passoutYear` },
         { model: ExperienceModel },
       ],
       // order: [
@@ -244,6 +248,8 @@ exports.oneEmployeeDetails = async (request, response) => {
       .json({ ack: 0, status: `error`, msg: error.message || "Server error" });
   }
 };
+
+//employee details by designation
 exports.getEmployeeByDesignation = async (request, response) => {
   const designationId = request.params.designationId;
   const getEmployee = await User.findAll({
@@ -254,11 +260,14 @@ exports.getEmployeeByDesignation = async (request, response) => {
 
     .json({ ack: 1, msg: getEmployee });
 };
+
+//employee pagination
 exports.getAllEmployeePagination = async (request, response) => {
   const { elements, page } = request.query;
 
   const limit = parseInt(elements);
   const offset = parseInt(limit * (page - 1));
+  console.log(`offset`, offset);
 
   try {
     const { count, rows } = await User.findAndCountAll({
@@ -271,6 +280,7 @@ exports.getAllEmployeePagination = async (request, response) => {
       data: rows,
       elementCount: rows.length,
       totalElements: count,
+      totalpage: Math.ceil(count / elements),
       page: parseInt(page),
       elementsPerPage: limit,
     });
@@ -279,65 +289,57 @@ exports.getAllEmployeePagination = async (request, response) => {
   }
 };
 
+//search employee
 exports.searchUser = async (request, response) => {
   const { firstName, employeeId, designationId, elements, page } =
     request.query;
-  // const {  } = request.query;
+
   const limit = parseInt(elements);
   const offset = parseInt(limit * (page - 1));
-  if (
-    !firstName &&
-    !employeeId &&
-    employeeId === null &&
-    !designationId &&
-    designationId === null
-  ) {
-    throw new Error(`please give search criteria `);
-  }
+  try {
+    if (
+      !firstName &&
+      !employeeId &&
+      employeeId === null &&
+      !designationId &&
+      designationId === null
+    ) {
+      response
+        .status(500)
+        .json({ ack: 0, status: `please give search criteria` });
+    }
+    let employeeWhere = {};
+    let includes = [];
+    let where = {};
 
-  // if (firstName) {
-  //   const userData = await User.findAll({ where: { firstName: firstName } });
-  // } else if (employeeId) {
-  //   const userData = await EmployeeDetails.findAll({
-  //     where: { employeeId: employeeId },
-  //   });
-  // } else if (designationId) {
-  //   const userData = await User.findAll({
-  //     where: { designationId: designationId },
-  //   });
-  // }
-  //let where={};
-  let employeeWhere = {};
-  let includes = [];
-  let where = {};
+    if (firstName && firstName !== "") {
+      where["firstName"] = { [Op.like]: `%${firstName}%` };
+    }
+    if (designationId && designationId !== null) {
+      where["designationId"] = designationId;
+    }
 
-  if (firstName && firstName !== "") {
-    where["firstName"] = { [Op.like]: `%${firstName}%` };
-  }
-  if (designationId && designationId !== null) {
-    where["designationId"] = designationId;
-  }
+    if (employeeId && employeeId !== "") {
+      employeeWhere["employeeId"] = { [Op.like]: `%${employeeId}%` };
+      includes.push({ model: EmployeeDetails, where: { ...employeeWhere } });
+    }
+    if (employeeId && employeeId !== "" && designationId) {
+      employeeWhere["employeeId"] = { [Op.like]: `%${employeeId}%` };
+      includes.push({ model: EmployeeDetails, where: { ...employeeWhere } });
+    }
 
-  if (employeeId && employeeId !== "") {
-    employeeWhere["employeeId"] = { [Op.like]: `%${employeeId}%` };
-    includes.push({ model: EmployeeDetails, where: { ...employeeWhere } });
-  }
-  if (employeeId && employeeId !== "" && designationId) {
-    employeeWhere["employeeId"] = { [Op.like]: `%${employeeId}%` };
-    includes.push({ model: EmployeeDetails, where: { ...employeeWhere } });
-  }
+    // if (firstName) {
+    const UserData = await User.findAll({
+      where: { ...where },
+      include: [...includes],
+      offset,
+      limit,
+    });
 
-  // if (firstName) {
-  const UserData = await User.findAll({
-    where: { ...where },
-    include: [...includes],
-    offset,
-    limit,
-  });
-
-  // const employeeData = await EmployeeDetails.findAll({
-  //   where: { employeeId: employeeId },
-  // });
-  response.status(200).json({ msg: UserData });
-  // }
+    // const employeeData = await EmployeeDetails.findAll({
+    //   where: { employeeId: employeeId },
+    // });
+    response.status(200).json({ msg: UserData });
+    // }
+  } catch (error) {}
 };

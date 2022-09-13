@@ -15,8 +15,8 @@ const isAuthenticated = (request, response, next) => {
     console.log("bearerToken", bearerToken);
     //Verify token
     jwt.verify(bearerToken, process.env.SECRET_KEY, (err, decoded) => {
-      console.log("Decoded Data", decoded);
-      console.log(`>>>>>>>>>`, process.env.SECRET_KEY);
+      //console.log("Decoded Data", decoded);
+      //console.log(`>>>>>>>>>`, process.env.SECRET_KEY);
       if (err) {
         return response
           .status(403)
