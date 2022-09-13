@@ -19,12 +19,16 @@ exports.getAlltypesOfLeave = async (request, response) => {
 
 //add leaves by admin
 exports.createLeaveByAdmin = async (request, response) => {
-  const { leaveFrom, leaveTo, reasonOfLeave } = request.body;
+  const { leaveFrom, leaveTo, numberOfDays, reasonOfLeave, leaveType } =
+    request.body;
   const data = {
+    leaveType: +leaveType,
     leaveFrom: new Date(leaveFrom),
     leaveTo: new Date(leaveTo),
+    numberOfDays: numberOfDays,
     reasonOfLeave: reasonOfLeave,
   };
+
   try {
     const createLeave = await LeaveModel.create(data);
 

@@ -22,9 +22,10 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       allowNull: false,
     },
+    leaveType: DataTypes.INTEGER,
     leaveFrom: DataTypes.DATEONLY,
     leaveTo: DataTypes.DATEONLY,
-
+    numberOfDays: DataTypes.INTEGER,
     reasonOfLeave: DataTypes.STRING,
   });
   return Leave;
