@@ -28,63 +28,69 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 db.User = require("./user.model")(sequelize, DataTypes);
 db.EmployeeDetails = require("./employeeDetails.model")(sequelize, DataTypes);
-db.EducationDetails = require("./education.model")(sequelize, DataTypes);
-db.EmployeeExperience = require("./experience.model")(sequelize, DataTypes);
-db.Salary = require("./salary.model")(sequelize, DataTypes);
-db.Leave = require("./leave.model")(sequelize, DataTypes);
-db.Designation = require("./designation.model")(sequelize, DataTypes);
-db.Department = require("./department.model")(sequelize, DataTypes);
-db.Holiday = require("./holiday.model")(sequelize, DataTypes);
-db.LeaveType = require("./leaveType.model")(sequelize, DataTypes);
+db.EducationModel = require("./education.model")(sequelize, DataTypes);
+db.ExperienceModel = require("./experience.model")(sequelize, DataTypes);
+db.SalaryModel = require("./salary.model")(sequelize, DataTypes);
+db.LeaveModel = require("./leave.model")(sequelize, DataTypes);
+db.DesignationModel = require("./designation.model")(sequelize, DataTypes);
+db.DepartmentModel = require("./department.model")(sequelize, DataTypes);
+db.HolidayModel = require("./holiday.model")(sequelize, DataTypes);
+db.LeaveTypeModel = require("./leaveType.model")(sequelize, DataTypes);
 
+// user & EmployeeDetails,Department,Designation
 db.User.hasOne(db.EmployeeDetails, {
   foreignKey: "userId",
 });
 db.EmployeeDetails.belongsTo(db.User, { foreignKey: "userId" });
-db.User.belongsTo(db.Department, {
+db.User.belongsTo(db.DepartmentModel, {
   foreignKey: "departmentId",
 });
-db.User.belongsTo(db.Designation, {
+db.User.belongsTo(db.DesignationModel, {
   foreignKey: "designationId",
 });
 
-db.User.hasMany(db.EmployeeExperience, {
+//user & ExperienceModel
+db.User.hasMany(db.ExperienceModel, {
   foreignKey: "userId",
 });
-db.EmployeeExperience.belongsTo(db.User, {
-  foreignKey: "userId",
-});
-
-db.User.hasMany(db.EducationDetails, {
-  foreignKey: "userId",
-});
-db.EducationDetails.belongsTo(db.User, {
+db.ExperienceModel.belongsTo(db.User, {
   foreignKey: "userId",
 });
 
-db.User.hasMany(db.Salary, { foreignKey: "userId" });
-db.Salary.belongsTo(db.User, { foreignKey: "userId" });
-
-db.Department.hasOne(db.EmployeeDetails, {
-  foreignKey: "departmentId",
+//user & EducationModel
+db.User.hasMany(db.EducationModel, {
+  foreignKey: "userId",
 });
-db.EmployeeDetails.belongsTo(db.Department, {
-  foreignKey: "departmentId",
+db.EducationModel.belongsTo(db.User, {
+  foreignKey: "userId",
 });
 
-db.Department.hasMany(db.Designation, {
+//user & SalaryModel
+db.User.hasMany(db.SalaryModel, { foreignKey: "userId" });
+db.SalaryModel.belongsTo(db.User, { foreignKey: "userId" });
+
+//user & Department
+db.DepartmentModel.hasOne(db.EmployeeDetails, {
   foreignKey: "departmentId",
 });
-db.Designation.belongsTo(db.Department, {
+db.EmployeeDetails.belongsTo(db.DepartmentModel, {
   foreignKey: "departmentId",
 });
 
-// sequelize
-//   .sync({ alter: true })
-//   .then(() => {
-//     console.log(`database is syncing`);
-//   })
-//   .catch((err) => {
-//     console.log(err);
-//   });
+//user & Designation
+db.DepartmentModel.hasMany(db.DesignationModel, {
+  foreignKey: "departmentId",
+});
+db.DesignationModel.belongsTo(db.DepartmentModel, {
+  foreignKey: "departmentId",
+});
+
+sequelize
+  .sync({ alter: true })
+  .then(() => {
+    console.log(`database is syncing`);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
 module.exports = db;

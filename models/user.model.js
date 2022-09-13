@@ -14,6 +14,7 @@ module.exports = (sequelize, DataTypes) => {
     designationId: DataTypes.INTEGER,
     //designation: DataTypes.STRING,
     departmentId: { type: DataTypes.INTEGER, allowNull: true },
+    employeeType: DataTypes.STRING,
     password: DataTypes.STRING,
     isAdmin: DataTypes.BOOLEAN,
     isActive: DataTypes.BOOLEAN,
