@@ -84,13 +84,15 @@ db.DepartmentModel.hasMany(db.DesignationModel, {
 db.DesignationModel.belongsTo(db.DepartmentModel, {
   foreignKey: "departmentId",
 });
+db.User.hasMany(db.LeaveModel, { foreignKey: `UserId` });
+db.LeaveModel.belongsTo(db.User, { foreignKey: `UserId` });
 
-sequelize
-  .sync({ alter: true })
-  .then(() => {
-    console.log(`database is syncing`);
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+// sequelize
+//   .sync({ alter: true })
+//   .then(() => {
+//     console.log(`database is syncing`);
+//   })
+//   .catch((err) => {
+//     console.log(err);
+//   });
 module.exports = db;

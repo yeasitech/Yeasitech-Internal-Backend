@@ -12,7 +12,7 @@ const isAuthenticated = (request, response, next) => {
   if (typeof bearerHeader !== "undefined") {
     const bearer = bearerHeader.split(" ");
     const bearerToken = bearer[1];
-    console.log("bearerToken", bearerToken);
+    //console.log("bearerToken", bearerToken);
     //Verify token
     jwt.verify(bearerToken, process.env.SECRET_KEY, (err, decoded) => {
       //console.log("Decoded Data", decoded);

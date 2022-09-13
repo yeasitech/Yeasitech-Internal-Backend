@@ -117,6 +117,11 @@ holidayRouter.delete(
 //leave
 leaveRouter.post("/leaveList", Authorization, leaveController.typesOfLeave);
 leaveRouter.get("/list", Authorization, leaveController.getAlltypesOfLeave);
+leaveRouter.post(
+  "/createleave",
+  Authorization,
+  leaveController.createLeaveByAdmin
+);
 module.exports = {
   userRouter,
   departmentRouter,
