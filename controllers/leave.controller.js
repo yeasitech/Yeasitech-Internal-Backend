@@ -1,12 +1,40 @@
+const { request, response } = require("express");
 const { LeaveModel, LeaveTypeModel } = require("../models/index");
-//const LeaveTypeModel = db.LeaveType;
+
 //create leave type
 exports.typesOfLeave = async (request, response) => {
-  const createtypesOfLeave = await LeaveTypeModel.create(request.body);
-  response.status(200).json({ ack: 1, msg: createtypesOfLeave });
+  try {
+    const createtypesOfLeave = await LeaveTypeModel.create(request.body);
+    response.status(200).json({ ack: 1, msg: createtypesOfLeave });
+  } catch (error) {
+    response.status(500).json({ ack: 0, msg: error.message || `server Error` });
+  }
 };
+
 //get type of leaves
 exports.getAlltypesOfLeave = async (request, response) => {
   const getAlltypesOfLeave = await LeaveTypeModel.findAll();
   response.status(200).json({ ack: 1, msg: getAlltypesOfLeave });
 };
+
+//add leaves by admin
+exports.createLeaveByAdmin = async (request, response) => {
+  const { leaveFrom, leaveTo, reasonOfLeave } = request.body;
+  const data = {
+    leaveFrom: new Date(leaveFrom),
+    leaveTo: new Date(leaveTo),
+    reasonOfLeave: reasonOfLeave,
+  };
+  try {
+    const createLeave = await LeaveModel.create(data);
+
+    response.status(200).json({ ack: 1, data: createLeave });
+  } catch (error) {
+    response.status(500).json({ ack: 0, msg: error.message || `server Error` });
+  }
+};
+
+// // get employee leaves
+// exports.employeeLeave = async (request, response) => {
+//   const data = await LeaveModel.findAll;
+// };

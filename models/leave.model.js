@@ -18,14 +18,14 @@ module.exports = (sequelize, DataTypes) => {
   const Leave = sequelize.define("Leave", {
     id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      autoIncrement: true,
       primaryKey: true,
+      allowNull: false,
     },
-    leaveDateFron: DataTypes.DATEONLY,
-    leaveDateFronTo: DataTypes.DATEONLY,
-    reasonOfLeave: DataTypes.DATEONLY,
-    approved: DataTypes.BOOLEAN,
-    rejected: DataTypes.BOOLEAN,
+    leaveFrom: DataTypes.DATEONLY,
+    leaveTo: DataTypes.DATEONLY,
+
+    reasonOfLeave: DataTypes.STRING,
   });
   return Leave;
 };
