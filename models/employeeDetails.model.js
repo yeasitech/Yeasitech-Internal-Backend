@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
     permanentAddress: DataTypes.STRING,
     currentAddress: DataTypes.STRING,
     gender: DataTypes.STRING,
-    dateOfBirth: DataTypes.STRING,
+    dateOfBirth: DataTypes.DATEONLY,
     guardianName: DataTypes.STRING,
     employeeId: DataTypes.STRING,
     employeeImage: DataTypes.STRING,

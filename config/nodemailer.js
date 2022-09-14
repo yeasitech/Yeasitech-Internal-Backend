@@ -19,3 +19,17 @@ const transporter = nodemailer.createTransport({
   auth: { user: process.env.HOST_EMAIL, pass: process.env.HOST_PASSWORD },
 });
 module.exports = transporter;
+
+// var mailOptions = {
+//   from: process.env.HOST_EMAIL,
+//   to: "sudip@yeasitech.com, ramjan@yeasitech.com",
+//   subject: "Sending Email using Node.js",
+//   text: "That was easy!",
+// };
+// transporter.sendMail(mailOptions, function (error, info) {
+//   if (error) {
+//     console.log(`123456`, error);
+//   } else {
+//     console.log("Email sent: " + info.response);
+//   }
+// });
