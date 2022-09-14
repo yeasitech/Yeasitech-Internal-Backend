@@ -271,6 +271,7 @@ exports.getAllEmployeePagination = async (request, response) => {
 
   try {
     const { count, rows } = await User.findAndCountAll({
+      include: [{ model: EmployeeDetails }],
       limit,
       offset,
       //order: [["createdAt", "AESC"]],

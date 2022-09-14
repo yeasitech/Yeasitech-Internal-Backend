@@ -38,7 +38,8 @@ exports.createLeaveByAdmin = async (request, response) => {
   }
 };
 
-// // get employee leaves
+// get employee leaves
+
 // exports.employeeLeave = async (request, response) => {
-//   const data = await LeaveModel.findAll;
+//   const data = await LeaveModel.findAll{}
 // };

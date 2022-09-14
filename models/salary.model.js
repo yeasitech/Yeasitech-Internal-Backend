@@ -6,6 +6,7 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true,
       allowNull: false,
     },
+
     userId: DataTypes.UUID,
     currentSalary: DataTypes.STRING,
     dateOfIncrement: DataTypes.STRING,
