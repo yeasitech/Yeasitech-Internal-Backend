@@ -6,6 +6,7 @@ const {
   EducationModel,
   DepartmentModel,
   DesignationModel,
+  ExperienceModel,
 } = require("../models/index");
 
 const {
@@ -271,7 +272,7 @@ exports.getAllEmployeePagination = async (request, response) => {
 
   try {
     const { count, rows } = await User.findAndCountAll({
-      include: [{ model: EmployeeDetails }],
+      include: [{ model: EmployeeDetails, attributes: ["employeeImage"] }],
       limit,
       offset,
       //order: [["createdAt", "AESC"]],
@@ -342,5 +343,7 @@ exports.searchUser = async (request, response) => {
     // });
     response.status(200).json({ msg: UserData });
     // }
-  } catch (error) {}
+  } catch (error) {
+    response.status(500).json({ ack: 1, msg: error.message || `server Error` });
+  }
 };
