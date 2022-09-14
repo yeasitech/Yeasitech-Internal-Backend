@@ -23,24 +23,24 @@ app.use("/salary", salaryRouter);
 app.use("/public", departmentRouter);
 app.use("/holiday", holidayRouter);
 app.use("/leave", leaveRouter);
-// const job = nodeCron.schedule("* 1 * * * *", function jobYouNeedToExecute() {
-//   // Do whatever you want in here. Send email, Make  database backup or download data.
-//   var mailOptions = {
-//     from: process.env.HOST_EMAIL,
-//     to: "sudip@yeasitech.com, ramjan@yeasitech.com",
-//     subject: "Sending Email using Node.js",
-//     text: "That was easy!",
-//   };
-//   transporter.sendMail(mailOptions, function (error, info) {
-//     if (error) {
-//       console.log(`123456`, error);
-//     } else {
-//       console.log("Email sent: " + info.response);
-//     }
-//   });
-//   console.log(new Date().toLocaleString());
-//   console.log(mailOptions);
-// });
+const job = nodeCron.schedule("* 1 * * * *", function jobYouNeedToExecute() {
+  // Do whatever you want in here. Send email, Make  database backup or download data.
+  var mailOptions = {
+    from: process.env.HOST_EMAIL,
+    to: "sudip@yeasitech.com, ramjan@yeasitech.com",
+    subject: "Sending Email using Node.js",
+    text: "That was easy!",
+  };
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(`123456`, error);
+    } else {
+      console.log("Email sent: " + info.response);
+    }
+  });
+  console.log(new Date().toLocaleString());
+  console.log(mailOptions);
+});
 job.start();
 app.listen(port, () => {
   console.log(`server is listening to the port :${port}`);
