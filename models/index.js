@@ -36,6 +36,7 @@ db.DesignationModel = require("./designation.model")(sequelize, DataTypes);
 db.DepartmentModel = require("./department.model")(sequelize, DataTypes);
 db.HolidayModel = require("./holiday.model")(sequelize, DataTypes);
 db.LeaveTypeModel = require("./leaveType.model")(sequelize, DataTypes);
+db.BankModel = require("./bankDeatils.model")(sequelize, DataTypes);
 
 // user & EmployeeDetails,Department,Designation
 db.User.hasOne(db.EmployeeDetails, {
@@ -84,8 +85,12 @@ db.DepartmentModel.hasMany(db.DesignationModel, {
 db.DesignationModel.belongsTo(db.DepartmentModel, {
   foreignKey: "departmentId",
 });
+//user & leave model
 db.User.hasMany(db.LeaveModel, { foreignKey: `UserId` });
 db.LeaveModel.belongsTo(db.User, { foreignKey: `UserId` });
+
+db.User.hasMany(db.BankModel, { foreignKey: "userId" });
+db.BankModel.belongsTo(db.User, { foreignKey: "userId" });
 
 // sequelize
 //   .sync({ alter: true })

@@ -1,5 +1,5 @@
 require("dotenv").config();
-const nodeCron = require("node-cron");
+//const nodeCron = require("node-cron");
 
 const {
   userRouter,
@@ -26,32 +26,32 @@ app.use("/public", departmentRouter);
 app.use("/holiday", holidayRouter);
 app.use("/leave", leaveRouter);
 
-const birthday = nodeCron.schedule(
-  "0 0 * * *",
-  async function jobYouNeedToExecute(request, response) {
-    // Do whatever you want in here. Send email, Make  database backup or download data.
-    const todayDate = new Date().getDate();
-    const thisMonth = new Date().getMonth();
-    const data = await EmployeeDetails.findAll({ attributes: ["dateOfBirth"] });
-    for (let i = 0; i < data.length; i++) {
-      let databaseDate = data[i].dataValues.dateOfBirth;
-      let date = new Date(databaseDate).getDate();
-      let month = new Date(databaseDate).getMonth();
-      if (todayDate == date && thisMonth == month) {
-        console.log(`happy birthday man enjoy your day`);
-      } else {
-        console.log(`sorry `);
-      }
-    }
+// const birthday = nodeCron.schedule(
+//   "1 * * * *",
+//   async function jobYouNeedToExecute(request, response) {
+//     // Do whatever you want in here. Send email, Make  database backup or download data.
+//     const todayDate = new Date().getDate();
+//     const thisMonth = new Date().getMonth();
+//     const data = await EmployeeDetails.findAll({ attributes: ["dateOfBirth"] });
+//     for (let i = 0; i < data.length; i++) {
+//       let databaseDate = data[i].dataValues.dateOfBirth;
+//       let date = new Date(databaseDate).getDate();
+//       let month = new Date(databaseDate).getMonth();
+//       if (todayDate == date && thisMonth == month) {
+//         console.log(`happy birthday man enjoy your day`);
+//       } else {
+//         console.log(`sorry `);
+//       }
+//     }
 
-    //console.log(data[0].dataValues.dateOfBirth);
-    let date = new Date();
-    console.log(date.toLocaleString());
-    //console.log(new Date(dataBaseDate).getMonth());
-  }
-);
+//     //console.log(data[0].dataValues.dateOfBirth);
+//     let date = new Date();
+//     console.log(date.toLocaleString());
+//     //console.log(new Date(dataBaseDate).getMonth());
+//   }
+// );
 
-birthday.start();
+// birthday.start();
 
 app.listen(port, () => {
   console.log(`server is listening to the port :${port}`);

@@ -7,6 +7,7 @@ const {
   DepartmentModel,
   DesignationModel,
   ExperienceModel,
+  BankModel,
 } = require("../models/index");
 
 const {
@@ -135,7 +136,7 @@ exports.logIn = async (request, response) => {
 };
 //employee onBoarding
 exports.employeeDetails = async (request, response) => {
-  const { personal, education, experience } = request.body;
+  const { personal, education, experience, bankDetails } = request.body;
   const { email } = request.body.personal;
 
   const { error } = employeeDetailsSchema.validate({ email });
@@ -198,6 +199,14 @@ exports.employeeDetails = async (request, response) => {
       else {
         await experience.map((data) => {
           ExperienceModel.create({ ...data, userId: user.id });
+        });
+      }
+      //bank details
+      if (!bankDetails) throw new Error(`please provide bank details`);
+      else {
+        await bankDetails.map((data) => {
+          console.log(`1234567`, { ...data });
+          BankModel.create({ ...data, userId: user.id });
         });
       }
       return response.status(200).json({
