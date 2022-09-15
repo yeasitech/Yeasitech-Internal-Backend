@@ -47,7 +47,7 @@ exports.createUser = async (request, response) => {
         msg: "User exists with this email",
       });
     } else {
-      //const hash = bcrypt.hashSync(user.password, 10);
+      const hash = bcrypt.hashSync(user.password, 10);
       const userRecord = {
         firstName: user.firstName,
         middleName: user.middleName,
@@ -55,7 +55,7 @@ exports.createUser = async (request, response) => {
         dateOfJoining: user.dateOfJoining,
         departmentId: +allDept.id,
         designationId: +allDesignation.id,
-        // password: hash,
+        password: hash,
         email: user.email,
         employeeType: user.employeeType,
         isActive: 1,
@@ -168,6 +168,7 @@ exports.employeeDetails = async (request, response) => {
           let employeeId = `YT-1`;
           await EmployeeDetails.create({
             ...personal,
+            //dateOfBirth: new Date(personal.dateOfBirth),
             userId: user.id,
             employeeId: employeeId,
           });

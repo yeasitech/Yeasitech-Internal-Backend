@@ -213,13 +213,15 @@ exports.getAllDesignationPagination = async (request, response) => {
   console.log(`qwertyui`, limit);
   const offset = parseInt(limit * (page - 1));
   try {
-    const { count, rows: designation } = await DepartmentModel.findAndCountAll({
-      include: [{ model: DesignationModel }],
+    const { count, rows: designation } = await DesignationModel.findAndCountAll(
+      {
+        include: [{ model: DepartmentModel }],
 
-      limit,
-      offset,
-      //order: [["createdAt", "AESC"]],
-    });
+        limit,
+        offset,
+        //order: [["createdAt", "AESC"]],
+      }
+    );
     response.status(200).json({
       ack: 1,
       data: designation,
