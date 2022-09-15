@@ -60,3 +60,27 @@ exports.deleteHoliday = async (request, response) => {
     response.status(500).json({ ack: 0, msg: error.message || `server error` });
   }
 };
+
+//holiday pagination
+exports.holidayPagination = async (request, response) => {
+  const { elements, page } = request.query;
+  const limit = parseInt(elements);
+  const offsets = parseInt(limit * (page - 1));
+  try {
+    const { count, rows } = await HolidayModel.findAndCountAll({
+      limit,
+      offsets,
+    });
+    response.status(200).json({
+      ack: 1,
+      data: rows,
+      elementCount: rows.length,
+      totalElements: count,
+      totalpage: Math.ceil(count / elements),
+      page: parseInt(page),
+      elementsPerPage: limit,
+    });
+  } catch (error) {
+    response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
+  }
+};

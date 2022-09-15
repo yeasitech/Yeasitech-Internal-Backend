@@ -114,6 +114,11 @@ holidayRouter.delete(
   Authorization,
   holidayController.deleteHoliday
 );
+holidayRouter.get(
+  "/holidayList",
+  Authorization,
+  holidayController.holidayPagination
+);
 //leave
 leaveRouter.post("/leaveList", Authorization, leaveController.typesOfLeave);
 leaveRouter.get("/list", Authorization, leaveController.getAlltypesOfLeave);
