@@ -184,8 +184,8 @@ exports.getAllDepartmentDesignation = async (request, response) => {
 exports.getAllDepartmentPagination = async (request, response) => {
   const { elements, page } = request.query;
   const limit = parseInt(elements);
-
   const offset = parseInt(limit * (page - 1));
+  console.log(`offset`, offset);
   try {
     const { count, rows: departments } = await DepartmentModel.findAndCountAll({
       limit,

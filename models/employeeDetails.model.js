@@ -25,6 +25,7 @@ module.exports = (sequelize, DataTypes) => {
     passportNo: DataTypes.STRING,
     passportFrontImage: DataTypes.STRING,
     passportBackImage: DataTypes.STRING,
+    // onBoardingStatus: DataTypes.BOOLEAN,
   });
   // EmployeeDetails.associate = function (models) {
   //   EmployeeDetails.belongsTo(models.User, {

@@ -65,11 +65,13 @@ exports.deleteHoliday = async (request, response) => {
 exports.holidayPagination = async (request, response) => {
   const { elements, page } = request.query;
   const limit = parseInt(elements);
-  const offsets = parseInt(limit * (page - 1));
+  //console.log(`limit`,limit);
+  const offset = parseInt(limit * (page - 1));
+  console.log(`offsets`, offset);
   try {
     const { count, rows } = await HolidayModel.findAndCountAll({
       limit,
-      offsets,
+      offset,
     });
     response.status(200).json({
       ack: 1,

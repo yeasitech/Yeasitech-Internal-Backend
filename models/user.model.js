@@ -12,9 +12,10 @@ module.exports = (sequelize, DataTypes) => {
     email: DataTypes.STRING,
     dateOfJoining: DataTypes.STRING,
     designationId: DataTypes.INTEGER,
-    //designation: DataTypes.STRING,
+
     departmentId: { type: DataTypes.INTEGER, allowNull: true },
     employeeType: DataTypes.STRING,
+    onBoardingStatus: DataTypes.BOOLEAN,
     password: DataTypes.STRING,
     isAdmin: DataTypes.BOOLEAN,
     isActive: DataTypes.BOOLEAN,
