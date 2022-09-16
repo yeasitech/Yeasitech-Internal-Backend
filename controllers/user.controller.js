@@ -58,10 +58,15 @@ exports.createUser = async (request, response) => {
         designationId: +allDesignation.id,
         password: hash,
         email: user.email,
+        onBoardingStatus: false,
         employeeType: user.employeeType,
         isActive: 1,
       };
-      const userData = await User.create(userRecord);
+
+      const userData = await User.create({
+        ...userRecord,
+        onBoardingStatus: false,
+      });
       response
         .status(200)
         .json({ ack: 1, msg: "successfully created", data: userData });
@@ -170,6 +175,7 @@ exports.employeeDetails = async (request, response) => {
           await EmployeeDetails.create({
             ...personal,
             //dateOfBirth: new Date(personal.dateOfBirth),
+            onBoardingStatus: true,
             userId: user.id,
             employeeId: employeeId,
           });
@@ -209,6 +215,10 @@ exports.employeeDetails = async (request, response) => {
           BankModel.create({ ...data, userId: user.id });
         });
       }
+      await User.update(
+        { onBoardingStatus: true },
+        { where: { email: email } }
+      );
       return response.status(200).json({
         ack: 1,
         status: "success",
@@ -245,6 +255,7 @@ exports.oneEmployeeDetails = async (request, response) => {
         { model: EmployeeDetails },
         { model: EducationModel, order: `passoutYear` },
         { model: ExperienceModel },
+        { model: BankModel },
       ],
       // order: [
       //   [{ model: EducationModel }, "passoutYear", "DESC"],

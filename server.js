@@ -27,7 +27,7 @@ app.use("/holiday", holidayRouter);
 app.use("/leave", leaveRouter);
 
 // const birthday = nodeCron.schedule(
-//   "1 * * * *",
+//   " 5 0 * * *",
 //   async function jobYouNeedToExecute(request, response) {
 //     // Do whatever you want in here. Send email, Make  database backup or download data.
 //     const todayDate = new Date().getDate();
@@ -49,7 +49,7 @@ app.use("/leave", leaveRouter);
 //     console.log(date.toLocaleString());
 //     //console.log(new Date(dataBaseDate).getMonth());
 //   }
-// );
+//);
 
 // birthday.start();
 
