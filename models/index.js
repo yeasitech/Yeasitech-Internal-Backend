@@ -1,5 +1,7 @@
 require("dotenv").config();
 const dbConfig = require("../config/db.config");
+const fs = require("fs");
+const path = require("path");
 
 const { Sequelize, DataTypes } = require("sequelize");
 
@@ -14,6 +16,12 @@ const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
     idle: dbConfig.pool.idle,
   },
 });
+
+console.log(`directory Name`, __dirname);
+console.log(`File Name`, __filename);
+//console.log(fs.readDirSync(__dirname));
+const filenames = fs.readdirSync(__dirname);
+console.log(``, filenames);
 sequelize
   .authenticate()
   .then(() => {

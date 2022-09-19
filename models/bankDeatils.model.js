@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     accountNumber: DataTypes.STRING,
     ifscCode: DataTypes.STRING,
     userId: DataTypes.UUID,
+    passbookImage: DataTypes.STRING,
   });
   return bankDetails;
 };
