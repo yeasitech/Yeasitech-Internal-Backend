@@ -3,6 +3,7 @@ const departmentController = require("../controllers/department.controller");
 const salaryController = require("../controllers/salary.controller");
 const holidayController = require("../controllers/holiday.controller");
 const leaveController = require("../controllers/leave.controller");
+const assetController = require("../controllers/asset.controller");
 const Authorization = require("../middleware/isAuth");
 const { Router } = require("express");
 const userRouter = Router();
@@ -10,6 +11,7 @@ const salaryRouter = Router();
 const departmentRouter = Router();
 const holidayRouter = Router();
 const leaveRouter = Router();
+const assetRouter = Router();
 //userRouter
 userRouter.post("/createEmployee", userController.createUser);
 userRouter.post("/login", userController.logIn);
@@ -131,10 +133,13 @@ leaveRouter.post(
   Authorization,
   leaveController.createLeaveByAdmin
 );
+//Assets
+assetRouter.post("/createAssets/:userId", assetController.createAssets);
 module.exports = {
   userRouter,
   departmentRouter,
   holidayRouter,
   leaveRouter,
   salaryRouter,
+  assetRouter,
 };
