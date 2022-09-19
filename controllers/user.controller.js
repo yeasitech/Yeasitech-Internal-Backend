@@ -175,7 +175,6 @@ exports.employeeDetails = async (request, response) => {
           await EmployeeDetails.create({
             ...personal,
             //dateOfBirth: new Date(personal.dateOfBirth),
-            onBoardingStatus: true,
             userId: user.id,
             employeeId: employeeId,
           });
@@ -366,5 +365,29 @@ exports.searchUser = async (request, response) => {
     // }
   } catch (error) {
     response.status(500).json({ ack: 1, msg: error.message || `server Error` });
+  }
+};
+
+exports.editOneEmployeePersonalData = async (request, response) => {
+  const userId = request.params.userId;
+  const { userInfo, personalInfo } = request.body;
+  try {
+    if (!userInfo || userInfo.length < 0) {
+      response.status(500).json({ ack: 0, msg: `invalid userInfo ` });
+    } else {
+      const userUpdatedData = await User.update(userInfo, {
+        where: { id: userId },
+      });
+    }
+    if (!personalInfo || personalInfo.length < 0) {
+      response.status(500).json({ ack: 0, msg: `invalid personalInfo ` });
+    } else {
+      const personalUpdatedData = await EmployeeDetails.update(personalInfo, {
+        where: { userId: userId },
+      });
+    }
+    response.status(200).json({ ack: 1, msg: `user updated successfully` });
+  } catch (error) {
+    response.status(500).json({ ack: 1, msg: error.message || `Server Error` });
   }
 };

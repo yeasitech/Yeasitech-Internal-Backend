@@ -27,6 +27,10 @@ userRouter.get(
 );
 userRouter.get("/list", Authorization, userController.getAllEmployeePagination);
 userRouter.get("/searchEmpList", userController.searchUser);
+userRouter.put(
+  "/personalData/:userId",
+  userController.editOneEmployeePersonalData
+);
 //salary
 salaryRouter.post(
   "/employeeSalary",
