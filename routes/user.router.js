@@ -35,6 +35,9 @@ userRouter.put(
 );
 userRouter.put("/education/:id", userController.updateEducation);
 userRouter.put("/experience/:id", userController.updateExperience);
+userRouter.put("/bankDetails/:id", userController.bankUpdate);
+userRouter.put("/makeAdmin/:id", userController.makeAdmin);
+userRouter.put("/setDeactive/:id", userController.setDeactive);
 
 //salary
 salaryRouter.post(

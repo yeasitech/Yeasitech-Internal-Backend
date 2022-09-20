@@ -1,4 +1,3 @@
-const { request, response } = require("express");
 const { LeaveModel, LeaveTypeModel } = require("../models/index");
 
 //create leave type
