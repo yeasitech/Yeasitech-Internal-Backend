@@ -59,7 +59,8 @@ exports.createUser = async (request, response) => {
         email: user.email,
         onBoardingStatus: false,
         employeeType: user.employeeType,
-        isActive: 1,
+        isAdmin: false,
+        isActive: true,
       };
 
       const userData = await User.create({
@@ -448,6 +449,67 @@ exports.updateExperience = async (request, response) => {
         data: `experience Data updated successfully`,
       });
     }
+  } catch (error) {
+    response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
+  }
+};
+
+exports.bankUpdate = async (request, response) => {
+  const id = request.params.id;
+
+  const { bankDetails } = request.body;
+
+  const bankData = await EducationModel.findByPk(id);
+  console.log(bankData);
+  try {
+    if (!bankData || bankData.length < 0) {
+      response.status(500).json({ ack: 0, msg: `invalid education Info` });
+    } else {
+      const updatedData = await bankDetails.map((data) => {
+        BankModel.update(
+          { ...data },
+          {
+            where: { id: id },
+          }
+        );
+      });
+      return response.status(200).json({
+        ack: 1,
+        status: `success`,
+        data: `bankDetails updated successfully`,
+      });
+    }
+  } catch (error) {
+    response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
+  }
+};
+// make user to admin
+exports.makeAdmin = async (request, response) => {
+  const id = request.params.id;
+  const userData = await User.findByPk(id);
+  try {
+    if (!userData || userData.length < 0) {
+      response.status(500).json({ ack: 0, msg: `invalid  userId` });
+    }
+    const makeAdmin = await User.update({ isAdmin: true }, { where: { id } });
+    response.status(200).json({
+      ack: 1,
+      msg: `you are an admin now`,
+    });
+  } catch (error) {
+    response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
+  }
+};
+// Dactive User
+exports.setDeactive = async (request, response) => {
+  const id = request.params.id;
+  const userData = await User.findByPk(id);
+  try {
+    if (!userData || userData.length < 0) {
+      response.status(500).json({ ack: 0, msg: `invalid  userId` });
+    }
+    const makeAdmin = await User.update({ isActive: false }, { where: { id } });
+    response.status(200).json({ ack: 1, msg: `successfully deactivated User` });
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
   }
