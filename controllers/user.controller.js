@@ -47,7 +47,7 @@ exports.createUser = async (request, response) => {
         msg: "User exists with this email",
       });
     } else {
-      const hash = bcrypt.hashSync(user.password, 10);
+      //const hash = bcrypt.hashSync(user.password, 10);
       const userRecord = {
         firstName: user.firstName,
         middleName: user.middleName,
@@ -55,7 +55,7 @@ exports.createUser = async (request, response) => {
         dateOfJoining: user.dateOfJoining,
         departmentId: +allDept.id,
         designationId: +allDesignation.id,
-        password: hash,
+        //password: hash,
         email: user.email,
         onBoardingStatus: false,
         employeeType: user.employeeType,
@@ -280,7 +280,7 @@ exports.getEmployeeByDesignation = async (request, response) => {
   response
     .status(200)
 
-    .json({ ack: 1, msg: getEmployee });
+    .json({ ack: 1, data: getEmployee });
 };
 
 //employee pagination
@@ -390,5 +390,65 @@ exports.editOneEmployeePersonalData = async (request, response) => {
     response.status(200).json({ ack: 1, msg: `user updated successfully` });
   } catch (error) {
     response.status(500).json({ ack: 1, msg: error.message || `Server Error` });
+  }
+};
+
+exports.updateEducation = async (request, response) => {
+  const id = request.params.id;
+  console.log(id);
+  const { education } = request.body;
+
+  const educationData = await EducationModel.findByPk(id);
+  //console.log(educationData);
+  try {
+    if (!educationData || educationData.length < 0) {
+      response.status(500).json({ ack: 0, msg: `invalid educationInfo` });
+    } else {
+      const updatedData = await education.map((data) => {
+        EducationModel.update(
+          { ...data },
+          {
+            where: { id: id },
+          }
+        );
+      });
+      return response.status(200).json({
+        ack: 1,
+        status: `success`,
+        data: `edecationDetails updated successfully`,
+      });
+    }
+  } catch (error) {
+    response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
+  }
+};
+
+exports.updateExperience = async (request, response) => {
+  const id = request.params.id;
+  console.log(id);
+  const { experience } = request.body;
+
+  const experienceData = await EducationModel.findByPk(id);
+  console.log(experienceData);
+  try {
+    if (!experienceData || experienceData.length < 0) {
+      response.status(500).json({ ack: 0, msg: `invalid educationInfo` });
+    } else {
+      const updatedData = await experience.map((data) => {
+        ExperienceModel.update(
+          { ...data },
+          {
+            where: { id: id },
+          }
+        );
+      });
+      return response.status(200).json({
+        ack: 1,
+        status: `success`,
+        data: `experience Data updated successfully`,
+      });
+    }
+  } catch (error) {
+    response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
   }
 };
