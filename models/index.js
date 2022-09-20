@@ -49,6 +49,7 @@ db.HolidayModel = require("./holiday.model")(sequelize, DataTypes);
 db.LeaveTypeModel = require("./leaveType.model")(sequelize, DataTypes);
 db.BankModel = require("./bankDeatils.model")(sequelize, DataTypes);
 db.AssetModel = require("./asset.model")(sequelize, DataTypes);
+
 // user & EmployeeDetails,Department,Designation
 db.User.hasOne(db.EmployeeDetails, {
   foreignKey: "userId",
