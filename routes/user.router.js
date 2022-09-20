@@ -33,6 +33,9 @@ userRouter.put(
   "/personalData/:userId",
   userController.editOneEmployeePersonalData
 );
+userRouter.put("/education/:id", userController.updateEducation);
+userRouter.put("/experience/:id", userController.updateExperience);
+
 //salary
 salaryRouter.post(
   "/employeeSalary",

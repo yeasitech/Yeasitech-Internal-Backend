@@ -15,7 +15,7 @@ const cors = require("cors");
 const transporter = require("./config/nodemailer");
 const port = process.env.PORT || 5000;
 const { User, EmployeeDetails } = require("./models/index");
-const e = require("express");
+
 var corsOptions = { origin: "*" };
 app.use(cors(corsOptions));
 
