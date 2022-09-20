@@ -232,10 +232,12 @@ exports.employeeDetails = async (request, response) => {
 };
 // get all user details
 exports.allUser = async (request, response) => {
+  id = request.params.id;
   try {
-    const allData = await User.findAll({
-      include: [{ model: EmployeeDetails }],
-    });
+    const allData = await User.findByPk(
+      id
+      // include: [{ model: EmployeeDetails }],
+    );
     response.status(200).json({ ack: 1, data: allData });
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });

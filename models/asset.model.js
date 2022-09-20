@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  const assets = sequelize.define("assets", {
+  const Assets = sequelize.define("Assets", {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -15,5 +15,5 @@ module.exports = (sequelize, DataTypes) => {
     productId: DataTypes.STRING,
     userId: DataTypes.UUID,
   });
-  return assets;
+  return Assets;
 };
