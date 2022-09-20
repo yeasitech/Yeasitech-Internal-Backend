@@ -154,7 +154,7 @@ exports.deleteDesignation = async (request, response) => {
   const designationId = request.params.designationId;
 
   try {
-    if (!designationId && designationId.length < 0)
+    if (!designationId || designationId == null)
       throw new Error(`invalid department id`);
     else {
       const designationToDelete = await DesignationModel.destroy({
