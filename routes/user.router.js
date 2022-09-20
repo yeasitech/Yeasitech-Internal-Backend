@@ -135,6 +135,9 @@ leaveRouter.post(
 );
 //Assets
 assetRouter.post("/createAssets/:userId", assetController.createAssets);
+assetRouter.get("/assetList", assetController.getAssetsPagination);
+assetRouter.put("/updateAsset/:id", assetController.updateAsset);
+assetRouter.delete("/deleteAsset/:id", assetController.deleteAsset);
 module.exports = {
   userRouter,
   departmentRouter,
