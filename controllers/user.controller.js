@@ -231,8 +231,20 @@ exports.employeeDetails = async (request, response) => {
       .json({ ack: 0, status: `error`, msg: error.message || "Server error" });
   }
 };
-// get all user details
-exports.allUser = async (request, response) => {
+// get all employee details
+exports.allEmployee = async (request, response) => {
+  try {
+    const allData = await User.findAll({
+      attributes: ["firstName", "middleName", "lastName"],
+    });
+    response.status(200).json({ ack: 1, data: allData });
+  } catch (error) {
+    response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
+  }
+};
+
+// get single user details
+exports.allSingleUser = async (request, response) => {
   id = request.params.id;
   try {
     const allData = await User.findByPk(

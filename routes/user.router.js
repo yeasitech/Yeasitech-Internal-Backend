@@ -16,7 +16,8 @@ const assetRouter = Router();
 userRouter.post("/createEmployee", userController.createUser);
 userRouter.post("/login", userController.logIn);
 userRouter.post("/employeeOnboarding", userController.employeeDetails);
-userRouter.get("/getEmployee/:id", Authorization, userController.allUser);
+userRouter.get("/getEmployee/:id", Authorization, userController.allSingleUser);
+userRouter.get("/getAllEmployee", userController.allEmployee);
 userRouter.get(
   "/employeeDetails/:id",
   Authorization,
