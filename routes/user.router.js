@@ -134,12 +134,18 @@ holidayRouter.get(
 );
 //leave
 leaveRouter.post("/leaveList", Authorization, leaveController.typesOfLeave);
-leaveRouter.get("/list", Authorization, leaveController.getAlltypesOfLeave);
+leaveRouter.get(
+  "/allTypeOfLeave",
+  Authorization,
+  leaveController.getAlltypesOfLeave
+);
 leaveRouter.post(
-  "/createleave",
+  "/createleave/:userId",
   Authorization,
   leaveController.createLeaveByAdmin
 );
+leaveRouter.get("/list", leaveController.getLeavePagiantion);
+
 //Assets
 assetRouter.post("/createAssets/:userId", assetController.createAssets);
 assetRouter.get("/assetList", assetController.getAssetsPagination);

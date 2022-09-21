@@ -235,7 +235,7 @@ exports.employeeDetails = async (request, response) => {
 exports.allEmployee = async (request, response) => {
   try {
     const allData = await User.findAll({
-      attributes: ["firstName", "middleName", "lastName"],
+      attributes: ["id", "firstName", "middleName", "lastName"],
     });
     response.status(200).json({ ack: 1, data: allData });
   } catch (error) {
@@ -526,3 +526,5 @@ exports.setDeactive = async (request, response) => {
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
   }
 };
+
+//emploee search by name

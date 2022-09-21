@@ -98,8 +98,8 @@ db.DesignationModel.belongsTo(db.DepartmentModel, {
   foreignKey: "departmentId",
 });
 //user & leave model
-db.User.hasMany(db.LeaveModel, { foreignKey: `UserId` });
-db.LeaveModel.belongsTo(db.User, { foreignKey: `UserId` });
+db.User.hasMany(db.LeaveModel, { foreignKey: `userId` });
+db.LeaveModel.belongsTo(db.User, { foreignKey: `userId` });
 //User & bankModel
 db.User.hasMany(db.BankModel, { foreignKey: "userId" });
 db.BankModel.belongsTo(db.User, { foreignKey: "userId" });
