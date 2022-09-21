@@ -1,4 +1,4 @@
-const { User, DepartmentModel, DesignationModel } = require("../models/index");
+const { DepartmentModel, DesignationModel } = require("../models/index");
 
 //create department
 exports.createDepartment = async (request, response) => {
