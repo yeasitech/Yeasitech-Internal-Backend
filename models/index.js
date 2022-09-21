@@ -17,12 +17,12 @@ const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
   },
 });
 
-console.log(`directory Name`, __dirname);
-console.log(`File Name`, __filename);
+//console.log(`directory Name`, __dirname);
+//console.log(`File Name`, __filename);
 //console.log(fs.readDirSync(__dirname));
 const filenames = fs.readdirSync(__dirname).filter((file) => {
-  console.log(`<<<<<<<<<<<<<`, basename);
-  console.log(`1234567`, file.slice(-3));
+  //console.log(`<<<<<<<<<<<<<`, basename);
+  //console.log(`1234567`, file.slice(-3));
 });
 //console.log(``, filenames);
 sequelize

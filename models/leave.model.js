@@ -30,6 +30,7 @@ module.exports = (sequelize, DataTypes) => {
     leaveTo: DataTypes.DATEONLY,
     numberOfDays: DataTypes.INTEGER,
     reasonOfLeave: DataTypes.STRING,
+    status: DataTypes.STRING,
   });
   return Leave;
 };

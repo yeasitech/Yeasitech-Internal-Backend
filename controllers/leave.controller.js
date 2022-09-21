@@ -36,6 +36,7 @@ exports.createLeaveByAdmin = async (request, response) => {
     numberOfDays: leaveData.numberOfDays,
     reasonOfLeave: leaveData.reasonOfLeave,
     userId: userId,
+    status: "pending",
   };
   // console.log({ ...leave });
   try {
@@ -62,7 +63,7 @@ exports.getLeavePagiantion = async (request, response) => {
         {
           model: User,
           attributes: ["firstName", "middleName", "lastName", "id"],
-          include: [{ model: DesignationModel }],
+          //include: [{ model: DesignationModel }],
           include: [{ model: EmployeeDetails, attributes: ["employeeImage"] }],
         },
       ],
@@ -80,5 +81,65 @@ exports.getLeavePagiantion = async (request, response) => {
     });
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `server Error` });
+  }
+};
+
+//update Leave
+exports.leaveUpdate = async (request, response) => {
+  const id = request.params.id;
+  const { leaveInfo } = request.body;
+  const leaveData = await LeaveModel.findByPk(id);
+  try {
+    if (!leaveData || leaveData.length < 0) {
+      response.status(500).json({ ack: 0, msg: `invalid leave id ` });
+    } else {
+      const UpdatedData = await LeaveModel.update(leaveInfo, {
+        where: { id: id },
+      });
+      response.status(200).json({ ack: 1, msg: UpdatedData });
+    }
+  } catch (error) {
+    response.status(500).json({ ack: 1, msg: error.message || `Server Error` });
+  }
+};
+
+//delete Leave
+exports.deleteLeave = async (request, response) => {
+  const id = request.params.id;
+  const leaveData = await LeaveModel.findByPk(id);
+  console.log(leaveData);
+  try {
+    if (!leaveData || leaveData.length < 0) {
+      return response.status(500).json({ ack: 0, msg: `invalid leaveId` });
+    } else {
+      const designationToDelete = await LeaveModel.destroy({
+        where: { id: id },
+      });
+
+      response.status(200).json({ ack: 1, msg: designationToDelete });
+    }
+  } catch (error) {
+    response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
+  }
+};
+
+//leave status update
+exports.leaveStatusUpdate = async (request, response) => {
+  const id = request.params.id;
+  // const { leaveInfo } = request.body;
+  const leaveData = await LeaveModel.findByPk(id);
+
+  try {
+    if (!leaveData || leaveData.length < 0) {
+      return response.status(500).json({ ack: 0, msg: `invalid leave id ` });
+    }
+    if (leaveData.status && leaveData.status.length > 0) {
+      const UpdatedData = await LeaveModel.update(request.body, {
+        where: { id: id },
+      });
+      response.status(200).json({ ack: 1, msg: `leave Status updated` });
+    }
+  } catch (error) {
+    response.status(500).json({ ack: 1, msg: error.message || `Server Error` });
   }
 };
