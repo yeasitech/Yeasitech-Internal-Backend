@@ -144,8 +144,10 @@ leaveRouter.post(
   Authorization,
   leaveController.createLeaveByAdmin
 );
-leaveRouter.get("/list", leaveController.getLeavePagiantion);
-
+leaveRouter.get("/list", Authorization, leaveController.getLeavePagiantion);
+leaveRouter.put("/editLeave/:id", leaveController.leaveUpdate);
+leaveRouter.put("/editStatusLeave/:id", leaveController.leaveStatusUpdate);
+leaveRouter.delete("/deleteLeave/:id", leaveController.deleteLeave);
 //Assets
 assetRouter.post("/createAssets/:userId", assetController.createAssets);
 assetRouter.get("/assetList", assetController.getAssetsPagination);

@@ -158,7 +158,11 @@ exports.employeeDetails = async (request, response) => {
   try {
     let user = await User.findOne({ where: { email: email } });
     console.log(`1234567890`, user.email);
-
+    if (user.onBoardingStatus == true) {
+      return response
+        .status(500)
+        .json({ ack: 0, msg: `you are already onboarded` });
+    }
     if (email !== user.email) throw new Error(`employee not exists`);
     else {
       //personal details
@@ -382,6 +386,7 @@ exports.searchUser = async (request, response) => {
   }
 };
 
+//update OneEmployeePersonal Data
 exports.editOneEmployeePersonalData = async (request, response) => {
   const userId = request.params.userId;
   const { userInfo, personalInfo } = request.body;
@@ -406,6 +411,7 @@ exports.editOneEmployeePersonalData = async (request, response) => {
   }
 };
 
+//updateEducation
 exports.updateEducation = async (request, response) => {
   const id = request.params.id;
   console.log(id);
@@ -436,6 +442,7 @@ exports.updateEducation = async (request, response) => {
   }
 };
 
+//update Experience
 exports.updateExperience = async (request, response) => {
   const id = request.params.id;
   console.log(id);
@@ -466,6 +473,7 @@ exports.updateExperience = async (request, response) => {
   }
 };
 
+// upadte Bank Deatils
 exports.bankUpdate = async (request, response) => {
   const id = request.params.id;
 
@@ -495,6 +503,7 @@ exports.bankUpdate = async (request, response) => {
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
   }
 };
+
 // make user to admin
 exports.makeAdmin = async (request, response) => {
   const id = request.params.id;
@@ -503,25 +512,48 @@ exports.makeAdmin = async (request, response) => {
     if (!userData || userData.length < 0) {
       response.status(500).json({ ack: 0, msg: `invalid  userId` });
     }
-    const makeAdmin = await User.update({ isAdmin: true }, { where: { id } });
-    response.status(200).json({
-      ack: 1,
-      msg: `you are an admin now`,
-    });
+    if (userData.isAdmin == false) {
+      const makeAdmin = await User.update({ isAdmin: true }, { where: { id } });
+      response.status(200).json({
+        ack: 1,
+        msg: `congrats you are an admin now`,
+      });
+    }
+    if (userData.isAdmin == true) {
+      const makeAdmin = await User.update(
+        { isAdmin: false },
+        { where: { id } }
+      );
+      response.status(200).json({
+        ack: 1,
+        msg: `sorry! you are an user now`,
+      });
+    }
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
   }
 };
+
 // Dactive User
 exports.setDeactive = async (request, response) => {
   const id = request.params.id;
   const userData = await User.findByPk(id);
+
   try {
     if (!userData || userData.length < 0) {
-      response.status(500).json({ ack: 0, msg: `invalid  userId` });
+      return response.status(500).json({ ack: 0, msg: `invalid  userId` });
     }
-    const makeAdmin = await User.update({ isActive: false }, { where: { id } });
-    response.status(200).json({ ack: 1, msg: `successfully deactivated User` });
+    if (userData.isActive == true) {
+      const deactive = await User.update(
+        { isActive: false },
+        { where: { id } }
+      );
+      response.status(200).json({ ack: 1, msg: `user deactivated` });
+    }
+    if (userData.isActive == false) {
+      const active = await User.update({ isActive: true }, { where: { id } });
+      response.status(200).json({ ack: 1, msg: `user activated` });
+    }
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
   }
