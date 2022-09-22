@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
       onUpdate: "cascade",
     },
     userId: DataTypes.UUID,
-    leaveType: DataTypes.INTEGER,
+    leaveType: DataTypes.STRING,
     leaveFrom: DataTypes.DATEONLY,
     leaveTo: DataTypes.DATEONLY,
     numberOfDays: DataTypes.INTEGER,

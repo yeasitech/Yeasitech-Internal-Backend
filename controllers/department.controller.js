@@ -139,7 +139,6 @@ exports.editDesignation = async (request, response) => {
           where: { id: id },
         }
       );
-
       response
         .status(200)
         .json({ ack: 1, msg: `Successfully Updated designation` });
