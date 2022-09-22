@@ -49,6 +49,7 @@ db.HolidayModel = require("./holiday.model")(sequelize, DataTypes);
 db.LeaveTypeModel = require("./leaveType.model")(sequelize, DataTypes);
 db.BankModel = require("./bankDeatils.model")(sequelize, DataTypes);
 db.AssetModel = require("./asset.model")(sequelize, DataTypes);
+db.CandidateModel = require("./candidate.model")(sequelize, DataTypes);
 
 // user & EmployeeDetails,Department,Designation
 db.User.hasOne(db.EmployeeDetails, {
@@ -108,12 +109,12 @@ db.BankModel.belongsTo(db.User, { foreignKey: "userId" });
 db.User.hasMany(db.AssetModel, { foreignKey: "userId" });
 db.AssetModel.belongsTo(db.User, { foreignKey: "userId" });
 
-// sequelize
-//   .sync({ alter: true })
-//   .then(() => {
-//     console.log(`database is syncing`);
-//   })
-//   .catch((err) => {
-//     console.log(err);
-//   });
+sequelize
+  .sync({ alter: true })
+  .then(() => {
+    console.log(`database is syncing`);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
 module.exports = db;
