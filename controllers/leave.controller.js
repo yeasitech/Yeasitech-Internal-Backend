@@ -63,8 +63,11 @@ exports.getLeavePagiantion = async (request, response) => {
         {
           model: User,
           attributes: ["firstName", "middleName", "lastName", "id"],
-          //include: [{ model: DesignationModel }],
-          include: [{ model: EmployeeDetails, attributes: ["employeeImage"] }],
+
+          include: [
+            { model: EmployeeDetails, attributes: ["employeeImage"] },
+            { model: DesignationModel, attributes: ["designation"] },
+          ],
         },
       ],
       limit,
