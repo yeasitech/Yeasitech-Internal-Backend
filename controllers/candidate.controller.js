@@ -65,6 +65,7 @@ exports.deleteCandidate = async (request, response) => {
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
   }
 };
+
 exports.candidatePagination = async (request, response) => {
   const { elements, page } = request.query;
   const limit = parseInt(elements);
