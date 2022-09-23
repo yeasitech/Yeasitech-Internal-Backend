@@ -396,7 +396,7 @@ exports.editOneEmployeePersonalData = async (request, response) => {
   });
   // console.log(EmployeeData);
   try {
-    if (!userData || userData.length < 0) {
+    if (!userData || userData == null) {
       response.status(500).json({ ack: 0, msg: `invalid userInfo ` });
     } else {
       const userUpdatedData = await User.update(userInfo, {
