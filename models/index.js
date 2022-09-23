@@ -50,6 +50,7 @@ db.LeaveTypeModel = require("./leaveType.model")(sequelize, DataTypes);
 db.BankModel = require("./bankDeatils.model")(sequelize, DataTypes);
 db.AssetModel = require("./asset.model")(sequelize, DataTypes);
 db.CandidateModel = require("./candidate.model")(sequelize, DataTypes);
+db.CommentModel = require("./comment.model")(sequelize, DataTypes);
 
 // user & EmployeeDetails,Department,Designation
 db.User.hasOne(db.EmployeeDetails, {
@@ -108,13 +109,18 @@ db.BankModel.belongsTo(db.User, { foreignKey: "userId" });
 // user & assetModel
 db.User.hasMany(db.AssetModel, { foreignKey: "userId" });
 db.AssetModel.belongsTo(db.User, { foreignKey: "userId" });
-
-sequelize
-  .sync({ alter: true })
-  .then(() => {
-    console.log(`database is syncing`);
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+//candidate & user;
+db.User.hasMany(db.CandidateModel, { foreignKey: "userId" });
+db.CandidateModel.belongsTo(db.User, { foreignKey: "userId" });
+//candidate & comments;
+db.CandidateModel.hasMany(db.CommentModel, { foreignKey: "candidateId" });
+db.CommentModel.belongsTo(db.CandidateModel, { foreignKey: "candidateId" });
+// sequelize
+//   .sync({ alter: true })
+//   .then(() => {
+//     console.log(`database is syncing`);
+//   })
+//   .catch((err) => {
+//     console.log(err);
+//   });
 module.exports = db;

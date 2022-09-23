@@ -4,15 +4,16 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       primaryKey: true,
       allowNull: false,
-      autoincrement: true,
+      autoIncrement: true,
     },
     fullName: DataTypes.STRING,
     email: DataTypes.STRING,
     cv: DataTypes.STRING,
     followUpDate: DataTypes.DATEONLY,
-    Schedule: DataTypes.DATE,
+    schedule: DataTypes.DATE,
     interviewAssignBy: DataTypes.STRING,
-    text: DataTypes.TEXT,
+    userId: DataTypes.UUID,
+    // text: DataTypes.TEXT,
   });
   return candidateDetails;
 };

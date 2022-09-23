@@ -156,7 +156,18 @@ assetRouter.get("/assetList", assetController.getAssetsPagination);
 assetRouter.put("/updateAsset/:id", assetController.updateAsset);
 assetRouter.delete("/deleteAsset/:id", assetController.deleteAsset);
 //Candidate
-
+candidateRouter.post(
+  "/createCandidate/:userId",
+  candidateController.createCandidate
+);
+candidateRouter.put(
+  "/updateCandidate/:id",
+  candidateController.candidateUpdate
+);
+candidateRouter.delete(
+  "/deleteCandidate/:id",
+  candidateController.deleteCandidate
+);
 module.exports = {
   userRouter,
   departmentRouter,
@@ -164,4 +175,5 @@ module.exports = {
   leaveRouter,
   salaryRouter,
   assetRouter,
+  candidateRouter,
 };

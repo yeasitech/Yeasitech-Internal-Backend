@@ -72,7 +72,7 @@ exports.deleteAsset = async (request, response) => {
     if (!assetData || assetData.length < 0) {
       response.status(500).json({ ack: 0, msg: `please give valid asset id` });
     } else {
-      const designationToDelete = await AssetModel.destroy({
+      const assetToDelete = await AssetModel.destroy({
         where: { id },
       });
       response.status(200).json({ ack: 1, msg: `asset deleted successfully` });
