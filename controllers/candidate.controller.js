@@ -1,4 +1,9 @@
-const { CandidateModel, User } = require("../models/index");
+const {
+  CandidateModel,
+  User,
+  CommentModel0,
+  CommentModel,
+} = require("../models/index");
 
 exports.createCandidate = async (request, response) => {
   const userId = request.params.userId;
@@ -56,6 +61,31 @@ exports.deleteCandidate = async (request, response) => {
       });
       response.status(200).json({ ack: 1, msg: `deleted successfully ` });
     }
+  } catch (error) {
+    response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
+  }
+};
+exports.candidatePagination = async (request, response) => {
+  const { elements, page } = request.query;
+  const limit = parseInt(elements);
+  const offset = parseInt(limit * (page - 1));
+  console.log(`offset`, offset);
+  try {
+    const { count, rows } = await CandidateModel.findAndCountAll({
+      include: [{ model: CommentModel }],
+      limit,
+      offset,
+      //order: [["createdAt", "AESC"]],
+    });
+    response.status(200).json({
+      ack: 1,
+      data: rows,
+      elementCount: rows.length,
+      totalElements: count,
+      totalpage: Math.ceil(count / elements),
+      page: parseInt(page),
+      elementsPerPage: limit,
+    });
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
   }
