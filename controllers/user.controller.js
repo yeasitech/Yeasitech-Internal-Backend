@@ -390,15 +390,20 @@ exports.searchUser = async (request, response) => {
 exports.editOneEmployeePersonalData = async (request, response) => {
   const userId = request.params.userId;
   const { userInfo, personalInfo } = request.body;
+  const userData = await User.findByPk(userId);
+  const EmployeeData = await EmployeeDetails.findAll({
+    where: { userId },
+  });
+  // console.log(EmployeeData);
   try {
-    if (!userInfo || userInfo.length < 0) {
+    if (!userData || userData.length < 0) {
       response.status(500).json({ ack: 0, msg: `invalid userInfo ` });
     } else {
       const userUpdatedData = await User.update(userInfo, {
         where: { id: userId },
       });
     }
-    if (!personalInfo || personalInfo.length < 0) {
+    if (!EmployeeData || EmployeeData.length < 0) {
       response.status(500).json({ ack: 0, msg: `invalid personalInfo ` });
     } else {
       const personalUpdatedData = await EmployeeDetails.update(personalInfo, {
