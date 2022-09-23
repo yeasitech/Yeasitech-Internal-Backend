@@ -5,6 +5,7 @@ const holidayController = require("../controllers/holiday.controller");
 const leaveController = require("../controllers/leave.controller");
 const assetController = require("../controllers/asset.controller");
 const candidateController = require("../controllers/candidate.controller");
+const commentController = require("../controllers/comment.controller");
 const Authorization = require("../middleware/isAuth");
 const { Router } = require("express");
 const userRouter = Router();
@@ -14,6 +15,7 @@ const holidayRouter = Router();
 const leaveRouter = Router();
 const assetRouter = Router();
 const candidateRouter = Router();
+const commentRouter = Router();
 //userRouter
 userRouter.post("/createEmployee", userController.createUser);
 userRouter.post("/login", userController.logIn);
@@ -168,6 +170,12 @@ candidateRouter.delete(
   "/deleteCandidate/:id",
   candidateController.deleteCandidate
 );
+//comment
+commentRouter.post(
+  "/createComment/:candidateId",
+  commentController.createComment
+);
+commentRouter.get("/getComment/:candidateId", commentController.getComment);
 module.exports = {
   userRouter,
   departmentRouter,
@@ -176,4 +184,5 @@ module.exports = {
   salaryRouter,
   assetRouter,
   candidateRouter,
+  commentRouter,
 };

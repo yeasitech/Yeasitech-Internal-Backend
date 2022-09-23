@@ -115,6 +115,7 @@ db.CandidateModel.belongsTo(db.User, { foreignKey: "userId" });
 //candidate & comments;
 db.CandidateModel.hasMany(db.CommentModel, { foreignKey: "candidateId" });
 db.CommentModel.belongsTo(db.CandidateModel, { foreignKey: "candidateId" });
+
 // sequelize
 //   .sync({ alter: true })
 //   .then(() => {
