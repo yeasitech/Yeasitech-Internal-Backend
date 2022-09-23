@@ -170,6 +170,7 @@ candidateRouter.delete(
   "/deleteCandidate/:id",
   candidateController.deleteCandidate
 );
+candidateRouter.get("/list", candidateController.candidatePagination);
 //comment
 commentRouter.post(
   "/createComment/:candidateId",
