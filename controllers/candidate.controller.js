@@ -1,7 +1,7 @@
 const {
   CandidateModel,
   User,
-  CommentModel0,
+
   CommentModel,
 } = require("../models/index");
 
@@ -21,6 +21,12 @@ exports.createCandidate = async (request, response) => {
   };
   try {
     const candidate = await CandidateModel.create(candidateInfo);
+    console.log(`qwertyu`, candidate);
+    const candidateId = candidate.dataValues.id;
+    // const { comment } = user;
+    const commentCreate = { comment: user.comment, candidateId };
+    const commentRes = await CommentModel.create(commentCreate);
+    console.log(commentRes);
     response.status(200).json({ ack: 1, data: candidate });
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `server error` });
