@@ -172,11 +172,12 @@ candidateRouter.delete(
 );
 candidateRouter.get("/list", candidateController.candidatePagination);
 //comment
-commentRouter.post(
-  "/createComment/:candidateId",
-  commentController.createComment
-);
+// commentRouter.post(
+//   "/createComment/:candidateId",
+//   commentController.createComment
+// );
 commentRouter.get("/getComment/:candidateId", commentController.getComment);
+commentRouter.put("/updateComment/:id", commentController.updateComments);
 module.exports = {
   userRouter,
   departmentRouter,

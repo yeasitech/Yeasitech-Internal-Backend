@@ -35,3 +35,27 @@ exports.getComment = async (request, response) => {
     response.status(500).json({ ack: 0, msg: error.message || `server error` });
   }
 };
+exports.updateComments = async (request, response) => {
+  const id = request.params.id;
+  console.log(id);
+  const commentData = await CommentModel.findByPk(id);
+  const { candidateId } = request.body;
+  const candidateData = await CommentModel.findOne({
+    where: { candidateId: candidateId },
+  });
+
+  try {
+    if (!commentData || commentData.length < 0) {
+      return response
+        .status(500)
+        .json({ ack: 0, msg: `invalid comment or candidate id` });
+    } else {
+      const updatedData = await CommentModel.update(request.body, {
+        where: { id },
+      });
+      response.status(200).json({ ack: 1, data: updatedData });
+    }
+  } catch (error) {
+    response.status(500).json({ ack: 0, msg: error.message || `server error` });
+  }
+};
