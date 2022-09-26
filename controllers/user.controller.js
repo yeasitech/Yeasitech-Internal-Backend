@@ -563,5 +563,3 @@ exports.setDeactive = async (request, response) => {
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
   }
 };
-
-//emploee search by name

@@ -99,7 +99,7 @@ exports.leaveUpdate = async (request, response) => {
       const UpdatedData = await LeaveModel.update(leaveInfo, {
         where: { id: id },
       });
-      response.status(200).json({ ack: 1, msg: UpdatedData });
+      response.status(200).json({ ack: 1, msg: `leave updated successfully` });
     }
   } catch (error) {
     response.status(500).json({ ack: 1, msg: error.message || `Server Error` });
@@ -129,7 +129,7 @@ exports.deleteLeave = async (request, response) => {
 //leave status update
 exports.leaveStatusUpdate = async (request, response) => {
   const id = request.params.id;
-  // const { leaveInfo } = request.body;
+
   const leaveData = await LeaveModel.findByPk(id);
 
   try {
