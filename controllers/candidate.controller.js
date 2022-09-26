@@ -1,9 +1,4 @@
-const {
-  CandidateModel,
-  User,
-
-  CommentModel,
-} = require("../models/index");
+const { CandidateModel, User, CommentModel } = require("../models/index");
 
 exports.createCandidate = async (request, response) => {
   const userId = request.params.userId;

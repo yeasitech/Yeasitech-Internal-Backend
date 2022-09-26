@@ -17,7 +17,6 @@ const cors = require("cors");
 const transporter = require("./config/nodemailer");
 const port = process.env.PORT || 5000;
 const { User, EmployeeDetails, CandidateModel } = require("./models/index");
-const { request } = require("express");
 
 var corsOptions = { origin: "*" };
 app.use(cors(corsOptions));
@@ -69,20 +68,40 @@ const birthday = nodeCron.schedule(
 
 birthday.start();
 
-// const interviewSchedule = nodeCron.schedule(
-//   " * 1 * * * * ",
-//   async function jobYouNeedToExecute(request, response) {
-//     const todayDate = new Date().getDate();
-//     const thisMonth = new Date().getMonth();
-//     console.log(thisMonth);
-//     const data = await CandidateModel.findAll();
+const interviewSchedule = nodeCron.schedule(
+  " * 1 * * * * ",
+  async function jobYouNeedToExecute(request, response) {
+    const todayDate = new Date().getDate();
+    const thisMonth = new Date().getMonth();
 
-//     date = new Date().toLocaleString();
-//     console.log(date);
-//   }
-// );
+    const data = await CandidateModel.findAll();
+    await Promise.all(
+      data.map((candidate) => {
+        let dataBase = candidate.dataValues;
+        const followUpDate = new Date(dataBase.followUpDate).getDate();
+        const followUpMonth = new Date(dataBase.followUpDate).getMonth();
 
-//interviewSchedule.start();
+        const scheduleDate = new Date(dataBase.schedule).getDate();
+        const scheduleMonth = new Date(dataBase.schedule).getMonth();
+
+        const name = dataBase.fullName;
+        if (followUpDate == todayDate && followUpMonth == thisMonth) {
+          console.log(
+            `${name} you have an interview on ${dataBase.schedule} be prepared`
+          );
+        } else if (scheduleDate == todayDate && scheduleMonth == thisMonth) {
+          console.log(
+            `${name} you have an interview today ${dataBase.schedule} `
+          );
+        }
+      })
+    );
+
+    // console.log(data);
+  }
+);
+
+interviewSchedule.start();
 
 app.listen(port, () => {
   console.log(`server is listening to the port :${port}`);
