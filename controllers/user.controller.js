@@ -17,6 +17,7 @@ const {
 const bcrypt = require("bcryptjs");
 
 const { Op } = require("sequelize");
+const { promises } = require("nodemailer/lib/xoauth2");
 
 //create new user
 
@@ -160,7 +161,7 @@ exports.employeeDetails = async (request, response) => {
     console.log(`1234567890`, user.email);
     if (user.onBoardingStatus == true) {
       return response
-        .status(500)
+        .status(200)
         .json({ ack: 0, msg: `you are already onboarded` });
     }
     if (email !== user.email) throw new Error(`employee not exists`);
@@ -396,20 +397,25 @@ exports.editOneEmployeePersonalData = async (request, response) => {
   });
   // console.log(EmployeeData);
   try {
-    if (!userData || userData == null) {
+    if (
+      !userData ||
+      (userData == null && !EmployeeData) ||
+      EmployeeData.length < 0
+    ) {
       response.status(500).json({ ack: 0, msg: `invalid userInfo ` });
     } else {
-      const userUpdatedData = await User.update(userInfo, {
-        where: { id: userId },
+      const [data] = await Promise.all([
+        User.update(userInfo, {
+          where: { id: userId },
+        }),
+        EmployeeDetails.update(personalInfo, {
+          where: { userId: userId },
+        }),
+      ]).catch((error) => {
+        console.log(`1234567890`, error);
       });
     }
-    if (!EmployeeData || EmployeeData.length < 0) {
-      response.status(500).json({ ack: 0, msg: `invalid personalInfo ` });
-    } else {
-      const personalUpdatedData = await EmployeeDetails.update(personalInfo, {
-        where: { userId: userId },
-      });
-    }
+
     response.status(200).json({ ack: 1, msg: `user updated successfully` });
   } catch (error) {
     response.status(500).json({ ack: 1, msg: error.message || `Server Error` });
