@@ -21,8 +21,8 @@ exports.createCandidate = async (request, response) => {
     // const { comment } = user;
     const commentCreate = { comment: user.comment, candidateId };
     const commentRes = await CommentModel.create(commentCreate);
-    console.log(commentRes);
-    response.status(200).json({ ack: 1, data: candidate });
+
+    response.status(200).json({ ack: 1, data: { candidate, commentRes } });
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `server error` });
   }
@@ -74,7 +74,7 @@ exports.candidatePagination = async (request, response) => {
   console.log(`offset`, offset);
   try {
     const { count, rows } = await CandidateModel.findAndCountAll({
-      include: [{ model: CommentModel }],
+      include: { model: CommentModel },
       limit,
       offset,
       //order: [["createdAt", "AESC"]],
@@ -91,4 +91,28 @@ exports.candidatePagination = async (request, response) => {
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
   }
+};
+
+exports.getCandidate = async (request, response) => {
+  const candidateId = request.params.candidateId;
+  const candidateData = await CandidateModel.findByPk(candidateId);
+  const commentData = await CommentModel.findOne({
+    where: { candidateId: candidateId },
+  });
+  try {
+    if (
+      (!candidateData && candidateData.length < 0) ||
+      (!commentData && commentData.length < 0)
+    ) {
+      return response
+        .status(500)
+        .json({ ack: 0, msg: `invalid candidateId  ` });
+    } else {
+      const data = await CandidateModel.findOne({
+        where: { id: candidateId },
+        include: { model: CommentModel },
+      });
+      response.status(200).json({ ack: 1, msg: data });
+    }
+  } catch (error) {}
 };

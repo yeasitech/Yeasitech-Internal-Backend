@@ -171,6 +171,11 @@ candidateRouter.delete(
   candidateController.deleteCandidate
 );
 candidateRouter.get("/list", candidateController.candidatePagination);
+candidateRouter.get(
+  "/getCandidate/:candidateId",
+  candidateController.getCandidate
+);
+
 //comment
 // commentRouter.post(
 //   "/createComment/:candidateId",
