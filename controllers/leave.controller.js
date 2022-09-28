@@ -54,7 +54,7 @@ exports.createLeaveByAdmin = async (request, response) => {
 // get employee leaves
 
 exports.getLeavePagiantion = async (request, response) => {
-  const { elements, page, employeeName = "", leaveFrom = "" } = request.query;
+  const { elements, page, employeeName = "", leaveFrom } = request.query;
   const limit = parseInt(elements);
   const offset = parseInt(limit * (page - 1));
   try {
@@ -63,7 +63,6 @@ exports.getLeavePagiantion = async (request, response) => {
         {
           model: User,
           attributes: ["firstName", "middleName", "lastName", "id"],
-
           include: [
             { model: EmployeeDetails, attributes: ["employeeImage"] },
             { model: DesignationModel, attributes: ["designation"] },
@@ -75,9 +74,11 @@ exports.getLeavePagiantion = async (request, response) => {
           },
         },
       ],
-      where: {
-        leaveFrom: { [Op.eq]: `%${leaveFrom}%` },
-      },
+      ...(leaveFrom && {
+        where: {
+          leaveFrom: { [Op.eq]: `%${leaveFrom}%` },
+        },
+      }),
       limit,
       offset,
     });
