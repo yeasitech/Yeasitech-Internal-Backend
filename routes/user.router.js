@@ -16,6 +16,7 @@ const leaveRouter = Router();
 const assetRouter = Router();
 const candidateRouter = Router();
 const commentRouter = Router();
+
 //userRouter
 userRouter.post("/createEmployee", userController.createUser);
 userRouter.post("/login", userController.logIn);
@@ -55,7 +56,6 @@ salaryRouter.get("/:userId", Authorization, salaryController.getSalary);
 //userRouter.put("/editProfile/:id", userController.editProfile);
 
 //deptRouter
-
 departmentRouter.post(
   "/dept",
   Authorization,
@@ -152,16 +152,15 @@ leaveRouter.get("/list", Authorization, leaveController.getLeavePagiantion);
 leaveRouter.put("/editLeave/:id", leaveController.leaveUpdate);
 leaveRouter.put("/editStatusLeave/:id", leaveController.leaveStatusUpdate);
 leaveRouter.delete("/deleteLeave/:id", leaveController.deleteLeave);
+
 //Assets
 assetRouter.post("/createAssets/:userId", assetController.createAssets);
 assetRouter.get("/assetList", assetController.getAssetsPagination);
 assetRouter.put("/updateAsset/:id", assetController.updateAsset);
 assetRouter.delete("/deleteAsset/:id", assetController.deleteAsset);
+
 //Candidate
-candidateRouter.post(
-  "/createCandidate/:userId",
-  candidateController.createCandidate
-);
+candidateRouter.post("/createCandidate", candidateController.createCandidate);
 candidateRouter.put(
   "/updateCandidate/:id",
   candidateController.candidateUpdate
@@ -176,13 +175,14 @@ candidateRouter.get(
   candidateController.getCandidate
 );
 
-//comment
-// commentRouter.post(
-//   "/createComment/:candidateId",
-//   commentController.createComment
-// );
+//comment;
+commentRouter.post(
+  "/createComment/:candidateId",
+  commentController.createComment
+);
 commentRouter.get("/getComment/:candidateId", commentController.getComment);
-commentRouter.put("/updateComment/:id", commentController.updateComments);
+commentRouter.post("/updateComment", commentController.updateComments);
+
 module.exports = {
   userRouter,
   departmentRouter,

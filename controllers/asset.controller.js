@@ -81,3 +81,8 @@ exports.deleteAsset = async (request, response) => {
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
   }
 };
+
+// exports.getSingleAsset=async(request,resposne)=>{
+//   assetId=request.params.assetId
+//   const data=
+// }
