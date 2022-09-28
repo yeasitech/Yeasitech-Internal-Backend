@@ -158,6 +158,7 @@ assetRouter.post("/createAssets/:userId", assetController.createAssets);
 assetRouter.get("/assetList", assetController.getAssetsPagination);
 assetRouter.put("/updateAsset/:id", assetController.updateAsset);
 assetRouter.delete("/deleteAsset/:id", assetController.deleteAsset);
+assetRouter.get("/getAsset/:assetId", assetController.getSingleAsset);
 
 //Candidate
 candidateRouter.post("/createCandidate", candidateController.createCandidate);

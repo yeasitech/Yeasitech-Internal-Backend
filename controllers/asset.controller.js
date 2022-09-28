@@ -82,7 +82,12 @@ exports.deleteAsset = async (request, response) => {
   }
 };
 
-// exports.getSingleAsset=async(request,resposne)=>{
-//   assetId=request.params.assetId
-//   const data=
-// }
+exports.getSingleAsset = async (request, response) => {
+  assetId = request.params.assetId;
+  try {
+    const data = await AssetModel.findByPk(assetId);
+    response.status(200).json({ ack: 1, msg: data });
+  } catch (error) {
+    response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
+  }
+};

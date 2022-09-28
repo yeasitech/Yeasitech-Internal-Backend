@@ -69,10 +69,10 @@ exports.candidatePagination = async (request, response) => {
   const {
     elements,
     page,
-    searchName,
-    searchEmail,
-    searchContactNumber,
-    searchSkills,
+    searchName = "",
+    searchEmail = "",
+    searchContactNumber = "",
+    searchSkills = "",
   } = request.query;
   const limit = parseInt(elements);
   const offset = parseInt(limit * (page - 1));
@@ -131,4 +131,12 @@ exports.getCandidate = async (request, response) => {
   }
 };
 
-//exports.getSingleCandidate=
+exports.getSingleCandidate = async (request, response) => {
+  const candidateId = request.params.candidateId;
+  try {
+    const data = await CandidateModel.findByPk(candidateId);
+    response.status(200).json({ ack: 1, data: data });
+  } catch (error) {
+    response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
+  }
+};
