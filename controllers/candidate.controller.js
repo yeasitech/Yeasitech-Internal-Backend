@@ -1,32 +1,30 @@
 const { CandidateModel, User, CommentModel } = require("../models/index");
-
+const { Op } = require("sequelize");
+//create Candidate
 exports.createCandidate = async (request, response) => {
-  const userId = request.params.userId;
-  const data = await User.findByPk(userId);
-  // console.log(`q  werghujkl`, data);
   const user = request.body;
   const candidateInfo = {
     fullName: user.fullName,
     email: user.email,
     followUpDate: user.followUpDate,
     cv: user.cv,
-    schedule: user.schedule,
-    interviewAssignBy: user.interviewAssignBy,
-    userId: userId,
+    skills: user.skills,
+    contactNumber: user.contactNumber,
   };
   try {
     const candidate = await CandidateModel.create(candidateInfo);
-    console.log(`qwertyu`, candidate);
-    const candidateId = candidate.dataValues.id;
-    // const { comment } = user;
-    const commentCreate = { comment: user.comment, candidateId };
-    const commentRes = await CommentModel.create(commentCreate);
 
-    response.status(200).json({ ack: 1, data: { candidate, commentRes } });
+    // const { comment } = user;
+    // const commentCreate = { comment: user.comment, candidateId };
+    // const commentRes = await CommentModel.create(commentCreate);
+
+    response.status(200).json({ ack: 1, data: candidate });
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `server error` });
   }
 };
+
+// Candiadte Update
 exports.candidateUpdate = async (request, response) => {
   const id = request.params.id;
   const { candidateInfo } = request.body;
@@ -48,11 +46,10 @@ exports.candidateUpdate = async (request, response) => {
   }
 };
 
+// Delete Candidate
 exports.deleteCandidate = async (request, response) => {
   const id = request.params.id;
-
   const candidateData = await CandidateModel.findByPk(id);
-
   try {
     if (!candidateData || candidateData.length < 0) {
       return response.status(500).json({ ack: 0, msg: `invalid candidate id` });
@@ -67,14 +64,30 @@ exports.deleteCandidate = async (request, response) => {
   }
 };
 
+// Candidate Pagination
 exports.candidatePagination = async (request, response) => {
-  const { elements, page } = request.query;
+  const {
+    elements,
+    page,
+    searchName,
+    searchEmail,
+    searchContactNumber,
+    searchSkills,
+  } = request.query;
   const limit = parseInt(elements);
   const offset = parseInt(limit * (page - 1));
   console.log(`offset`, offset);
   try {
     const { count, rows } = await CandidateModel.findAndCountAll({
       include: { model: CommentModel },
+      where: {
+        [Op.or]: [
+          { fullName: { [Op.like]: `%${searchName}%` } },
+          { email: { [Op.like]: `%${searchEmail}%` } },
+          { contactNumber: { [Op.like]: `%${searchContactNumber}%` } },
+          { skills: { [Op.like]: "%" + searchSkills + "%" } },
+        ],
+      },
       limit,
       offset,
       //order: [["createdAt", "AESC"]],
@@ -82,8 +95,8 @@ exports.candidatePagination = async (request, response) => {
     response.status(200).json({
       ack: 1,
       data: rows,
-      elementCount: rows.length,
-      totalElements: count,
+      elementPerPage: rows.length,
+      totalData: count,
       totalpage: Math.ceil(count / elements),
       page: parseInt(page),
       elementsPerPage: limit,
@@ -93,6 +106,7 @@ exports.candidatePagination = async (request, response) => {
   }
 };
 
+//Get Candidate
 exports.getCandidate = async (request, response) => {
   const candidateId = request.params.candidateId;
   const candidateData = await CandidateModel.findByPk(candidateId);
@@ -104,15 +118,17 @@ exports.getCandidate = async (request, response) => {
       (!candidateData && candidateData.length < 0) ||
       (!commentData && commentData.length < 0)
     ) {
-      return response
-        .status(500)
-        .json({ ack: 0, msg: `invalid candidateId  ` });
+      return response.status(500).json({ ack: 0, msg: `invalid candidateId` });
     } else {
       const data = await CandidateModel.findOne({
         where: { id: candidateId },
         include: { model: CommentModel },
       });
-      response.status(200).json({ ack: 1, msg: data });
+      response.status(200).json({ ack: 1, data: data });
     }
-  } catch (error) {}
+  } catch (error) {
+    response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
+  }
 };
+
+//exports.getSingleCandidate=

@@ -26,7 +26,7 @@ exports.getComment = async (request, response) => {
       return response.status(500).json({ ack: 0, msg: `invalid candidate id` });
     } else {
       const createComment = await CommentModel.findOne({
-        include: [{ model: CandidateModel }],
+        include: { model: CandidateModel },
         where: { candidateId: candidateId },
       });
       response.status(200).json({ ack: 1, data: createComment });
@@ -36,12 +36,14 @@ exports.getComment = async (request, response) => {
   }
 };
 exports.updateComments = async (request, response) => {
-  const id = request.params.id;
-  console.log(id);
-  const commentData = await CommentModel.findByPk(id);
+  // const id = request.params.id;
+  // console.log(id);
   const { candidateId } = request.body;
-  const candidateData = await CommentModel.findOne({
+  const commentData = await CommentModel.findOne({
     where: { candidateId: candidateId },
+  });
+  const candidateData = await CommentModel.findOne({
+    where: { id: candidateId },
   });
 
   try {
@@ -50,10 +52,12 @@ exports.updateComments = async (request, response) => {
         .status(500)
         .json({ ack: 0, msg: `invalid comment or candidate id` });
     } else {
-      const updatedData = await CommentModel.update(request.body, {
-        where: { id },
+      const updatedData = await CommentModel.create(request.body, {
+        where: { candidateId },
       });
-      response.status(200).json({ ack: 1, data: updatedData });
+      response
+        .status(200)
+        .json({ ack: 1, data: `comment updated successfully` });
     }
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `server error` });

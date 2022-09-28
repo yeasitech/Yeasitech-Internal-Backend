@@ -6,7 +6,7 @@ const {
   DesignationModel,
   DepartmentModel,
 } = require("../models/index");
-
+const { Op } = require("sequelize");
 //create leave type
 exports.typesOfLeave = async (request, response) => {
   try {
@@ -54,7 +54,7 @@ exports.createLeaveByAdmin = async (request, response) => {
 // get employee leaves
 
 exports.getLeavePagiantion = async (request, response) => {
-  const { elements, page } = request.query;
+  const { elements, page, employeeName = "", leaveFrom = "" } = request.query;
   const limit = parseInt(elements);
   const offset = parseInt(limit * (page - 1));
   try {
@@ -68,8 +68,16 @@ exports.getLeavePagiantion = async (request, response) => {
             { model: EmployeeDetails, attributes: ["employeeImage"] },
             { model: DesignationModel, attributes: ["designation"] },
           ],
+          where: {
+            firstName: { [Op.like]: `%${employeeName}%` },
+            //   // { middleName: { [Op.like]: `%${employeeName}%` } },
+            //   // { lastName: { [Op.like]: `%${employeeName}%` } },
+          },
         },
       ],
+      where: {
+        leaveFrom: { [Op.eq]: `%${leaveFrom}%` },
+      },
       limit,
       offset,
     });
