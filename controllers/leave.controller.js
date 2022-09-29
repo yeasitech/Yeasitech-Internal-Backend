@@ -24,7 +24,7 @@ exports.getAlltypesOfLeave = async (request, response) => {
 };
 
 //add leaves by admin
-exports.createLeaveByAdmin = async (request, response) => {
+exports.createLeaveByUser = async (request, response) => {
   let userId = request.params.userId;
   const userData = await User.findByPk(userId);
 
@@ -137,8 +137,10 @@ exports.deleteLeave = async (request, response) => {
 
 //leave status update
 exports.leaveStatusUpdate = async (request, response) => {
-  const id = request.params.id;
-
+  const userId = request.userId;
+  const userData = await User.findByPk(userId);
+  console.log(`123456789`, userId);
+  console.log(`qwertyuiop[]`, userData);
   const leaveData = await LeaveModel.findByPk(id);
 
   try {

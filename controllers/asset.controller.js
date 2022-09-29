@@ -1,4 +1,3 @@
-const db = require("../models/index");
 const { User, AssetModel } = require("../models/index");
 
 exports.createAssets = async (request, response) => {

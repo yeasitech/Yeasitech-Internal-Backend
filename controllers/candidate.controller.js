@@ -1,4 +1,9 @@
-const { CandidateModel, User, CommentModel } = require("../models/index");
+const {
+  CandidateModel,
+  User,
+  CommentModel,
+  InterviewModel,
+} = require("../models/index");
 const { Op } = require("sequelize");
 //create Candidate
 exports.createCandidate = async (request, response) => {
@@ -10,6 +15,8 @@ exports.createCandidate = async (request, response) => {
     cv: user.cv,
     skills: user.skills,
     contactNumber: user.contactNumber,
+    interviewSchedule: false,
+    isSelected: false,
   };
   try {
     const candidate = await CandidateModel.create(candidateInfo);
@@ -114,10 +121,7 @@ exports.getCandidate = async (request, response) => {
     where: { candidateId: candidateId },
   });
   try {
-    if (
-      (!candidateData && candidateData.length < 0) ||
-      (!commentData && commentData.length < 0)
-    ) {
+    if (!candidateData && candidateData == null) {
       return response.status(500).json({ ack: 0, msg: `invalid candidateId` });
     } else {
       const data = await CandidateModel.findOne({
@@ -139,4 +143,10 @@ exports.getSingleCandidate = async (request, response) => {
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
   }
+};
+
+exports.createInterview = async (request, resposne) => {
+  const candidateId = request.params.candidateId;
+  const candidateData = await CandidateModel.findByPk(candidateId);
+  console.log(candidateData);
 };
