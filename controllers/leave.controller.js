@@ -139,19 +139,20 @@ exports.deleteLeave = async (request, response) => {
 exports.leaveStatusUpdate = async (request, response) => {
   const userId = request.userId;
   const userData = await User.findByPk(userId);
-  console.log(`123456789`, userId);
-  console.log(`qwertyuiop[]`, userData);
+  const id = request.params.id;
   const leaveData = await LeaveModel.findByPk(id);
-
+  const updatedData = { status: request.body.status, userId: userId };
   try {
     if (!leaveData || leaveData.length < 0) {
       return response.status(500).json({ ack: 0, msg: `invalid leave id ` });
     }
     if (leaveData.status && leaveData.status.length > 0) {
-      const UpdatedData = await LeaveModel.update(request.body, {
+      const UpdatedData = await LeaveModel.update(updatedData, {
         where: { id: id },
       });
-      response.status(200).json({ ack: 1, msg: `leave Status updated` });
+      response
+        .status(200)
+        .json({ ack: 1, msg: `leave Status updated`, data: userData });
     }
   } catch (error) {
     response.status(500).json({ ack: 1, msg: error.message || `Server Error` });
