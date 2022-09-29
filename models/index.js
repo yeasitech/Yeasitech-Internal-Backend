@@ -51,6 +51,7 @@ db.BankModel = require("./bankDeatils.model")(sequelize, DataTypes);
 db.AssetModel = require("./asset.model")(sequelize, DataTypes);
 db.CandidateModel = require("./candidate.model")(sequelize, DataTypes);
 db.CommentModel = require("./comment.model")(sequelize, DataTypes);
+db.InterviewModel = require("./interview.model")(sequelize, DataTypes);
 
 // user & EmployeeDetails,Department,Designation
 db.User.hasOne(db.EmployeeDetails, {
@@ -99,9 +100,11 @@ db.DepartmentModel.hasMany(db.DesignationModel, {
 db.DesignationModel.belongsTo(db.DepartmentModel, {
   foreignKey: "departmentId",
 });
+
 //user & leave model
 db.User.hasMany(db.LeaveModel, { foreignKey: `userId` });
 db.LeaveModel.belongsTo(db.User, { foreignKey: `userId` });
+
 //User & bankModel
 db.User.hasMany(db.BankModel, { foreignKey: "userId" });
 db.BankModel.belongsTo(db.User, { foreignKey: "userId" });
@@ -109,9 +112,12 @@ db.BankModel.belongsTo(db.User, { foreignKey: "userId" });
 // user & assetModel
 db.User.hasMany(db.AssetModel, { foreignKey: "userId" });
 db.AssetModel.belongsTo(db.User, { foreignKey: "userId" });
+
 //candidate & user;
-// db.User.hasMany(db.CandidateModel, { foreignKey: "userId" });
-// db.CandidateModel.belongsTo(db.User, { foreignKey: "userId" });
+db.User.hasMany(db.InterviewModel, { foreignKey: "userId" });
+db.InterviewModel.belongsTo(db.User, { foreignKey: "userId" });
+db.InterviewModel.belongsTo(db.CandidateModel, { foreignKey: "candidateId" });
+
 //candidate & comments;
 db.CandidateModel.hasMany(db.CommentModel, { foreignKey: "candidateId" });
 db.CommentModel.belongsTo(db.CandidateModel, { foreignKey: "candidateId" });

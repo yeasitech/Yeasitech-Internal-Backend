@@ -14,6 +14,8 @@ module.exports = (sequelize, DataTypes) => {
     //schedule: DataTypes.DATEONLY,
     //interviewAssignBy: DataTypes.STRING,
     skills: DataTypes.TEXT,
+    interviewSchedule: DataTypes.BOOLEAN,
+    isSelected: DataTypes.BOOLEAN,
     // userId: DataTypes.UUID,
     // text: DataTypes.TEXT,
   });
