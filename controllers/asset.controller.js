@@ -12,14 +12,12 @@ exports.createAssets = async (request, response) => {
       response.status(500).json({ ack: 0, msg: `invalid userId ` });
     } else {
       const createAsset = await AssetModel.create({ ...data, userId: userId });
-      response
-        .status(200)
-        .json({
-          ack: 1,
-          msg: "successfully created",
-          data: createAsset,
-          userData,
-        });
+      response.status(200).json({
+        ack: 1,
+        msg: "successfully created",
+        data: createAsset,
+        userData,
+      });
     }
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
@@ -106,7 +104,7 @@ exports.getSingleAsset = async (request, response) => {
   assetId = request.params.assetId;
   try {
     const data = await AssetModel.findByPk(assetId);
-    response.status(200).json({ ack: 1, msg: data });
+    response.status(200).json({ ack: 1, data: data });
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
   }
