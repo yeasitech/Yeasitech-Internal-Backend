@@ -122,12 +122,14 @@ db.InterviewModel.belongsTo(db.CandidateModel, { foreignKey: "candidateId" });
 db.CandidateModel.hasMany(db.CommentModel, { foreignKey: "candidateId" });
 db.CommentModel.belongsTo(db.CandidateModel, { foreignKey: "candidateId" });
 
-// sequelize
-//   .sync({ alter: true })
-//   .then(() => {
-//     console.log(`database is syncing`);
-//   })
-//   .catch((err) => {
-//     console.log(err);
-//   });
+if (process.env.ENV === "production") {
+  sequelize
+    .sync({ alter: true })
+    .then(() => {
+      console.log(`database is syncing`);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+}
 module.exports = db;
