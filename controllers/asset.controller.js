@@ -1,5 +1,6 @@
 const { User, AssetModel } = require("../models/index");
 const { Op } = require("sequelize");
+
 exports.createAssets = async (request, response) => {
   data = request.body;
   const userId = data.userId;
@@ -13,7 +14,12 @@ exports.createAssets = async (request, response) => {
       const createAsset = await AssetModel.create({ ...data, userId: userId });
       response
         .status(200)
-        .json({ ack: 1, msg: "successfully created", data: createAsset });
+        .json({
+          ack: 1,
+          msg: "successfully created",
+          data: createAsset,
+          userData,
+        });
     }
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
