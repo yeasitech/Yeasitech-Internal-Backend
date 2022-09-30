@@ -19,11 +19,7 @@ const candidateRouter = Router();
 const commentRouter = Router();
 
 //userRouter
-userRouter.post(
-  "/createEmployee",
-  AdminAuthorization,
-  userController.createUser
-);
+userRouter.post("/createEmployee", userController.createUser);
 userRouter.post("/login", userController.logIn);
 userRouter.post("/employeeOnboarding", userController.employeeDetails);
 userRouter.get("/getEmployee/:id", Authorization, userController.allSingleUser);

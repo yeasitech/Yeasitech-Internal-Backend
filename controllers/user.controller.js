@@ -1,4 +1,7 @@
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
+const { Op } = require("sequelize");
+
 const {
   User,
   EmployeeDetails,
@@ -8,19 +11,13 @@ const {
   ExperienceModel,
   BankModel,
 } = require("../models/index");
-
 const {
   createEmployeeSchema,
   loginSchema,
   employeeDetailsSchema,
 } = require("./validation/user.validation");
-const bcrypt = require("bcryptjs");
-
-const { Op } = require("sequelize");
-const { promises } = require("nodemailer/lib/xoauth2");
 
 //create new user
-
 exports.createUser = async (request, response) => {
   const { error } = createEmployeeSchema.validate(request.body);
 
@@ -46,15 +43,15 @@ exports.createUser = async (request, response) => {
         msg: "User exists with this email",
       });
     } else {
-      //const hash = bcrypt.hashSync(user.password, 10);
+      const hash = bcrypt.hashSync(user.password, 10);
       const userRecord = {
         firstName: user.firstName,
         middleName: user.middleName,
         lastName: user.lastName,
         dateOfJoining: user.dateOfJoining,
-        departmentId: +allDept.id,
-        designationId: +allDesignation.id,
-        //password: hash,
+        // departmentId: +allDept.id,
+        // designationId: +allDesignation.id,
+        password: hash,
         email: user.email,
         onBoardingStatus: false,
         employeeType: user.employeeType,
