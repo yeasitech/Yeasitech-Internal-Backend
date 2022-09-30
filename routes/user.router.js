@@ -185,7 +185,7 @@ leaveRouter.delete(
 
 //Assets
 assetRouter.post(
-  "/createAssets/:userId",
+  "/createAssets",
   AdminAuthorization,
   assetController.createAssets
 );

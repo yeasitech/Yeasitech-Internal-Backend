@@ -301,7 +301,7 @@ exports.getEmployeeByDesignation = async (request, response) => {
 
 //employee pagination
 exports.getAllEmployeePagination = async (request, response) => {
-  const { elements, page, employeeName = "", employeeId = "" } = request.query;
+  const { elements, page, searchParam } = request.query;
 
   const limit = parseInt(elements);
   const offset = parseInt(limit * (page - 1));
@@ -313,15 +313,16 @@ exports.getAllEmployeePagination = async (request, response) => {
         {
           model: EmployeeDetails,
           // attributes: ["employeeImage"],
-          where: {
-            employeeId: { [Op.like]: `%${employeeId}%` },
-          },
+          // where: {
+          //   employeeId: { [Op.like]: `%${employeeId}%` },
+          // },
         },
       ],
       where: {
-        firstName: { [Op.like]: `%${employeeName}%` },
-        //middleName: { [Op.like]: `%${employeeName}%` },
-        //   // { lastName: { [Op.like]: `%${employeeName}%` } },
+        [Op.or]: [
+          { firstName: { [Op.like]: `%${searchParam}%` } },
+          { "$EmployeeDetail.employeeId$": { [Op.like]: `%${searchParam}%` } },
+        ],
       },
       limit,
       offset,
