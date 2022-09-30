@@ -301,7 +301,7 @@ exports.getEmployeeByDesignation = async (request, response) => {
 
 //employee pagination
 exports.getAllEmployeePagination = async (request, response) => {
-  const { elements, page, searchParam } = request.query;
+  const { elements, page, searchParam = "" } = request.query;
 
   const limit = parseInt(elements);
   const offset = parseInt(limit * (page - 1));
@@ -578,6 +578,8 @@ exports.setDeactive = async (request, response) => {
       response.status(200).json({ ack: 1, msg: `user activated` });
     }
   } catch (error) {
-    response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
+    response
+      .status(500)
+      .json({ ack: 0, data: error.message || `Server Error` });
   }
 };
