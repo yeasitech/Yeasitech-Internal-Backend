@@ -86,6 +86,7 @@ exports.candidatePagination = async (request, response) => {
   console.log(`offset`, offset);
   try {
     const { count, rows } = await CandidateModel.findAndCountAll({
+      //order: [["followUpDate", "DESc"]],
       include: { model: CommentModel },
       where: {
         [Op.or]: [
@@ -97,7 +98,6 @@ exports.candidatePagination = async (request, response) => {
       },
       limit,
       offset,
-      //order: [["createdAt", "AESC"]],
     });
     response.status(200).json({
       ack: 1,

@@ -11,9 +11,10 @@ module.exports = (sequelize, DataTypes) => {
     assetInvoice: DataTypes.STRING,
     purchaseFrom: DataTypes.STRING,
     purchaseDate: DataTypes.DATEONLY,
-    assignTo: DataTypes.STRING,
+    // assignTo: DataTypes.STRING,
     productId: DataTypes.STRING,
     userId: DataTypes.UUID,
+    type: DataTypes.STRING,
   });
   return Assets;
 };

@@ -1,10 +1,11 @@
 const { User, AssetModel } = require("../models/index");
-
+const { Op } = require("sequelize");
 exports.createAssets = async (request, response) => {
-  const userId = request.params.userId;
+  data = request.body;
+  const userId = data.userId;
   console.log(userId);
   const userData = await User.findByPk(userId);
-  data = request.body;
+
   try {
     if (!userData || userData.length < 0) {
       response.status(500).json({ ack: 0, msg: `invalid userId ` });
@@ -20,18 +21,32 @@ exports.createAssets = async (request, response) => {
 };
 
 exports.getAssetsPagination = async (request, response) => {
-  const { elements, page } = request.query;
+  const {
+    elements,
+    page,
+    searcProductId = "",
+    searchAssetId = "",
+    searchType = "",
+  } = request.query;
   const limit = parseInt(elements);
   console.log(`qwertyui`, limit);
   const offset = parseInt(limit * (page - 1));
   try {
     const { count, rows: asset } = await AssetModel.findAndCountAll({
       include: [{ model: User }],
+      where: {
+        [Op.or]: [
+          { type: { [Op.like]: `%${searchType}%` } },
+          { assetId: { [Op.like]: `%${searchAssetId}%` } },
+          { productId: { [Op.like]: `%${searcProductId}%` } },
+        ],
+      },
       limit,
       offset,
+
       //order: [["createdAt", "AESC"]],
     });
-    console.log(`qwertyu`, count, asset);
+    // console.log(`qwertyu`, count, asset);
     response.status(200).json({
       ack: 1,
       data: asset,
