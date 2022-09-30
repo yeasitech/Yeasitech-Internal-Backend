@@ -43,15 +43,15 @@ exports.createUser = async (request, response) => {
         msg: "User exists with this email",
       });
     } else {
-      const hash = bcrypt.hashSync(user.password, 10);
+      // const hash = bcrypt.hashSync(user.password, 10);
       const userRecord = {
         firstName: user.firstName,
         middleName: user.middleName,
         lastName: user.lastName,
         dateOfJoining: user.dateOfJoining,
-        // departmentId: +allDept.id,
-        // designationId: +allDesignation.id,
-        password: hash,
+        departmentId: +allDept.id,
+        designationId: +allDesignation.id,
+        // password: hash,
         email: user.email,
         onBoardingStatus: false,
         employeeType: user.employeeType,
