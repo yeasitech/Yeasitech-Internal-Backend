@@ -22,32 +22,52 @@ const commentRouter = Router();
 userRouter.post("/createEmployee", userController.createUser);
 userRouter.post("/login", userController.logIn);
 userRouter.post("/employeeOnboarding", userController.employeeDetails);
-userRouter.get("/getEmployee/:id", Authorization, userController.allSingleUser);
-userRouter.get("/getAllEmployee", Authorization, userController.allEmployee);
+userRouter.get(
+  "/getEmployee/:id",
+  AdminAuthorization,
+  userController.allSingleUser
+);
+userRouter.get(
+  "/getAllEmployee",
+  AdminAuthorization,
+  userController.allEmployee
+);
 userRouter.get(
   "/employeeDetails/:id",
-  Authorization,
+  AdminAuthorization,
   userController.oneEmployeeDetails
 );
 userRouter.get(
   "/designation/:designationId",
-  Authorization,
+  AdminAuthorization,
   userController.getEmployeeByDesignation
 );
-userRouter.get("/list", Authorization, userController.getAllEmployeePagination);
-userRouter.get("/searchEmpList", Authorization, userController.searchUser);
+userRouter.get(
+  "/list",
+  AdminAuthorization,
+  userController.getAllEmployeePagination
+);
+userRouter.get("/searchEmpList", AdminAuthorization, userController.searchUser);
 userRouter.put(
   "/personalData/:userId",
-  Authorization,
+  AdminAuthorization,
   userController.editOneEmployeePersonalData
 );
-userRouter.put("/education/:id", Authorization, userController.updateEducation);
+userRouter.put(
+  "/education/:id",
+  AdminAuthorization,
+  userController.updateEducation
+);
 userRouter.put(
   "/experience/:id",
-  Authorization,
+  AdminAuthorization,
   userController.updateExperience
 );
-userRouter.put("/bankDetails/:id", Authorization, userController.bankUpdate);
+userRouter.put(
+  "/bankDetails/:id",
+  AdminAuthorization,
+  userController.bankUpdate
+);
 userRouter.put("/makeAdmin/:id", AdminAuthorization, userController.makeAdmin);
 userRouter.put(
   "/setDeactive/:id",
@@ -58,11 +78,11 @@ userRouter.put(
 //salary
 salaryRouter.post(
   "/employeeSalary",
-  Authorization,
+  AdminAuthorization,
   salaryController.employeeSalary
 );
 
-salaryRouter.get("/:userId", Authorization, salaryController.getSalary);
+salaryRouter.get("/:userId", AdminAuthorization, salaryController.getSalary);
 //userRouter.put("/editProfile/:id", userController.editProfile);
 
 //deptRouter
@@ -78,17 +98,17 @@ departmentRouter.post(
 );
 departmentRouter.get(
   "/department",
-  Authorization,
+  AdminAuthorization,
   departmentController.getDepartment
 );
 departmentRouter.get(
   "/designation/:departmentId",
-  Authorization,
+  AdminAuthorization,
   departmentController.getDesignation
 );
 departmentRouter.get(
   "/allDesignation",
-  Authorization,
+  AdminAuthorization,
   departmentController.getAllDesignation
 );
 departmentRouter.delete(
@@ -113,17 +133,17 @@ departmentRouter.delete(
 );
 departmentRouter.get(
   "/departmentList",
-  Authorization,
+  AdminAuthorization,
   departmentController.getAllDepartmentPagination
 );
 departmentRouter.get(
   "/designationList",
-  Authorization,
+  AdminAuthorization,
   departmentController.getAllDesignationPagination
 );
 departmentRouter.get(
   "/list",
-  Authorization,
+  AdminAuthorization,
   departmentController.getAllDepartmentDesignation
 );
 departmentRouter.put(
@@ -134,7 +154,7 @@ departmentRouter.put(
 
 //holiday
 holidayRouter.post("/", AdminAuthorization, holidayController.createHoliday);
-holidayRouter.get("/list", Authorization, holidayController.getAllHoliday);
+holidayRouter.get("/list", AdminAuthorization, holidayController.getAllHoliday);
 holidayRouter.put(
   "/updateHoliday/:HolidayId",
   AdminAuthorization,
@@ -147,22 +167,30 @@ holidayRouter.delete(
 );
 holidayRouter.get(
   "/holidayList",
-  Authorization,
+  AdminAuthorization,
   holidayController.holidayPagination
 );
 //leave
-leaveRouter.post("/leaveList", Authorization, leaveController.typesOfLeave);
+leaveRouter.post(
+  "/leaveList",
+  AdminAuthorization,
+  leaveController.typesOfLeave
+);
 leaveRouter.get(
   "/allTypeOfLeave",
-  Authorization,
+  AdminAuthorization,
   leaveController.getAlltypesOfLeave
 );
 leaveRouter.post(
   "/createleave/:userId",
-  Authorization,
+  AdminAuthorization,
   leaveController.createLeaveByUser
 );
-leaveRouter.get("/list", Authorization, leaveController.getLeavePagiantion);
+leaveRouter.get(
+  "/list",
+  AdminAuthorization,
+  leaveController.getLeavePagiantion
+);
 leaveRouter.put(
   "/editLeave/:id",
   AdminAuthorization,
@@ -187,7 +215,7 @@ assetRouter.post(
 );
 assetRouter.get(
   "/assetList",
-  Authorization,
+  AdminAuthorization,
   assetController.getAssetsPagination
 );
 assetRouter.put(
@@ -202,7 +230,7 @@ assetRouter.delete(
 );
 assetRouter.get(
   "/getAsset/:assetId",
-  Authorization,
+  AdminAuthorization,
   assetController.getSingleAsset
 );
 
@@ -224,18 +252,19 @@ candidateRouter.delete(
 );
 candidateRouter.get(
   "/list",
-  Authorization,
+  AdminAuthorization,
   candidateController.candidatePagination
 );
 candidateRouter.get(
   "/getCandidate/:candidateId",
-  Authorization,
+  AdminAuthorization,
   candidateController.getCandidate
 );
-// candidateRouter.get(
-//   "/createInterview/:candidateId",
-//   candidateController.createInterview
-// );
+candidateRouter.get(
+  "/createInterview/:candidateId",
+  AdminAuthorization,
+  candidateController.createInterview
+);
 
 //comment;
 commentRouter.post(
@@ -245,7 +274,7 @@ commentRouter.post(
 );
 commentRouter.get(
   "/getComment/:candidateId",
-  Authorization,
+  AdminAuthorization,
   commentController.getComment
 );
 commentRouter.post(
