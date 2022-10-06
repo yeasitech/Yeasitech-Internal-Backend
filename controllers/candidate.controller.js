@@ -145,8 +145,26 @@ exports.getSingleCandidate = async (request, response) => {
   }
 };
 
-exports.createInterview = async (request, resposne) => {
+exports.createInterview = async (request, response) => {
   const candidateId = request.params.candidateId;
+  const user = request.body;
+
   const candidateData = await CandidateModel.findByPk(candidateId);
-  console.log(candidateData);
+  const info = {
+    schedule: user.schedule,
+    interviewAssignBy: user.interviewAssignBy,
+    userId: user.userId,
+    candidateId: request.params.candidateId,
+  };
+
+  try {
+    if (!candidateData && candidateData == null) {
+      return response.status(500).json({ ack: 0, msg: `invalid candidateId` });
+    } else {
+      interviewData = await InterviewModel.create(info);
+      response.status(200).json({ ack: 1, data: interviewData });
+    }
+  } catch (error) {
+    response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
+  }
 };
