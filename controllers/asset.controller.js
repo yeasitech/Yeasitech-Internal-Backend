@@ -24,13 +24,7 @@ exports.createAssets = async (request, response) => {
 };
 
 exports.getAssetsPagination = async (request, response) => {
-  const {
-    elements,
-    page,
-    searcProductId = "",
-    searchAssetId = "",
-    searchType = "",
-  } = request.query;
+  const { elements, page, searchType = "" } = request.query;
   const limit = parseInt(elements);
   console.log(`qwertyui`, limit);
   const offset = parseInt(limit * (page - 1));
@@ -40,8 +34,8 @@ exports.getAssetsPagination = async (request, response) => {
       where: {
         [Op.or]: [
           { type: { [Op.like]: `%${searchType}%` } },
-          { assetId: { [Op.like]: `%${searchAssetId}%` } },
-          { productId: { [Op.like]: `%${searcProductId}%` } },
+          { assetId: { [Op.like]: `%${searchType}%` } },
+          { productId: { [Op.like]: `%${searchType}%` } },
         ],
       },
       limit,

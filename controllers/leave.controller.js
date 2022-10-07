@@ -25,7 +25,7 @@ exports.getAlltypesOfLeave = async (request, response) => {
 
 //add leaves by admin
 exports.createLeaveByUser = async (request, response) => {
-  let userId = request.params.userId;
+  let userId = request.userId;
   const userData = await User.findByPk(userId);
 
   const leaveData = request.body;
