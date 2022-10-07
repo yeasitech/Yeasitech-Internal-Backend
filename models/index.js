@@ -125,7 +125,10 @@ db.InterviewModel.belongsTo(db.CandidateModel, { foreignKey: "candidateId" });
 
 //candidate & comments;
 db.CandidateModel.hasMany(db.CommentModel, { foreignKey: "candidateId" });
-db.CommentModel.belongsTo(db.CandidateModel, { foreignKey: "candidateId" });
+db.CommentModel.belongsTo(db.CandidateModel, { foreignKey: "candidateId" })
+db.User.hasMany(db.ExpenseModel, { foreignKey: "userId" });
+ db.ExpenseModel.belongsTo(db.User, { foreignKey: "userId" });
+//userLogin & user;
 
 db.User.hasMany(db.ExpenseModel, { foreignKey: "userId" });
  db.ExpenseModel.belongsTo(db.User, { foreignKey: "userId" });
