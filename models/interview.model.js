@@ -5,6 +5,8 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       allowNull: false,
       autoIncrement: true,
+      onDelete: "cascade",
+      onUpdate: "cascade",
     },
     schedule: DataTypes.DATEONLY,
     interviewAssignBy: DataTypes.STRING,

@@ -1,4 +1,7 @@
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
+const { Op } = require("sequelize");
+
 const {
   User,
   EmployeeDetails,
@@ -8,19 +11,13 @@ const {
   ExperienceModel,
   BankModel,
 } = require("../models/index");
-
 const {
   createEmployeeSchema,
   loginSchema,
   employeeDetailsSchema,
 } = require("./validation/user.validation");
-const bcrypt = require("bcryptjs");
-
-const { Op } = require("sequelize");
-const { promises } = require("nodemailer/lib/xoauth2");
 
 //create new user
-
 exports.createUser = async (request, response) => {
   const { error } = createEmployeeSchema.validate(request.body);
 
@@ -46,7 +43,7 @@ exports.createUser = async (request, response) => {
         msg: "User exists with this email",
       });
     } else {
-      //const hash = bcrypt.hashSync(user.password, 10);
+      // const hash = bcrypt.hashSync(user.password, 10);
       const userRecord = {
         firstName: user.firstName,
         middleName: user.middleName,
@@ -54,7 +51,7 @@ exports.createUser = async (request, response) => {
         dateOfJoining: user.dateOfJoining,
         departmentId: +allDept.id,
         designationId: +allDesignation.id,
-        //password: hash,
+        // password: hash,
         email: user.email,
         onBoardingStatus: false,
         employeeType: user.employeeType,
@@ -301,7 +298,7 @@ exports.getEmployeeByDesignation = async (request, response) => {
 
 //employee pagination
 exports.getAllEmployeePagination = async (request, response) => {
-  const { elements, page, searchParam } = request.query;
+  const { elements, page, searchParam = "" } = request.query;
 
   const limit = parseInt(elements);
   const offset = parseInt(limit * (page - 1));
@@ -578,6 +575,8 @@ exports.setDeactive = async (request, response) => {
       response.status(200).json({ ack: 1, msg: `user activated` });
     }
   } catch (error) {
-    response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
+    response
+      .status(500)
+      .json({ ack: 0, data: error.message || `Server Error` });
   }
 };
