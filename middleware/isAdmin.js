@@ -17,7 +17,7 @@ const isAdmin = (req, res, next) => {
       }
       // req.userId = decoded.id;
       const user = await User.findByPk(decoded.id);
-      console.log("User", user);
+      // console.log("User", user);
       if (!user || !user.dataValues.isAdmin) {
         return res
           .status(403)

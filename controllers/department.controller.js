@@ -131,7 +131,8 @@ exports.editDesignation = async (request, response) => {
 
   const designation = request.body.designation;
   try {
-    if (!id && id.length <= 0) throw new Error(`invalid department `);
+    if (!id && id.length <= 0)
+      response.status(500).json({ ack: 0, msg: `invalid department id` });
     else {
       const updatedDesignation = await DesignationModel.update(
         { designation },

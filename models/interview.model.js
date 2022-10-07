@@ -9,9 +9,10 @@ module.exports = (sequelize, DataTypes) => {
       onUpdate: "cascade",
     },
     schedule: DataTypes.DATEONLY,
-    interviewAssignBy: DataTypes.STRING,
+    interviewAssignTo: DataTypes.UUID,
+    interviewAssignBy: DataTypes.UUID,
     candidateId: DataTypes.INTEGER,
-    userId: DataTypes.UUID,
+    // userId: DataTypes.UUID,
   });
   return Interview;
 };
