@@ -7,7 +7,7 @@ const assetController = require("../controllers/asset.controller");
 const candidateController = require("../controllers/candidate.controller");
 const commentController = require("../controllers/comment.controller");
 const expenseController = require("../controllers/expense.controller");
-const userLoginController = require("../controllers/userlogin.controller");
+const userLoginController = require("../controllers/userLogin.controller");
 const Authorization = require("../middleware/isAuth");
 const AdminAuthorization = require("../middleware/isAdmin");
 const { Router } = require("express");
@@ -325,7 +325,7 @@ userLoginRouter.post(
   userLoginController.userLoginTokenGenerate
 );
 userLoginRouter.put(
-  "/resetPassword",
+  "/:token",
   AdminAuthorization,
   userLoginController.resetPassword
 );
