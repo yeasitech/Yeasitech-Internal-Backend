@@ -145,16 +145,18 @@ exports.getSingleCandidate = async (request, response) => {
   }
 };
 
+//create interview
 exports.createInterview = async (request, response) => {
   const candidateId = request.params.candidateId;
   const user = request.body;
 
   const candidateData = await CandidateModel.findByPk(candidateId);
+  const userId = request.userId;
   const info = {
     schedule: user.schedule,
-    interviewAssignBy: user.interviewAssignBy,
-    userId: user.userId,
-    candidateId: request.params.candidateId,
+    interviewAssignTo: user.interviewAssignTo,
+    interviewAssignBy: userId,
+    candidateId: candidateId,
   };
 
   try {
@@ -163,6 +165,60 @@ exports.createInterview = async (request, response) => {
     } else {
       interviewData = await InterviewModel.create(info);
       response.status(200).json({ ack: 1, data: interviewData });
+    }
+  } catch (error) {
+    response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
+  }
+};
+
+// Update Interview
+
+exports.updateInterview = async (request, response) => {
+  const interviewId = request.params.interviewId;
+  const userId = request.userId;
+  const data = {
+    schedule: request.body.schedule,
+    interviewAssignBy: userId,
+    candidateId: request.body.candidateId,
+    interviewAssignTo: request.body.interviewAssignTo,
+  };
+
+  const interviewData = await InterviewModel.findByPk(interviewId);
+  try {
+    if (!interviewData || interviewData == null) {
+      return response.status(500).json({ ack: 0, msg: `invalid interview id` });
+    } else {
+      const updatedData = await InterviewModel.update(data, {
+        where: { id: interviewId },
+      });
+      response
+        .status(200)
+        .json({ ack: 1, msg: `interview updated successfully` });
+    }
+  } catch (error) {
+    response.status(500).json({ ack: 0, msg: error.message || `server error` });
+  }
+};
+
+// delete Interview
+
+exports.deleteInterview = async (request, response) => {
+  const interviewId = request.params.interviewId;
+
+  const interviewData = await InterviewModel.findByPk(interviewId);
+
+  try {
+    if (!interviewData || interviewData == null) {
+      response
+        .status(500)
+        .json({ ack: 0, msg: `please give valid interview id` });
+    } else {
+      const interviewToDelete = await InterviewModel.destroy({
+        where: { id: interviewId },
+      });
+      response
+        .status(200)
+        .json({ ack: 1, msg: `interview deleted successfully` });
     }
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });

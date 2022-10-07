@@ -264,10 +264,20 @@ candidateRouter.get(
   AdminAuthorization,
   candidateController.getCandidate
 );
-candidateRouter.get(
+candidateRouter.post(
   "/createInterview/:candidateId",
   AdminAuthorization,
   candidateController.createInterview
+);
+candidateRouter.put(
+  "/upadateInterview/:interviewId",
+  AdminAuthorization,
+  candidateController.updateInterview
+);
+candidateRouter.delete(
+  "/deleteInterview/:interviewId",
+  AdminAuthorization,
+  candidateController.deleteInterview
 );
 
 //comment;

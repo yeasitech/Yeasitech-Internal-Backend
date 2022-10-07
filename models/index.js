@@ -116,11 +116,11 @@ db.User.hasMany(db.AssetModel, { foreignKey: "userId" });
 db.AssetModel.belongsTo(db.User, { foreignKey: "userId" });
 
 //candidate & user;
-db.User.hasMany(db.InterviewModel, { foreignKey: "userId" });
-db.InterviewModel.belongsTo(db.User, { foreignKey: "userId" });
+db.User.hasMany(db.InterviewModel, { foreignKey: "interviewAssignTo" });
+db.InterviewModel.belongsTo(db.User, { foreignKey: "interviewAssignBy" });
 
 // candidate & interview
-db.CandidateModel.hasOne(db.InterviewModel, { foreignKey: "cnndidateId" });
+db.CandidateModel.hasOne(db.InterviewModel, { foreignKey: "candidateId" });
 db.InterviewModel.belongsTo(db.CandidateModel, { foreignKey: "candidateId" });
 
 //candidate & comments;

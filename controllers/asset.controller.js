@@ -3,8 +3,7 @@ const { Op } = require("sequelize");
 
 exports.createAssets = async (request, response) => {
   data = request.body;
-  const userId = data.userId;
-  console.log(userId);
+  const userId = request.userId;
   const userData = await User.findByPk(userId);
 
   try {
