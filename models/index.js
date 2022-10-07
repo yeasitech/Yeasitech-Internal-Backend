@@ -52,6 +52,8 @@ db.AssetModel = require("./asset.model")(sequelize, DataTypes);
 db.CandidateModel = require("./candidate.model")(sequelize, DataTypes);
 db.CommentModel = require("./comment.model")(sequelize, DataTypes);
 db.InterviewModel = require("./interview.model")(sequelize, DataTypes);
+db.ExpenseModel = require("./expense.model")(sequelize, DataTypes);
+db.UserLoginModel = require("./userLogin.model")(sequelize, DataTypes);
 
 // user & EmployeeDetails,Department,Designation
 db.User.hasOne(db.EmployeeDetails, {
@@ -124,6 +126,15 @@ db.InterviewModel.belongsTo(db.CandidateModel, { foreignKey: "candidateId" });
 //candidate & comments;
 db.CandidateModel.hasMany(db.CommentModel, { foreignKey: "candidateId" });
 db.CommentModel.belongsTo(db.CandidateModel, { foreignKey: "candidateId" });
+
+db.User.hasMany(db.ExpenseModel, { foreignKey: "userId" });
+ db.ExpenseModel.belongsTo(db.User, { foreignKey: "userId" });
+//userLogin & user;
+
+ db.User.hasMany(db.UserLoginModel, { foreignKey: "userId" });
+ db.UserLoginModel.belongsTo(db.User, { foreignKey: "userId" });
+
+
 
 // if (process.env.ENV === "dev") {
 //   sequelize

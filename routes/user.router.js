@@ -6,6 +6,8 @@ const leaveController = require("../controllers/leave.controller");
 const assetController = require("../controllers/asset.controller");
 const candidateController = require("../controllers/candidate.controller");
 const commentController = require("../controllers/comment.controller");
+const expenseController = require("../controllers/expense.controller");
+const userLoginController = require("../controllers/userlogin.controller");
 const Authorization = require("../middleware/isAuth");
 const AdminAuthorization = require("../middleware/isAdmin");
 const { Router } = require("express");
@@ -17,6 +19,8 @@ const leaveRouter = Router();
 const assetRouter = Router();
 const candidateRouter = Router();
 const commentRouter = Router();
+const expenseRouter = Router();
+const userLoginRouter = Router();
 
 //userRouter
 userRouter.post("/createEmployee", userController.createUser);
@@ -282,6 +286,49 @@ commentRouter.post(
   AdminAuthorization,
   commentController.updateComments
 );
+//expense
+expenseRouter.post(
+  "/addExpense",
+  AdminAuthorization,
+  expenseController.addExpense
+);
+expenseRouter.get(
+  "/getExpenses",
+  AdminAuthorization,
+  expenseController.getExpenses
+);
+
+expenseRouter.get(
+  "/getExpenseList",
+  AdminAuthorization,
+  expenseController.getExpenseList
+);
+expenseRouter.put(
+  "/:id",
+  AdminAuthorization,
+  expenseController.updateExpense
+);
+expenseRouter.patch(
+  "/status/:id",
+  AdminAuthorization,
+  expenseController.updateExpenseStatus
+);
+expenseRouter.delete(
+  "/:id",
+  AdminAuthorization,
+  expenseController.deleteExpense
+);
+//userLoginPassword create
+userLoginRouter.post(
+  "/",
+  AdminAuthorization,
+  userLoginController.userLoginTokenGenerate
+);
+userLoginRouter.put(
+  "/resetPassword",
+  AdminAuthorization,
+  userLoginController.resetPassword
+);
 
 module.exports = {
   userRouter,
@@ -292,4 +339,6 @@ module.exports = {
   assetRouter,
   candidateRouter,
   commentRouter,
+  expenseRouter,
+  userLoginRouter,
 };
