@@ -398,7 +398,7 @@ exports.searchUser = async (request, response) => {
 
 //update OneEmployeePersonal Data
 exports.editOneEmployeePersonalData = async (request, response) => {
-  const userId = request.params.userId;
+  const userId = request.userId;
   const { userInfo, personalInfo } = request.body;
   const userData = await User.findByPk(userId);
   const EmployeeData = await EmployeeDetails.findAll({
@@ -526,14 +526,17 @@ exports.bankUpdate = async (request, response) => {
 
 // make user to admin
 exports.makeAdmin = async (request, response) => {
-  const id = request.params.id;
-  const userData = await User.findByPk(id);
+  const userId = request.userId;
+  const userData = await User.findByPk(userId);
   try {
-    if (!userData || userData.length < 0) {
+    if (!userData || userData == null) {
       response.status(500).json({ ack: 0, msg: `invalid  userId` });
     }
     if (userData.isAdmin == false) {
-      const makeAdmin = await User.update({ isAdmin: true }, { where: { id } });
+      const makeAdmin = await User.update(
+        { isAdmin: true },
+        { where: { id: userId } }
+      );
       response.status(200).json({
         ack: 1,
         msg: `congrats you are an admin now`,
@@ -542,7 +545,7 @@ exports.makeAdmin = async (request, response) => {
     if (userData.isAdmin == true) {
       const makeAdmin = await User.update(
         { isAdmin: false },
-        { where: { id } }
+        { where: { id: userId } }
       );
       response.status(200).json({
         ack: 1,
@@ -556,22 +559,25 @@ exports.makeAdmin = async (request, response) => {
 
 // Dactive User
 exports.setDeactive = async (request, response) => {
-  const id = request.params.id;
-  const userData = await User.findByPk(id);
+  const userId = request.userId;
+  const userData = await User.findByPk(userId);
 
   try {
-    if (!userData || userData.length < 0) {
+    if (!userData || userData == null) {
       return response.status(500).json({ ack: 0, msg: `invalid  userId` });
     }
     if (userData.isActive == true) {
       const deactive = await User.update(
         { isActive: false },
-        { where: { id } }
+        { where: { id: userId } }
       );
       response.status(200).json({ ack: 1, msg: `user deactivated` });
     }
     if (userData.isActive == false) {
-      const active = await User.update({ isActive: true }, { where: { id } });
+      const active = await User.update(
+        { isActive: true },
+        { where: { id: userId } }
+      );
       response.status(200).json({ ack: 1, msg: `user activated` });
     }
   } catch (error) {

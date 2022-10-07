@@ -73,27 +73,19 @@ exports.deleteCandidate = async (request, response) => {
 
 // Candidate Pagination
 exports.candidatePagination = async (request, response) => {
-  const {
-    elements,
-    page,
-    searchName = "",
-    searchEmail = "",
-    searchContactNumber = "",
-    searchSkills = "",
-  } = request.query;
+  const { elements, page, searchParam = "" } = request.query;
   const limit = parseInt(elements);
   const offset = parseInt(limit * (page - 1));
-  console.log(`offset`, offset);
   try {
     const { count, rows } = await CandidateModel.findAndCountAll({
       //order: [["followUpDate", "DESc"]],
       include: { model: CommentModel },
       where: {
         [Op.or]: [
-          { fullName: { [Op.like]: `%${searchName}%` } },
-          { email: { [Op.like]: `%${searchEmail}%` } },
-          { contactNumber: { [Op.like]: `%${searchContactNumber}%` } },
-          { skills: { [Op.like]: "%" + searchSkills + "%" } },
+          { fullName: { [Op.like]: `%${searchParam}%` } },
+          { email: { [Op.like]: `%${searchParam}%` } },
+          { contactNumber: { [Op.like]: `%${searchParam}%` } },
+          { skills: { [Op.like]: "%" + searchParam + "%" } },
         ],
       },
       limit,
@@ -220,6 +212,40 @@ exports.deleteInterview = async (request, response) => {
         .status(200)
         .json({ ack: 1, msg: `interview deleted successfully` });
     }
+  } catch (error) {
+    response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
+  }
+};
+
+//interview pagiantion
+exports.interviewPagination = async (request, response) => {
+  const { elements, page, searchParam = "" } = request.query;
+  const limit = parseInt(elements);
+  const offset = parseInt(limit * (page - 1));
+  try {
+    const { count, rows } = await User.findAndCountAll({
+      //order: [["followUpDate", "DESc"]],
+      include: [{ model: InterviewModel }],
+      // where: {
+      //   [Op.or]: [
+      //     { fullName: { [Op.like]: `%${searchParam}%` } },
+      //     { email: { [Op.like]: `%${searchParam}%` } },
+      //     { contactNumber: { [Op.like]: `%${searchParam}%` } },
+      //     { skills: { [Op.like]: "%" + searchParam + "%" } },
+      //   ],
+      // },
+      limit,
+      offset,
+    });
+    response.status(200).json({
+      ack: 1,
+      data: rows,
+      elementPerPage: rows.length,
+      totalData: count,
+      totalpage: Math.ceil(count / elements),
+      page: parseInt(page),
+      elementsPerPage: limit,
+    });
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
   }

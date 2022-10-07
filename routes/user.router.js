@@ -53,7 +53,7 @@ userRouter.get(
 );
 userRouter.get("/searchEmpList", AdminAuthorization, userController.searchUser);
 userRouter.put(
-  "/personalData/:userId",
+  "/personalData",
   AdminAuthorization,
   userController.editOneEmployeePersonalData
 );
@@ -72,12 +72,8 @@ userRouter.put(
   AdminAuthorization,
   userController.bankUpdate
 );
-userRouter.put("/makeAdmin/:id", AdminAuthorization, userController.makeAdmin);
-userRouter.put(
-  "/setDeactive/:id",
-  AdminAuthorization,
-  userController.setDeactive
-);
+userRouter.put("/makeAdmin", AdminAuthorization, userController.makeAdmin);
+userRouter.put("/setDeactive", AdminAuthorization, userController.setDeactive);
 
 //salary
 salaryRouter.post(
@@ -186,7 +182,7 @@ leaveRouter.get(
   leaveController.getAlltypesOfLeave
 );
 leaveRouter.post(
-  "/createleave/:userId",
+  "/createleave",
   AdminAuthorization,
   leaveController.createLeaveByUser
 );
@@ -279,6 +275,11 @@ candidateRouter.delete(
   AdminAuthorization,
   candidateController.deleteInterview
 );
+candidateRouter.get(
+  "/interviewList",
+  AdminAuthorization,
+  candidateController.interviewPagination
+);
 
 //comment;
 commentRouter.post(
@@ -313,11 +314,7 @@ expenseRouter.get(
   AdminAuthorization,
   expenseController.getExpenseList
 );
-expenseRouter.put(
-  "/:id",
-  AdminAuthorization,
-  expenseController.updateExpense
-);
+expenseRouter.put("/:id", AdminAuthorization, expenseController.updateExpense);
 expenseRouter.patch(
   "/status/:id",
   AdminAuthorization,
