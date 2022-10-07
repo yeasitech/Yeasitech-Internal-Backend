@@ -118,12 +118,16 @@ db.AssetModel.belongsTo(db.User, { foreignKey: "userId" });
 //candidate & user;
 db.User.hasMany(db.InterviewModel, { foreignKey: "userId" });
 db.InterviewModel.belongsTo(db.User, { foreignKey: "userId" });
+
+// candidate & interview
+db.CandidateModel.hasOne(db.InterviewModel, { foreignKey: "cnndidateId" });
 db.InterviewModel.belongsTo(db.CandidateModel, { foreignKey: "candidateId" });
 
 //candidate & comments;
 db.CandidateModel.hasMany(db.CommentModel, { foreignKey: "candidateId" });
 db.CommentModel.belongsTo(db.CandidateModel, { foreignKey: "candidateId" });
 
+<<<<<<< HEAD
 db.User.hasMany(db.ExpenseModel, { foreignKey: "userId" });
  db.ExpenseModel.belongsTo(db.User, { foreignKey: "userId" });
 //userLogin & user;
@@ -140,4 +144,16 @@ db.User.hasMany(db.ExpenseModel, { foreignKey: "userId" });
 //   .catch((err) => {
 //     console.log(err);
 //   });
+=======
+// if (process.env.ENV === "dev") {
+//   sequelize
+//     .sync({ alter: true })
+//     .then(() => {
+//       console.log(`database is syncing`);
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//     });
+// }
+>>>>>>> a56514263e27e789fe9e5ff58b088cca6475121c
 module.exports = db;
