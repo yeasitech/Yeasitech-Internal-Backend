@@ -27,8 +27,8 @@ jobs:
             git checkout .
             git checkout master
             git pull origin master
-            npm i --production
             export NVM_DIR=~/.nvm
             source ~/.nvm/nvm.sh
+            npm i
             pm2 reload 8
             pm2 reset 8
