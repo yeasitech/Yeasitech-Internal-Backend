@@ -117,6 +117,9 @@ db.AssetModel.belongsTo(db.User, { foreignKey: "userId" });
 
 //candidate & user;
 db.User.hasMany(db.InterviewModel, { foreignKey: "interviewAssignTo" });
+db.InterviewModel.belongsTo(db.User, { foreignKey: "interviewAssignTo" });
+
+db.User.hasMany(db.InterviewModel, { foreignKey: "interviewAssignBy" });
 db.InterviewModel.belongsTo(db.User, { foreignKey: "interviewAssignBy" });
 
 // candidate & interview
@@ -125,19 +128,20 @@ db.InterviewModel.belongsTo(db.CandidateModel, { foreignKey: "candidateId" });
 
 //candidate & comments;
 db.CandidateModel.hasMany(db.CommentModel, { foreignKey: "candidateId" });
-db.CommentModel.belongsTo(db.CandidateModel, { foreignKey: "candidateId" })
+db.CommentModel.belongsTo(db.CandidateModel, { foreignKey: "candidateId" });
+db.CommentModel.belongsTo(db.User, { foreignKey: "userId" });
+
+//user & expense
 db.User.hasMany(db.ExpenseModel, { foreignKey: "userId" });
- db.ExpenseModel.belongsTo(db.User, { foreignKey: "userId" });
+db.ExpenseModel.belongsTo(db.User, { foreignKey: "userId" });
 //userLogin & user;
 
 db.User.hasMany(db.ExpenseModel, { foreignKey: "userId" });
- db.ExpenseModel.belongsTo(db.User, { foreignKey: "userId" });
+db.ExpenseModel.belongsTo(db.User, { foreignKey: "userId" });
 //userLogin & user;
 
- db.User.hasMany(db.UserLoginModel, { foreignKey: "userId" });
- db.UserLoginModel.belongsTo(db.User, { foreignKey: "userId" });
-
-
+db.User.hasMany(db.UserLoginModel, { foreignKey: "userId" });
+db.UserLoginModel.belongsTo(db.User, { foreignKey: "userId" });
 
 // if (process.env.ENV === "dev") {
 //   sequelize

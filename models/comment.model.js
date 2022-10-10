@@ -1,5 +1,3 @@
-const { DataTypes } = require("sequelize");
-
 module.exports = (sequelize, DataTypes) => {
   const Comments = sequelize.define("Comments", {
     id: {
@@ -10,6 +8,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     comment: DataTypes.TEXT,
     candidateId: DataTypes.INTEGER,
+    userId: DataTypes.UUID,
   });
   return Comments;
 };
