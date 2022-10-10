@@ -401,15 +401,15 @@ exports.editOneEmployeePersonalData = async (request, response) => {
   const userId = request.userId;
   const { userInfo, personalInfo } = request.body;
   const userData = await User.findByPk(userId);
-  const EmployeeData = await EmployeeDetails.findAll({
-    where: { userId },
+  const EmployeeData = await EmployeeDetails.findOne({
+    where: { userId: userId },
   });
   // console.log(EmployeeData);
   try {
     if (
       !userData ||
       (userData == null && !EmployeeData) ||
-      EmployeeData.length < 0
+      EmployeeData == null
     ) {
       response.status(500).json({ ack: 0, msg: `invalid userInfo ` });
     } else {
@@ -420,12 +420,13 @@ exports.editOneEmployeePersonalData = async (request, response) => {
         EmployeeDetails.update(personalInfo, {
           where: { userId: userId },
         }),
+
+        //response.status(200).json({ ack: 1, msg: data }),
       ]).catch((error) => {
         console.log(`1234567890`, error);
       });
+      response.status(200).json({ ack: 1, data: data });
     }
-
-    response.status(200).json({ ack: 1, msg: `user updated successfully` });
   } catch (error) {
     response.status(500).json({ ack: 1, msg: error.message || `Server Error` });
   }

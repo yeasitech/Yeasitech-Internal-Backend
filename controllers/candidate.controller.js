@@ -57,14 +57,28 @@ exports.candidateUpdate = async (request, response) => {
 exports.deleteCandidate = async (request, response) => {
   const id = request.params.id;
   const candidateData = await CandidateModel.findByPk(id);
+  console.log(candidateData);
   try {
     if (!candidateData || candidateData.length < 0) {
       return response.status(500).json({ ack: 0, msg: `invalid candidate id` });
     } else {
-      const candidateToDelete = await CandidateModel.destroy({
-        where: { id },
+      const [data] = await Promise.all([
+        CandidateModel.destroy({
+          where: { id },
+        }),
+        CommentModel.destroy({
+          where: { candidateId: id },
+        }),
+        InterviewModel.destroy({
+          where: { candidateId: id },
+        }),
+
+        response
+          .status(200)
+          .json({ ack: 1, data: ` data deleted successfully` }),
+      ]).catch((error) => {
+        console.log(`1234567890`, error);
       });
-      response.status(200).json({ ack: 1, msg: `deleted successfully ` });
     }
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });

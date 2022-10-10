@@ -7,8 +7,8 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     userId: DataTypes.UUID,
-    currentSalary: DataTypes.STRING,
-    dateOfIncrement: DataTypes.STRING,
+    currentSalary: DataTypes.DATEONLY,
+    dateOfIncrement: DataTypes.DATEONLY,
   });
   return Salary;
 };
