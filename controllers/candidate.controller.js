@@ -150,7 +150,6 @@ exports.createInterview = async (request, response) => {
     interviewAssignBy: userId,
     candidateId: candidateId,
   };
-
   try {
     if (!candidateData && candidateData == null) {
       return response.status(500).json({ ack: 0, msg: `invalid candidateId` });
@@ -223,9 +222,9 @@ exports.interviewPagination = async (request, response) => {
   const limit = parseInt(elements);
   const offset = parseInt(limit * (page - 1));
   try {
-    const { count, rows } = await User.findAndCountAll({
+    const { count, rows } = await InterviewModel.findAndCountAll({
       //order: [["followUpDate", "DESc"]],
-      include: [{ model: InterviewModel }],
+      include: [{ model: User }],
       // where: {
       //   [Op.or]: [
       //     { fullName: { [Op.like]: `%${searchParam}%` } },

@@ -1,11 +1,15 @@
-const { CandidateModel, CommentModel } = require("../models/index");
+const { CandidateModel, CommentModel, User } = require("../models/index");
 
 exports.createComment = async (request, response) => {
   const candidateId = request.params.candidateId;
   const candidateData = await CandidateModel.findByPk(candidateId);
-
+  const userId = request.userId;
   const user = request.body;
-  const data = { comment: user.comment, candidateId: candidateId };
+  const data = {
+    comment: user.comment,
+    candidateId: candidateId,
+    userId: userId,
+  };
   try {
     if (!candidateData && candidateData == null) {
       return response.status(500).json({ ack: 0, msg: `invalid candidate id` });
@@ -20,13 +24,20 @@ exports.createComment = async (request, response) => {
 
 exports.getComment = async (request, response) => {
   const candidateId = request.params.candidateId;
+
   const candidateData = await CandidateModel.findByPk(candidateId);
   try {
     if (!candidateData && candidateData == null) {
       return response.status(500).json({ ack: 0, msg: `invalid candidate id` });
     } else {
-      const createComment = await CommentModel.findOne({
-        include: { model: CandidateModel },
+      const createComment = await CommentModel.findAll({
+        include: [
+          { model: CandidateModel },
+          {
+            model: User,
+            attributes: ["firstName", "middleName", "lastName"],
+          },
+        ],
         where: { candidateId: candidateId },
       });
       response.status(200).json({ ack: 1, data: createComment });
