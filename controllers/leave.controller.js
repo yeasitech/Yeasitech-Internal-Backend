@@ -54,7 +54,7 @@ exports.createLeaveByUser = async (request, response) => {
 // get employee leaves
 
 exports.getLeavePagiantion = async (request, response) => {
-  const { elements, page, searchParam = "" } = request.query;
+  const { elements, page, employeeName = "", leaveFrom = "" } = request.query;
   const limit = parseInt(elements);
   const offset = parseInt(limit * (page - 1));
   try {
@@ -67,24 +67,24 @@ exports.getLeavePagiantion = async (request, response) => {
             { model: EmployeeDetails, attributes: ["employeeImage"] },
             { model: DesignationModel, attributes: ["designation"] },
           ],
-          // where: {
-          //   firstName: { [Op.like]: `%${employeeName}%` },
-          //   //   // { middleName: { [Op.like]: `%${employeeName}%` } },
-          //   //   // { lastName: { [Op.like]: `%${employeeName}%` } },
-          // },
+          where: {
+            firstName: { [Op.like]: `%${employeeName}%` },
+            //   // { middleName: { [Op.like]: `%${employeeName}%` } },
+            //   // { lastName: { [Op.like]: `%${employeeName}%` } },
+          },
         },
       ],
-      where: {
-        [Op.or]: [
-          { leaveFrom: { [Op.like]: `%${searchParam}%` } },
-          { "$User.firstName$": { [Op.like]: `%${searchParam}%` } },
-        ],
-      },
-      // ...(leaveFrom && {
-      //   where: {
-      //     leaveFrom: { [Op.eq]: `%${leaveFrom}%` },
-      //   },
-      // }),
+      // where: {
+      //   [Op.or]: [
+      //     { leaveFrom: { [Op.like]: `%${searchParam}%` } },
+      //     { "$User.firstName$": { [Op.like]: `%${searchParam}%` } },
+      //   ],
+      // },
+      ...(leaveFrom && {
+        where: {
+          leaveFrom: { [Op.eq]: `%${leaveFrom}%` },
+        },
+      }),
       limit,
       offset,
     });
