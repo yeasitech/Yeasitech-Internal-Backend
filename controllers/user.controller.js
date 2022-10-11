@@ -27,11 +27,11 @@ exports.createUser = async (request, response) => {
   }
   const user = request.body;
   if (!user) throw new Error(`user doesn't exists`);
-  const allDept = await DepartmentModel.findByPk(+user.department);
+  // const allDept = await DepartmentModel.findByPk(+user.department);
 
-  const allDesignation = await DesignationModel.findOne({
-    where: { designation: user.designation },
-  });
+  // const allDesignation = await DesignationModel.findOne({
+  //   where: { designation: user.designation },
+  // });
 
   try {
     const checkForIfExists = await User.findOne({
@@ -49,8 +49,8 @@ exports.createUser = async (request, response) => {
         middleName: user.middleName,
         lastName: user.lastName,
         dateOfJoining: user.dateOfJoining,
-        departmentId: +allDept.id,
-        designationId: +allDesignation.id,
+        // departmentId: +allDept.id,
+        // designationId: +allDesignation.id,
         // password: hash,
         email: user.email,
         onBoardingStatus: false,
