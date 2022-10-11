@@ -331,11 +331,7 @@ userLoginRouter.post(
   AdminAuthorization,
   userLoginController.userLoginTokenGenerate
 );
-userLoginRouter.put(
-  "/:token",
-  AdminAuthorization,
-  userLoginController.resetPassword
-);
+userLoginRouter.put("/:token", userLoginController.resetPassword);
 
 module.exports = {
   userRouter,
