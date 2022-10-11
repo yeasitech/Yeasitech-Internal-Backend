@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     userId: DataTypes.UUID,
-    currentSalary: DataTypes.DATEONLY,
+    currentSalary: DataTypes.INTEGER,
     dateOfIncrement: DataTypes.DATEONLY,
   });
   return Salary;

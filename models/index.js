@@ -116,11 +116,23 @@ db.User.hasMany(db.AssetModel, { foreignKey: "userId" });
 db.AssetModel.belongsTo(db.User, { foreignKey: "userId" });
 
 //candidate & user;
-db.User.hasMany(db.InterviewModel, { foreignKey: "interviewAssignTo" });
-db.InterviewModel.belongsTo(db.User, { foreignKey: "interviewAssignTo" });
+db.User.hasMany(db.InterviewModel, {
+  foreignKey: "interviewAssignTo",
+  as: "InterviewAssignedTo",
+});
+db.InterviewModel.belongsTo(db.User, {
+  foreignKey: "interviewAssignTo",
+  as: "InterviewAssignedTo",
+});
 
-db.User.hasMany(db.InterviewModel, { foreignKey: "interviewAssignBy" });
-db.InterviewModel.belongsTo(db.User, { foreignKey: "interviewAssignBy" });
+db.User.hasMany(db.InterviewModel, {
+  foreignKey: "interviewAssignBy",
+  as: "InterviewAssignedBy",
+});
+db.InterviewModel.belongsTo(db.User, {
+  foreignKey: "interviewAssignBy",
+  as: "InterviewAssignedBy",
+});
 
 // candidate & interview
 db.CandidateModel.hasOne(db.InterviewModel, { foreignKey: "candidateId" });
@@ -143,14 +155,14 @@ db.ExpenseModel.belongsTo(db.User, { foreignKey: "userId" });
 db.User.hasMany(db.UserLoginModel, { foreignKey: "userId" });
 db.UserLoginModel.belongsTo(db.User, { foreignKey: "userId" });
 
-if (process.env.ENV === "dev") {
-  sequelize
-    .sync({ alter: true })
-    .then(() => {
-      console.log(`database is syncing`);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-}
+// if (process.env.ENV === "dev") {
+//   sequelize
+//     .sync({ alter: true })
+//     .then(() => {
+//       console.log(`database is syncing`);
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//     });
+// }
 module.exports = db;

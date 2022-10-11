@@ -238,7 +238,18 @@ exports.interviewPagination = async (request, response) => {
   try {
     const { count, rows } = await InterviewModel.findAndCountAll({
       //order: [["followUpDate", "DESc"]],
-      include: [{ model: User }],
+      include: [
+        {
+          model: User,
+          as: "InterviewAssignedTo",
+          attributes: ["firstName", "middleName", "lastName"],
+        },
+        {
+          model: User,
+          as: "InterviewAssignedBy",
+          attributes: ["firstName", "middleName", "lastName"],
+        },
+      ],
       // where: {
       //   [Op.or]: [
       //     { fullName: { [Op.like]: `%${searchParam}%` } },

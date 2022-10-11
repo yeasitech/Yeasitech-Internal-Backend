@@ -399,6 +399,7 @@ exports.searchUser = async (request, response) => {
 //update OneEmployeePersonal Data
 exports.editOneEmployeePersonalData = async (request, response) => {
   const userId = request.userId;
+
   const { userInfo, personalInfo } = request.body;
   const userData = await User.findByPk(userId);
   const EmployeeData = await EmployeeDetails.findOne({
