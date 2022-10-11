@@ -155,14 +155,14 @@ db.ExpenseModel.belongsTo(db.User, { foreignKey: "userId" });
 db.User.hasMany(db.UserLoginModel, { foreignKey: "userId" });
 db.UserLoginModel.belongsTo(db.User, { foreignKey: "userId" });
 
-// if (process.env.ENV === "dev") {
-//   sequelize
-//     .sync({ alter: true })
-//     .then(() => {
-//       console.log(`database is syncing`);
-//     })
-//     .catch((err) => {
-//       console.log(err);
-//     });
-// }
+if (process.env.ENV !== "dev") {
+  sequelize
+    .sync({ alter: true })
+    .then(() => {
+      console.log(`database is syncing`);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+}
 module.exports = db;
