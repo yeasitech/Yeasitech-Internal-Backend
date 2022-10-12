@@ -31,7 +31,7 @@ const {
         const userData = await UserLoginModel.findOne({ where :{token:token }});
         const password = bcrypt.hashSync(request.body.password, 10);
         if (!userData || userData.length < 0) {
-          response.status(200).json({ ack: 1, msg: `Reset password link expired ` });
+          response.status(401).json({ ack: 0, msg: `Reset password link expired ` });
           return;
         } ;
        
