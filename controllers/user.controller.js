@@ -27,11 +27,11 @@ exports.createUser = async (request, response) => {
   const user = request.body;
   if (!user)
     return response.status(200).json({ ack: 1, msg: `Please give valid user` });
-  const allDept = await Department.findByPk(user.department);
+  // const allDept = await Department.findByPk(user.department);
 
-  const allDesignation = await Designation.findOne({
-    where: { designation: user.designation },
-  });
+  // const allDesignation = await Designation.findOne({
+  //   where: { designation: user.designation },
+  // });
 
   try {
     const checkForIfExists = await User.findOne({
@@ -50,9 +50,9 @@ exports.createUser = async (request, response) => {
         middleName: user.middleName,
         lastName: user.lastName,
         dateOfJoining: user.dateOfJoining,
-        departmentId: allDept.id,
-        designationId: allDesignation.id,
-        //password: hash,
+        // departmentId: allDept.id,
+        // designationId: allDesignation.id,
+        password: hash,
         email: user.email,
         onBoardingStatus: false,
         employeeType: user.employeeType,
