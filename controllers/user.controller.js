@@ -52,7 +52,7 @@ exports.createUser = async (request, response) => {
         dateOfJoining: user.dateOfJoining,
         // departmentId: allDept.id,
         // designationId: allDesignation.id,
-        password: hash,
+        // password: hash,
         email: user.email,
         onBoardingStatus: false,
         employeeType: user.employeeType,
