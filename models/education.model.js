@@ -9,15 +9,15 @@ module.exports = (sequelize, DataTypes) => {
     userId: { type: DataTypes.UUID },
     schoolOrcollegeName: DataTypes.STRING,
     percentage: DataTypes.STRING,
-    passoutYear: DataTypes.STRING,
+    passoutYear: DataTypes.INTEGER,
     specialization: DataTypes.STRING,
     type: DataTypes.STRING, // X / XII / Graduation / Master / PHD
   });
-  // EducationDetails.associate = function (models) {
-  //   EducationDetails.belongsTo(models.User, {
-  //     foreignKey: "userId",
-  //   });
-  // };
+  EducationDetails.associate = function (models) {
+    EducationDetails.belongsTo(models.User, {
+      foreignKey: "userId",
+    });
+  };
 
   return EducationDetails;
 };

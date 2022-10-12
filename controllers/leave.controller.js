@@ -1,11 +1,11 @@
 const {
-  LeaveModel,
+  Leave,
   LeaveTypeModel,
   User,
   EmployeeDetails,
-  DesignationModel,
-  DepartmentModel,
-} = require("../models/index");
+  Designation,
+  Department,
+} = require("../models");
 const { Op } = require("sequelize");
 //create leave type
 exports.typesOfLeave = async (request, response) => {
@@ -26,7 +26,8 @@ exports.getAlltypesOfLeave = async (request, response) => {
 //add leaves by admin
 exports.createLeaveByUser = async (request, response) => {
   let userId = request.userId;
-  const userData = await User.findByPk(userId);
+  let id = request.params.id;
+  const userData = await User.findByPk(id);
 
   const leaveData = request.body;
   const leave = {
@@ -35,15 +36,15 @@ exports.createLeaveByUser = async (request, response) => {
     leaveTo: leaveData.leaveTo,
     numberOfDays: leaveData.numberOfDays,
     reasonOfLeave: leaveData.reasonOfLeave,
-    userId: userId,
+    userId: id,
     status: "pending",
   };
-  // console.log({ ...leave });
+
   try {
     if (!userData || userData.length < 0) {
       response.status(500).json({ ack: 0, msg: `invalid  userId` });
     } else {
-      const createLeave = await LeaveModel.create({ ...leave });
+      const createLeave = await Leave.create({ ...leave });
       response.status(200).json({ ack: 1, data: createLeave });
     }
   } catch (error) {
@@ -58,14 +59,14 @@ exports.getLeavePagiantion = async (request, response) => {
   const limit = parseInt(elements);
   const offset = parseInt(limit * (page - 1));
   try {
-    const { count, rows } = await LeaveModel.findAndCountAll({
+    const { count, rows } = await Leave.findAndCountAll({
       include: [
         {
           model: User,
           attributes: ["firstName", "middleName", "lastName", "id"],
           include: [
             { model: EmployeeDetails, attributes: ["employeeImage"] },
-            { model: DesignationModel, attributes: ["designation"] },
+            { model: Designation, attributes: ["designation"] },
           ],
           where: {
             firstName: { [Op.like]: `%${employeeName}%` },
@@ -106,12 +107,12 @@ exports.getLeavePagiantion = async (request, response) => {
 exports.leaveUpdate = async (request, response) => {
   const id = request.params.id;
   const { leaveInfo } = request.body;
-  const leaveData = await LeaveModel.findByPk(id);
+  const leaveData = await Leave.findByPk(id);
   try {
     if (!leaveData || leaveData.length < 0) {
       response.status(500).json({ ack: 0, msg: `invalid leave id ` });
     } else {
-      const UpdatedData = await LeaveModel.update(leaveInfo, {
+      const UpdatedData = await Leave.update(leaveInfo, {
         where: { id: id },
       });
       response.status(200).json({ ack: 1, msg: `leave updated successfully` });
@@ -124,17 +125,17 @@ exports.leaveUpdate = async (request, response) => {
 //delete Leave
 exports.deleteLeave = async (request, response) => {
   const id = request.params.id;
-  const leaveData = await LeaveModel.findByPk(id);
-  console.log(leaveData);
+  const leaveData = await Leave.findByPk(id);
+
   try {
     if (!leaveData || leaveData.length < 0) {
       return response.status(500).json({ ack: 0, msg: `invalid leaveId` });
     } else {
-      const designationToDelete = await LeaveModel.destroy({
+      const designationToDelete = await Leave.destroy({
         where: { id: id },
       });
 
-      response.status(200).json({ ack: 1, msg: designationToDelete });
+      response.status(200).json({ ack: 1, msg: `leave deleted successfully` });
     }
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
@@ -144,16 +145,30 @@ exports.deleteLeave = async (request, response) => {
 //leave status update
 exports.leaveStatusUpdate = async (request, response) => {
   const userId = request.userId;
-  const userData = await User.findByPk(userId);
+  const userData = await User.findOne({
+    where: { id: userId },
+    attributes: [
+      "firstName",
+      "middleName",
+      "lastName",
+      "id",
+      "email",
+      "dateOfJoining",
+      "employeeType",
+      "onBoardingStatus",
+      "isAdmin",
+      "isActive",
+    ],
+  });
   const id = request.params.id;
-  const leaveData = await LeaveModel.findByPk(id);
+  const leaveData = await Leave.findByPk(id);
   const updatedData = { status: request.body.status, userId: userId };
   try {
     if (!leaveData || leaveData.length < 0) {
       return response.status(500).json({ ack: 0, msg: `invalid leave id ` });
     }
     if (leaveData.status && leaveData.status.length > 0) {
-      const UpdatedData = await LeaveModel.update(updatedData, {
+      const UpdatedData = await Leave.update(updatedData, {
         where: { id: id },
       });
       response

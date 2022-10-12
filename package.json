@@ -36,5 +36,8 @@
   "bugs": {
     "url": "https://github.com/yeasitech/Yeasitech-Internal-Backend/issues"
   },
-  "homepage": "https://github.com/yeasitech/Yeasitech-Internal-Backend#readme"
+  "homepage": "https://github.com/yeasitech/Yeasitech-Internal-Backend#readme",
+  "devDependencies": {
+    "sequelize-cli": "^6.5.1"
+  }
 }

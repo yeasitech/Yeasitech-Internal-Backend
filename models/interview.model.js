@@ -14,5 +14,18 @@ module.exports = (sequelize, DataTypes) => {
     candidateId: DataTypes.INTEGER,
     // userId: DataTypes.UUID,
   });
+  Interview.associate = function (models) {
+    Interview.belongsTo(models.User, {
+      foreignKey: "interviewAssignTo",
+      as: "InterviewAssignedTo",
+    });
+    Interview.belongsTo(models.User, {
+      foreignKey: "interviewAssignBy",
+      as: "InterviewAssignedBy",
+    });
+    Interview.belongsTo(models.candidateDetails, {
+      foreignKey: "candidateId",
+    });
+  };
   return Interview;
 };

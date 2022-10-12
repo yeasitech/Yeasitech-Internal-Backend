@@ -1,16 +1,30 @@
-const { User, AssetModel } = require("../models/index");
+const { User, Assets } = require("../models");
 const { Op } = require("sequelize");
 
 exports.createAssets = async (request, response) => {
   data = request.body;
   const userId = request.userId;
-  const userData = await User.findByPk(userId);
+  const userData = await User.findOne({
+    where: { id: userId },
+    attributes: [
+      "firstName",
+      "middleName",
+      "lastName",
+      "id",
+      "email",
+      "dateOfJoining",
+      "employeeType",
+      "onBoardingStatus",
+      "isAdmin",
+      "isActive",
+    ],
+  });
 
   try {
     if (!userData || userData.length < 0) {
       response.status(500).json({ ack: 0, msg: `invalid userId ` });
     } else {
-      const createAsset = await AssetModel.create({ ...data, userId: userId });
+      const createAsset = await Assets.create({ ...data, userId: userId });
       response.status(200).json({
         ack: 1,
         msg: "successfully created",
@@ -26,11 +40,26 @@ exports.createAssets = async (request, response) => {
 exports.getAssetsPagination = async (request, response) => {
   const { elements, page, searchType = "" } = request.query;
   const limit = parseInt(elements);
-  console.log(`qwertyui`, limit);
   const offset = parseInt(limit * (page - 1));
   try {
-    const { count, rows: asset } = await AssetModel.findAndCountAll({
-      include: [{ model: User }],
+    const { count, rows: asset } = await Assets.findAndCountAll({
+      include: [
+        {
+          model: User,
+          attributes: [
+            "firstName",
+            "middleName",
+            "lastName",
+            "id",
+            "email",
+            "dateOfJoining",
+            "employeeType",
+            "onBoardingStatus",
+            "isAdmin",
+            "isActive",
+          ],
+        },
+      ],
       where: {
         [Op.or]: [
           { type: { [Op.like]: `%${searchType}%` } },
@@ -43,7 +72,7 @@ exports.getAssetsPagination = async (request, response) => {
 
       //order: [["createdAt", "AESC"]],
     });
-    // console.log(`qwertyu`, count, asset);
+
     response.status(200).json({
       ack: 1,
       data: asset,
@@ -67,7 +96,7 @@ exports.updateAsset = async (request, response) => {
       response.status(500).json({ ack: 0, msg: `invalid input ` });
     }
 
-    const assets = await AssetModel.update(updateAsset, { where: { id: id } });
+    const assets = await Assets.update(updateAsset, { where: { id: id } });
     response.status(200).json({ ack: 1, msg: `asset updated successfully` });
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
@@ -77,13 +106,13 @@ exports.updateAsset = async (request, response) => {
 exports.deleteAsset = async (request, response) => {
   const id = request.params.id;
 
-  const assetData = await AssetModel.findByPk(id);
+  const assetData = await Assets.findByPk(id);
 
   try {
     if (!assetData || assetData.length < 0) {
       response.status(500).json({ ack: 0, msg: `please give valid asset id` });
     } else {
-      const assetToDelete = await AssetModel.destroy({
+      const assetToDelete = await Assets.destroy({
         where: { id },
       });
       response.status(200).json({ ack: 1, msg: `asset deleted successfully` });
@@ -96,7 +125,7 @@ exports.deleteAsset = async (request, response) => {
 exports.getSingleAsset = async (request, response) => {
   assetId = request.params.assetId;
   try {
-    const data = await AssetModel.findByPk(assetId);
+    const data = await Assets.findByPk(assetId);
     response.status(200).json({ ack: 1, data: data });
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });

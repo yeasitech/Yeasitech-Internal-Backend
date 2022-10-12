@@ -28,7 +28,7 @@ userRouter.post("/login", userController.logIn);
 userRouter.post("/employeeOnboarding", userController.employeeDetails);
 userRouter.get(
   "/getEmployee/:id",
-  AdminAuthorization,
+
   userController.allSingleUser
 );
 userRouter.get(
@@ -72,8 +72,12 @@ userRouter.put(
   AdminAuthorization,
   userController.bankUpdate
 );
-userRouter.put("/makeAdmin", AdminAuthorization, userController.makeAdmin);
-userRouter.put("/setDeactive", AdminAuthorization, userController.setDeactive);
+userRouter.put("/makeAdmin/:id", AdminAuthorization, userController.makeAdmin);
+userRouter.put(
+  "/setDeactive/:id",
+  AdminAuthorization,
+  userController.setDeactive
+);
 
 //salary
 salaryRouter.post(
@@ -88,12 +92,12 @@ salaryRouter.get("/:userId", AdminAuthorization, salaryController.getSalary);
 //deptRouter
 departmentRouter.post(
   "/dept",
-  AdminAuthorization,
+
   departmentController.createDepartment
 );
 departmentRouter.post(
   "/designation",
-  AdminAuthorization,
+
   departmentController.createDesignation
 );
 departmentRouter.get(
@@ -182,7 +186,7 @@ leaveRouter.get(
   leaveController.getAlltypesOfLeave
 );
 leaveRouter.post(
-  "/createleave",
+  "/createleave/:id",
   AdminAuthorization,
   leaveController.createLeaveByUser
 );

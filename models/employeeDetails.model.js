@@ -4,8 +4,8 @@ module.exports = (sequelize, DataTypes) => {
   const EmployeeDetails = sequelize.define("EmployeeDetails", {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     userId: DataTypes.UUID,
-    contactNo: DataTypes.STRING,
-    emergencyContactNo: DataTypes.STRING,
+    contactNo: DataTypes.BIGINT,
+    emergencyContactNo: DataTypes.BIGINT,
     permanentAddress: DataTypes.STRING,
     currentAddress: DataTypes.STRING,
     gender: DataTypes.STRING,
@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
     guardianName: DataTypes.STRING,
     employeeId: DataTypes.STRING,
     employeeImage: DataTypes.STRING,
-    aadharNumber: DataTypes.STRING,
+    aadharNumber: DataTypes.BIGINT,
     aadharFrontImage: DataTypes.STRING,
     aadharBackImage: DataTypes.STRING,
     voterIdNo: DataTypes.STRING,
@@ -25,12 +25,14 @@ module.exports = (sequelize, DataTypes) => {
     passportNo: DataTypes.STRING,
     passportFrontImage: DataTypes.STRING,
     passportBackImage: DataTypes.STRING,
-    // onBoardingStatus: DataTypes.BOOLEAN,
   });
-  // EmployeeDetails.associate = function (models) {
-  //   EmployeeDetails.belongsTo(models.User, {
-  //     foreignKey: "userId",
-  //   });
-  // };
+  EmployeeDetails.associate = function (models) {
+    EmployeeDetails.belongsTo(models.User, {
+      foreignKey: "userId",
+    });
+    // EmployeeDetails.belongsTo(models.Department, {
+    //   foreignKey: "departmentId",
+    // });
+  };
   return EmployeeDetails;
 };

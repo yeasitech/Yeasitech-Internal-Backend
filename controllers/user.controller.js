@@ -5,12 +5,12 @@ const { Op } = require("sequelize");
 const {
   User,
   EmployeeDetails,
-  EducationModel,
-  DepartmentModel,
-  DesignationModel,
-  ExperienceModel,
-  BankModel,
-} = require("../models/index");
+  EducationDetails,
+  Department,
+  Designation,
+  EmployeeExperience,
+  BankDetails,
+} = require("../models");
 const {
   createEmployeeSchema,
   loginSchema,
@@ -23,13 +23,13 @@ exports.createUser = async (request, response) => {
 
   if (error) {
     return response.status(200).json({ ack: 1, msg: error.details[0].message });
-    console.log(`efdh`, error);
   }
   const user = request.body;
-  if (!user) throw new Error(`user doesn't exists`);
-  const allDept = await DepartmentModel.findByPk(+user.department);
+  if (!user)
+    return response.status(200).json({ ack: 1, msg: `Please give valid user` });
+  const allDept = await Department.findByPk(user.department);
 
-  const allDesignation = await DesignationModel.findOne({
+  const allDesignation = await Designation.findOne({
     where: { designation: user.designation },
   });
 
@@ -43,15 +43,16 @@ exports.createUser = async (request, response) => {
         msg: "User exists with this email",
       });
     } else {
-      // const hash = bcrypt.hashSync(user.password, 10);
+      console.log(`user-passowrd`, user.password);
+      //const hash = bcrypt.hashSync(user.password, 10);
       const userRecord = {
         firstName: user.firstName,
         middleName: user.middleName,
         lastName: user.lastName,
         dateOfJoining: user.dateOfJoining,
-        departmentId: +allDept.id,
-        designationId: +allDesignation.id,
-        // password: hash,
+        departmentId: allDept.id,
+        designationId: allDesignation.id,
+        //password: hash,
         email: user.email,
         onBoardingStatus: false,
         employeeType: user.employeeType,
@@ -68,7 +69,6 @@ exports.createUser = async (request, response) => {
         .json({ ack: 1, msg: "successfully created", data: userData });
     }
   } catch (error) {
-    console.error("Error => ", error);
     response.status(500).json({ ack: 0, msg: error.message || "Server error" });
   }
 };
@@ -76,7 +76,6 @@ exports.createUser = async (request, response) => {
 // Log In User
 exports.logIn = async (request, response) => {
   const { error } = loginSchema.validate(request.body);
-  console.log(`>>>>>>>>>`, request.userId);
   if (error) {
     response.status(200).json({ ack: 1, msg: error.details[0].message });
     return false;
@@ -89,7 +88,7 @@ exports.logIn = async (request, response) => {
         if (!checkForIfExists.dataValues.isActive) {
           response.status(200).json({
             ack: 0,
-            msg: "User disabled, Please contact us through our website",
+            msg: "User not exist",
           });
           return false;
         }
@@ -131,7 +130,7 @@ exports.logIn = async (request, response) => {
     } catch (error) {
       response
         .status(500)
-        .json({ ack: 0, msg: error.message || "Server error" });
+        .json({ ack: 11, msg: error.message || "Server error" });
     }
   }
 };
@@ -139,30 +138,30 @@ exports.logIn = async (request, response) => {
 exports.employeeDetails = async (request, response) => {
   const { personal, education, experience, bankDetails } = request.body;
   const { email } = request.body.personal;
-
   const { error } = employeeDetailsSchema.validate({ email });
   if (error) {
-    response.status(400).json({
+    return response.status(400).json({
       ack: 1,
       error: "invalid email Id",
       msg: error.details[0].message,
     });
-
-    return;
   }
 
   try {
     let user = await User.findOne({ where: { email: email } });
-    console.log(`1234567890`, user.email);
     if (user.onBoardingStatus == true) {
       return response
         .status(200)
         .json({ ack: 0, msg: `you are already onboarded` });
     }
-    if (email !== user.email) throw new Error(`employee not exists`);
+    if (email !== user.email)
+      return response.status(200).json({ ack: 1, msg: `employee not exists` });
     else {
       //personal details
-      if (!personal) throw new Error(`please provide personal details`);
+      if (!personal)
+        response
+          .status(200)
+          .json({ ack: 1, msg: `please provide personal details` });
       else {
         personal.userId = user.id;
         let getAllEmployee = await EmployeeDetails.findAll({
@@ -192,26 +191,34 @@ exports.employeeDetails = async (request, response) => {
       }
 
       // Eduaction Details
-      if (!education) throw new Error(`please provide education details`);
+      if (!education)
+        response
+          .status(200)
+          .json({ ack: 1, msg: `please provide education details` });
       else {
         await education.map((data) => {
-          EducationModel.create({ ...data, userId: user.id });
+          EducationDetails.create({ ...data, userId: user.id });
         });
       }
 
       //experience details
-      if (!experience) throw new Error(`please provide experience details`);
+      if (!experience)
+        response
+          .status(200)
+          .json({ ack: 1, msg: `please provide experience details` });
       else {
         await experience.map((data) => {
-          ExperienceModel.create({ ...data, userId: user.id });
+          EmployeeExperience.create({ ...data, userId: user.id });
         });
       }
       //bank details
-      if (!bankDetails) throw new Error(`please provide bank details`);
+      if (!BankDetails)
+        response
+          .status(200)
+          .json({ ack: 1, msg: `please provide bank details` });
       else {
         await bankDetails.map((data) => {
-          console.log(`1234567`, { ...data });
-          BankModel.create({ ...data, userId: user.id });
+          BankDetails.create({ ...data, userId: user.id });
         });
       }
       await User.update(
@@ -225,7 +232,6 @@ exports.employeeDetails = async (request, response) => {
       });
     }
   } catch (error) {
-    console.log("error", error);
     response
       .status(500)
       .json({ ack: 0, status: `error`, msg: error.message || "Server error" });
@@ -247,10 +253,17 @@ exports.allEmployee = async (request, response) => {
 exports.allSingleUser = async (request, response) => {
   id = request.params.id;
   try {
-    const allData = await User.findByPk(
-      id
-      // include: [{ model: EmployeeDetails }],
-    );
+    const allData = await User.findOne({
+      where: { id: id },
+      attributes: [
+        "firstName",
+        "middleName",
+        "lastName",
+        "id",
+        "email",
+        "dateOfJoining",
+      ],
+    });
     response.status(200).json({ ack: 1, data: allData });
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
@@ -263,16 +276,24 @@ exports.oneEmployeeDetails = async (request, response) => {
 
   try {
     const detailsOfEmployee = await User.findOne({
+      attributes: [
+        "firstName",
+        "middleName",
+        "lastName",
+        "id",
+        "email",
+        "dateOfJoining",
+      ],
       where: { id: id },
       include: [
         { model: EmployeeDetails },
-        { model: EducationModel, order: `passoutYear` },
-        { model: ExperienceModel },
-        { model: BankModel },
+        { model: EducationDetails, order: `passoutYear` },
+        { model: EmployeeExperience },
+        { model: BankDetails },
       ],
       // order: [
-      //   [{ model: EducationModel }, "passoutYear", "DESC"],
-      //   [{ model: ExperienceModel }, "dateOfLeaving"],
+      //   [{ model: EducationDetails }, "passoutYear", "DESC"],
+      //   [{ model: EmployeeExperience }, "dateOfLeaving"],
       // ],
     });
 
@@ -302,10 +323,21 @@ exports.getAllEmployeePagination = async (request, response) => {
 
   const limit = parseInt(elements);
   const offset = parseInt(limit * (page - 1));
-  console.log(`offset`, offset);
 
   try {
     const { count, rows } = await User.findAndCountAll({
+      attributes: [
+        "firstName",
+        "middleName",
+        "lastName",
+        "id",
+        "email",
+        "dateOfJoining",
+        "employeeType",
+        "onBoardingStatus",
+        "isAdmin",
+        "isActive",
+      ],
       include: [
         {
           model: EmployeeDetails,
@@ -398,14 +430,14 @@ exports.searchUser = async (request, response) => {
 
 //update OneEmployeePersonal Data
 exports.editOneEmployeePersonalData = async (request, response) => {
-  const userId = request.userId;
-
+  const id = request.body.id;
   const { userInfo, personalInfo } = request.body;
-  const userData = await User.findByPk(userId);
+
+  const userData = await User.findByPk(id);
   const EmployeeData = await EmployeeDetails.findOne({
-    where: { userId: userId },
+    where: { userId: id },
   });
-  // console.log(EmployeeData);
+
   try {
     if (
       !userData ||
@@ -416,16 +448,14 @@ exports.editOneEmployeePersonalData = async (request, response) => {
     } else {
       const [data] = await Promise.all([
         User.update(userInfo, {
-          where: { id: userId },
+          where: { id: id },
         }),
         EmployeeDetails.update(personalInfo, {
-          where: { userId: userId },
+          where: { userId: id },
         }),
 
         //response.status(200).json({ ack: 1, msg: data }),
-      ]).catch((error) => {
-        console.log(`1234567890`, error);
-      });
+      ]).catch((error) => {});
       response.status(200).json({ ack: 1, data: data });
     }
   } catch (error) {
@@ -436,17 +466,16 @@ exports.editOneEmployeePersonalData = async (request, response) => {
 //updateEducation
 exports.updateEducation = async (request, response) => {
   const id = request.params.id;
-  console.log(id);
   const { education } = request.body;
 
-  const educationData = await EducationModel.findByPk(id);
-  //console.log(educationData);
+  const educationData = await EducationDetails.findByPk(id);
+
   try {
     if (!educationData || educationData.length < 0) {
       response.status(500).json({ ack: 0, msg: `invalid educationInfo` });
     } else {
       const updatedData = await education.map((data) => {
-        EducationModel.update(
+        EducationDetails.update(
           { ...data },
           {
             where: { id: id },
@@ -467,17 +496,15 @@ exports.updateEducation = async (request, response) => {
 //update Experience
 exports.updateExperience = async (request, response) => {
   const id = request.params.id;
-  console.log(id);
   const { experience } = request.body;
 
-  const experienceData = await EducationModel.findByPk(id);
-  console.log(experienceData);
+  const experienceData = await EducationDetails.findByPk(id);
   try {
     if (!experienceData || experienceData.length < 0) {
       response.status(500).json({ ack: 0, msg: `invalid educationInfo` });
     } else {
       const updatedData = await experience.map((data) => {
-        ExperienceModel.update(
+        EmployeeExperience.update(
           { ...data },
           {
             where: { id: id },
@@ -501,14 +528,13 @@ exports.bankUpdate = async (request, response) => {
 
   const { bankDetails } = request.body;
 
-  const bankData = await EducationModel.findByPk(id);
-  console.log(bankData);
+  const bankData = await EducationDetails.findByPk(id);
   try {
     if (!bankData || bankData.length < 0) {
       response.status(500).json({ ack: 0, msg: `invalid education Info` });
     } else {
       const updatedData = await bankDetails.map((data) => {
-        BankModel.update(
+        BankDetails.update(
           { ...data },
           {
             where: { id: id },
@@ -518,7 +544,7 @@ exports.bankUpdate = async (request, response) => {
       return response.status(200).json({
         ack: 1,
         status: `success`,
-        data: `bankDetails updated successfully`,
+        data: `BankDetails updated successfully`,
       });
     }
   } catch (error) {
@@ -529,7 +555,8 @@ exports.bankUpdate = async (request, response) => {
 // make user to admin
 exports.makeAdmin = async (request, response) => {
   const userId = request.userId;
-  const userData = await User.findByPk(userId);
+  const id = request.params.id;
+  const userData = await User.findByPk(id);
   try {
     if (!userData || userData == null) {
       response.status(500).json({ ack: 0, msg: `invalid  userId` });
@@ -537,7 +564,7 @@ exports.makeAdmin = async (request, response) => {
     if (userData.isAdmin == false) {
       const makeAdmin = await User.update(
         { isAdmin: true },
-        { where: { id: userId } }
+        { where: { id: id } }
       );
       response.status(200).json({
         ack: 1,
@@ -547,7 +574,7 @@ exports.makeAdmin = async (request, response) => {
     if (userData.isAdmin == true) {
       const makeAdmin = await User.update(
         { isAdmin: false },
-        { where: { id: userId } }
+        { where: { id: id } }
       );
       response.status(200).json({
         ack: 1,
@@ -562,7 +589,8 @@ exports.makeAdmin = async (request, response) => {
 // Dactive User
 exports.setDeactive = async (request, response) => {
   const userId = request.userId;
-  const userData = await User.findByPk(userId);
+  const id = request.params.id;
+  const userData = await User.findByPk(id);
 
   try {
     if (!userData || userData == null) {
@@ -571,14 +599,14 @@ exports.setDeactive = async (request, response) => {
     if (userData.isActive == true) {
       const deactive = await User.update(
         { isActive: false },
-        { where: { id: userId } }
+        { where: { id: id } }
       );
       response.status(200).json({ ack: 1, msg: `user deactivated` });
     }
     if (userData.isActive == false) {
       const active = await User.update(
         { isActive: true },
-        { where: { id: userId } }
+        { where: { id: id } }
       );
       response.status(200).json({ ack: 1, msg: `user activated` });
     }

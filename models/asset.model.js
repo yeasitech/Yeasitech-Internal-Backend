@@ -12,10 +12,14 @@ module.exports = (sequelize, DataTypes) => {
     purchaseFrom: DataTypes.STRING,
     purchaseDate: DataTypes.DATEONLY,
     warrentyExpire: DataTypes.DATEONLY,
-    // assignTo: DataTypes.STRING,
     productId: DataTypes.STRING,
     userId: DataTypes.UUID,
     type: DataTypes.STRING,
   });
+  Assets.associate = function (models) {
+    Assets.belongsTo(models.User, {
+      foreignKey: "userId",
+    });
+  };
   return Assets;
 };

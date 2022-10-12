@@ -1,9 +1,9 @@
-const { DepartmentModel, DesignationModel } = require("../models/index");
+const { Department, Designation } = require("../models");
 
 //create department
 exports.createDepartment = async (request, response) => {
   try {
-    const departmentTypes = await DepartmentModel.create(request.body);
+    const departmentTypes = await Department.create(request.body);
     response.status(200).json({ ack: 1, data: departmentTypes });
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `server error` });
@@ -13,7 +13,7 @@ exports.createDepartment = async (request, response) => {
 //delete department
 exports.deleteDepartment = async (request, response) => {
   const id = request.params.id;
-  const department = await DepartmentModel.findOne({
+  const department = await Department.findOne({
     where: { id: id },
   });
 
@@ -21,12 +21,7 @@ exports.deleteDepartment = async (request, response) => {
     if (!department || department === null) {
       response.status(500).json({ ack: 0, msg: `invalid department ` });
     } else {
-      // Promise.all([
-      // await DesignationModel.destroy({
-      //   where: { departmentId: id },
-      // });
-      //await User.destroy({ where: { departmentId: id } });
-      await DepartmentModel.destroy({
+      await Department.destroy({
         where: { id: id },
         // onDelete: "cascade",
       });
@@ -35,7 +30,6 @@ exports.deleteDepartment = async (request, response) => {
       response.status(200).json({ ack: 1, msg: `successfully deleted` });
     }
   } catch (error) {
-    console.error(error);
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
   }
 };
@@ -44,14 +38,14 @@ exports.deleteDepartment = async (request, response) => {
 exports.editDepartment = async (request, response) => {
   const id = request.params.id;
 
-  const departments = await DepartmentModel.findOne({ where: { id: id } });
+  const departments = await Department.findOne({ where: { id: id } });
 
   const department = request.body.department;
   try {
     if (!departments || departments === null) {
       response.status(500).json({ ack: 0, msg: `invalid department ` });
     } else {
-      const updatedDepartment = await DepartmentModel.update(
+      const updatedDepartment = await Department.update(
         { department },
         {
           where: { id: id },
@@ -70,7 +64,7 @@ exports.editDepartment = async (request, response) => {
 // get department
 exports.getDepartment = async (request, response) => {
   try {
-    const allDept = await DepartmentModel.findAll();
+    const allDept = await Department.findAll();
 
     response.status(200).json({ ack: 1, data: allDept });
   } catch (error) {
@@ -85,7 +79,7 @@ exports.createDesignation = async (request, response) => {
   if (!departmentId) {
     response.status(500).json({ ack: 0, msg: `invalid department id` });
   }
-  const allDepartments = await DepartmentModel.findByPk(+departmentId);
+  const allDepartments = await Department.findByPk(+departmentId);
   if (!allDepartments && allDepartments === null) {
     response.status(500).json({ ack: 0, msg: `invalid department` });
   }
@@ -94,8 +88,8 @@ exports.createDesignation = async (request, response) => {
     departmentId: allDepartments.id,
     designation: user.designation,
   };
-  const userDesignation = await DesignationModel.create(userRecord);
-  console.log(userDesignation);
+  const userDesignation = await Designation.create(userRecord);
+
   response.status(200).json({ ack: 1, data: userDesignation });
 };
 
@@ -104,7 +98,7 @@ exports.getDesignation = async (request, response) => {
   const departmentId = request.params.departmentId;
 
   try {
-    const allDept = await DesignationModel.findAll({
+    const allDept = await Designation.findAll({
       where: { departmentId: +departmentId },
       attributes: ["designation", "id"],
     });
@@ -117,7 +111,7 @@ exports.getDesignation = async (request, response) => {
 //get all designation
 exports.getAllDesignation = async (request, response) => {
   try {
-    const data = await DesignationModel.findAll();
+    const data = await Designation.findAll();
 
     response.status(200).json({ ack: 1, data: data });
   } catch (error) {
@@ -134,7 +128,7 @@ exports.editDesignation = async (request, response) => {
     if (!id && id.length <= 0)
       response.status(500).json({ ack: 0, msg: `invalid department id` });
     else {
-      const updatedDesignation = await DesignationModel.update(
+      const updatedDesignation = await Designation.update(
         { designation },
         {
           where: { id: id },
@@ -155,9 +149,11 @@ exports.deleteDesignation = async (request, response) => {
 
   try {
     if (!designationId || designationId == null)
-      throw new Error(`invalid department id`);
+      return response
+        .status(200)
+        .json({ ack: 1, msg: `invalid department id` });
     else {
-      const designationToDelete = await DesignationModel.destroy({
+      const designationToDelete = await Designation.destroy({
         where: { id: designationId },
       });
 
@@ -171,8 +167,8 @@ exports.deleteDesignation = async (request, response) => {
 //get all Department Designation
 exports.getAllDepartmentDesignation = async (request, response) => {
   try {
-    const departments = await DepartmentModel.findAll({
-      include: [{ model: DesignationModel }],
+    const departments = await Department.findAll({
+      include: [{ model: Designation }],
     });
     response.status(200).json({ ack: 1, data: departments });
   } catch (error) {
@@ -185,9 +181,9 @@ exports.getAllDepartmentPagination = async (request, response) => {
   const { elements, page } = request.query;
   const limit = parseInt(elements);
   const offset = parseInt(limit * (page - 1));
-  console.log(`offset`, offset);
+
   try {
-    const { count, rows: departments } = await DepartmentModel.findAndCountAll({
+    const { count, rows: departments } = await Department.findAndCountAll({
       limit,
       offset,
       //order: [["createdAt", "AESC"]],
@@ -210,18 +206,16 @@ exports.getAllDepartmentPagination = async (request, response) => {
 exports.getAllDesignationPagination = async (request, response) => {
   const { elements, page } = request.query;
   const limit = parseInt(elements);
-  console.log(`qwertyui`, limit);
+
   const offset = parseInt(limit * (page - 1));
   try {
-    const { count, rows: designation } = await DesignationModel.findAndCountAll(
-      {
-        include: [{ model: DepartmentModel }],
+    const { count, rows: designation } = await Designation.findAndCountAll({
+      include: [{ model: Department }],
 
-        limit,
-        offset,
-        //order: [["createdAt", "AESC"]],
-      }
-    );
+      limit,
+      offset,
+      //order: [["createdAt", "AESC"]],
+    });
     response.status(200).json({
       ack: 1,
       data: designation,
@@ -241,12 +235,12 @@ exports.editDepartmentDesignation = async (request, response) => {
   const designationid = request.params.designationid;
   const { designation, departmentId } = request.body;
 
-  const allDesignations = await DesignationModel.findByPk(designationid);
+  const allDesignations = await Designation.findByPk(designationid);
 
   try {
     if (!allDesignations || allDesignations === null)
-      throw new Error(`invalid designation`);
-    const updateDepartmentDesignation = await DesignationModel.update(
+      return response.status(200).json({ ack: 1, msg: "invalid designation" });
+    const updateDepartmentDesignation = await Designation.update(
       { designation: designation, departmentId: departmentId },
       {
         where: { id: designationid },

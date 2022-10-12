@@ -1,4 +1,4 @@
-const { HolidayModel } = require("../models/index");
+const { Holiday } = require("../models");
 
 //create Holidays
 exports.createHoliday = async (request, response) => {
@@ -8,7 +8,7 @@ exports.createHoliday = async (request, response) => {
     holidayDate: new Date(holidayDate),
   };
   try {
-    const createHoliday = await HolidayModel.create(holidayInfo);
+    const createHoliday = await Holiday.create(holidayInfo);
     response.status(200).json({ ack: 1, msg: createHoliday });
   } catch (error) {
     response
@@ -19,7 +19,7 @@ exports.createHoliday = async (request, response) => {
 
 // get Holiday
 exports.getAllHoliday = async (request, response) => {
-  const allHolidays = await HolidayModel.findAll();
+  const allHolidays = await Holiday.findAll();
   response.status(200).json({ ack: 1, msg: allHolidays });
 };
 
@@ -31,7 +31,7 @@ exports.updateHoliday = async (request, response) => {
     response.status(500).json({ ack: 0, msg: `please provide proper Holiday` });
   }
   try {
-    const updatedHoliday = await HolidayModel.update(
+    const updatedHoliday = await Holiday.update(
       {
         title: title,
         holidayDate: new Date(holidayDate),
@@ -52,7 +52,7 @@ exports.deleteHoliday = async (request, response) => {
     response.status(500).json({ ack: 1, msg: `please provide proper holiday` });
   }
   try {
-    const deleteHoliday = await HolidayModel.destroy({
+    const deleteHoliday = await Holiday.destroy({
       where: { id: holidayId },
     });
     response.status(200).json({ ack: 1, msg: `successfully deleted holiday` });
@@ -65,11 +65,9 @@ exports.deleteHoliday = async (request, response) => {
 exports.holidayPagination = async (request, response) => {
   const { elements, page } = request.query;
   const limit = parseInt(elements);
-  //console.log(`limit`,limit);
   const offset = parseInt(limit * (page - 1));
-  console.log(`offsets`, offset);
   try {
-    const { count, rows } = await HolidayModel.findAndCountAll({
+    const { count, rows } = await Holiday.findAndCountAll({
       limit,
       offset,
     });

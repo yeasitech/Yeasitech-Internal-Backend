@@ -11,5 +11,10 @@ module.exports = (sequelize, DataTypes) => {
     designation: DataTypes.STRING,
     departmentId: { type: DataTypes.INTEGER, allowNull: true },
   });
+  Designation.associate = function (models) {
+    Designation.belongsTo(models.Department, {
+      foreignKey: "departmentId",
+    });
+  };
   return Designation;
 };
