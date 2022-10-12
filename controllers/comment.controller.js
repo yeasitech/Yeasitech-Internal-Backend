@@ -1,8 +1,8 @@
-const { CandidateModel, CommentModel, User } = require("../models/index");
+const { candidateDetails, Comments, User } = require("../models");
 
 exports.createComment = async (request, response) => {
   const candidateId = request.params.candidateId;
-  const candidateData = await CandidateModel.findByPk(candidateId);
+  const candidateData = await candidateDetails.findByPk(candidateId);
   const userId = request.userId;
   const user = request.body;
   const data = {
@@ -14,7 +14,7 @@ exports.createComment = async (request, response) => {
     if (!candidateData && candidateData == null) {
       return response.status(500).json({ ack: 0, msg: `invalid candidate id` });
     } else {
-      const createComment = await CommentModel.create(data);
+      const createComment = await Comments.create(data);
       response.status(200).json({ ack: 1, data: createComment });
     }
   } catch (error) {
@@ -25,14 +25,14 @@ exports.createComment = async (request, response) => {
 exports.getComment = async (request, response) => {
   const candidateId = request.params.candidateId;
 
-  const candidateData = await CandidateModel.findByPk(candidateId);
+  const candidateData = await candidateDetails.findByPk(candidateId);
   try {
     if (!candidateData && candidateData == null) {
       return response.status(500).json({ ack: 0, msg: `invalid candidate id` });
     } else {
-      const createComment = await CommentModel.findAll({
+      const createComment = await Comments.findAll({
         include: [
-          { model: CandidateModel },
+          { model: candidateDetails },
           {
             model: User,
             attributes: ["firstName", "middleName", "lastName"],
@@ -48,12 +48,12 @@ exports.getComment = async (request, response) => {
 };
 exports.updateComments = async (request, response) => {
   // const id = request.params.id;
-  // console.log(id);
+
   const { candidateId } = request.body;
-  const commentData = await CommentModel.findOne({
+  const commentData = await Comments.findOne({
     where: { candidateId: candidateId },
   });
-  const candidateData = await CommentModel.findOne({
+  const candidateData = await Comments.findOne({
     where: { id: candidateId },
   });
 
@@ -63,7 +63,7 @@ exports.updateComments = async (request, response) => {
         .status(500)
         .json({ ack: 0, msg: `invalid comment or candidate id` });
     } else {
-      const updatedData = await CommentModel.create(request.body, {
+      const updatedData = await Comments.create(request.body, {
         where: { candidateId },
       });
       response

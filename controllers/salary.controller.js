@@ -1,4 +1,4 @@
-const { User, SalaryModel } = require("../models/index");
+const { User, Salary } = require("../models");
 
 // create salary
 exports.employeeSalary = async (request, response) => {
@@ -8,23 +8,20 @@ exports.employeeSalary = async (request, response) => {
 
   try {
     const userData = await User.findOne({ where: { id: userId } });
-
     if (!userData) {
-      response.status(500).json({ ack: 0, msg: `employee not exist` });
+      return response.status(200).json({ ack: 1, msg: `employee not exist` });
     } else {
       await salary.map((data) => {
-        SalaryModel.create({
+        Salary.create({
           ...data,
-          //previousSalary: parseInt(data.previousSalary),
-          currentSalary: parseInt(data.currentSalary),
+          currentSalary: data.currentSalary,
           userId: userId,
         });
       });
 
       response.status(200).json({
         ack: 1,
-
-        msg: "salary updated successfully",
+        data: `Salary updated sccessfully`,
       });
     }
   } catch (error) {
@@ -37,12 +34,12 @@ exports.employeeSalary = async (request, response) => {
 //get employeesalary
 exports.getSalary = async (request, response) => {
   const userId = request.params.userId;
-  console.log(userId);
+
   try {
     if (!userId) {
-      throw new Error(`user not exists`);
+      return response.status(200).json({ ack: 1, msg: `user not exists` });
     } else {
-      const salaryDetails = await SalaryModel.findAll({
+      const salaryDetails = await Salary.findAll({
         where: { userId: userId },
       });
 

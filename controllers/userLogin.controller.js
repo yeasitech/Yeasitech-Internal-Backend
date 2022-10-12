@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const{ uuid} = require("uuidv4");
  
 const {
-    UserLoginModel,User,
+    UserLogin, User,
   } = require("../models/index");
   
  exports.userLoginTokenGenerate = async (request, response) => {
@@ -15,7 +15,7 @@ const {
       if (!userId || userId.length < 0) {
         response.status(500).json({ ack: 0, msg: `invalid userId ` });
       } else {
-        const userLoginData = await UserLoginModel.create({userId,token});
+        const userLoginData = await UserLogin.create({userId,token});
       // console.log("expense",{...expenseData});
         response.status(200) .json({ ack: 1, msg: "link generated successfully", data: userLoginData });
       }
@@ -28,7 +28,7 @@ const {
     try {
         //const { password } =request.body;
         const token =request.params.token
-        const userData = await UserLoginModel.findOne({ where :{token:token }});
+        const userData = await UserLogin.findOne({ where :{token:token }});
         const password = bcrypt.hashSync(request.body.password, 10);
         if (!userData || userData.length < 0) {
           response.status(401).json({ ack: 0, msg: `Reset password link expired ` });
@@ -42,7 +42,7 @@ const {
 
         if (password) {
            const  data= await User.update({password},{where :{id  :userData.userId}});
-           await UserLoginModel.destroy({ where :{userId:userData.userId }});
+           await UserLogin.destroy({ where :{userId:userData.userId }});
            
             response
             .status(200)
@@ -53,8 +53,3 @@ const {
         response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
       }
  };
-
-
-
-
- 

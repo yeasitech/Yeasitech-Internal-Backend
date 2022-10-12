@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  const bankDetails = sequelize.define("bankDetails", {
+  const BankDetails = sequelize.define("BankDetails", {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -14,5 +14,10 @@ module.exports = (sequelize, DataTypes) => {
     userId: DataTypes.UUID,
     passbookImage: DataTypes.STRING,
   });
-  return bankDetails;
+  BankDetails.associate = function (models) {
+    BankDetails.belongsTo(models.User, {
+      foreignKey: "userId",
+    });
+  };
+  return BankDetails;
 };

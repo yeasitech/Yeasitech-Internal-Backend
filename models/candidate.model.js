@@ -9,15 +9,19 @@ module.exports = (sequelize, DataTypes) => {
     fullName: DataTypes.STRING,
     email: DataTypes.STRING,
     cv: DataTypes.STRING,
-    followUpDate: DataTypes.DATEONLY,
+    followUpDate: { type: DataTypes.DATEONLY, allowNull: true },
     contactNumber: DataTypes.STRING,
-    //schedule: DataTypes.DATEONLY,
-    //interviewAssignBy: DataTypes.STRING,
     skills: DataTypes.TEXT,
     interviewSchedule: DataTypes.BOOLEAN,
     isSelected: DataTypes.BOOLEAN,
-    // userId: DataTypes.UUID,
-    // text: DataTypes.TEXT,
   });
+  candidateDetails.associate = function (models) {
+    candidateDetails.hasMany(models.Interview, {
+      foreignKey: "candidateId",
+    });
+    candidateDetails.hasMany(models.Comments, {
+      foreignKey: "candidateId",
+    });
+  };
   return candidateDetails;
 };

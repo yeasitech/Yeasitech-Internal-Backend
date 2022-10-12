@@ -32,5 +32,10 @@ module.exports = (sequelize, DataTypes) => {
     reasonOfLeave: DataTypes.STRING,
     status: DataTypes.STRING,
   });
+  Leave.associate = function (models) {
+    Leave.belongsTo(models.User, {
+      foreignKey: "userId",
+    });
+  };
   return Leave;
 };

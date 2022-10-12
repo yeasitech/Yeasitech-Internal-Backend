@@ -10,5 +10,10 @@ module.exports = (sequelize, DataTypes) => {
     currentSalary: DataTypes.INTEGER,
     dateOfIncrement: DataTypes.DATEONLY,
   });
+  Salary.associate = function (models) {
+    Salary.belongsTo(models.User, {
+      foreignKey: "userId",
+    });
+  };
   return Salary;
 };

@@ -37,7 +37,7 @@ app.use("/expense", expenseRouter);
 app.use("/userLogin", userLoginRouter);
 
 // const birthday = nodeCron.schedule(
-//   " * 1 * * * * ",
+//   " 5 0 * * *  ",
 //   async function jobYouNeedToExecute(request, response) {
 //     // Do whatever you want in here. Send email, Make  database backup or download data.
 //     const todayDate = new Date().getDate();
@@ -70,10 +70,10 @@ app.use("/userLogin", userLoginRouter);
 //   }
 // );
 
-//birthday.start();
+// birthday.start();
 
 // const interviewSchedule = nodeCron.schedule(
-//   " * 1 * * * * ",
+//   " 5 0 * * * ",
 //   async function jobYouNeedToExecute(request, response) {
 //     const todayDate = new Date().getDate();
 //     const thisMonth = new Date().getMonth();
@@ -105,7 +105,7 @@ app.use("/userLogin", userLoginRouter);
 //   }
 // );
 
-//interviewSchedule.start();
+// interviewSchedule.start();
 
 app.listen(port, () => {
   console.log(`server is listening to the port :${port}`);

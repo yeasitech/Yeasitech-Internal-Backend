@@ -1,9 +1,4 @@
-const {
-  CandidateModel,
-  User,
-  CommentModel,
-  InterviewModel,
-} = require("../models/index");
+const { candidateDetails, User, Comments, Interview } = require("../models");
 const { Op } = require("sequelize");
 //create Candidate
 exports.createCandidate = async (request, response) => {
@@ -19,11 +14,11 @@ exports.createCandidate = async (request, response) => {
     isSelected: false,
   };
   try {
-    const candidate = await CandidateModel.create(candidateInfo);
+    const candidate = await candidateDetails.create(candidateInfo);
 
     // const { comment } = user;
     // const commentCreate = { comment: user.comment, candidateId };
-    // const commentRes = await CommentModel.create(commentCreate);
+    // const commentRes = await Comments.create(commentCreate);
 
     response.status(200).json({ ack: 1, data: candidate });
   } catch (error) {
@@ -35,18 +30,20 @@ exports.createCandidate = async (request, response) => {
 exports.candidateUpdate = async (request, response) => {
   const id = request.params.id;
   const { candidateInfo } = request.body;
-  const searchData = await CandidateModel.findByPk(id);
+  const searchData = await candidateDetails.findByPk(id);
   try {
     if (!searchData || searchData.length < 0) {
       response.status(500).json({ ack: 0, msg: `invalid id passed ` });
     } else {
-      const updatedData = await CandidateModel.update(
+      const updatedData = await candidateDetails.update(
         { ...candidateInfo },
         {
           where: { id: id },
         }
       );
-      response.status(200).json({ ack: 1, msg: updatedData });
+      response
+        .status(200)
+        .json({ ack: 1, msg: `Candidate updated successfully` });
     }
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
@@ -56,29 +53,27 @@ exports.candidateUpdate = async (request, response) => {
 // Delete Candidate
 exports.deleteCandidate = async (request, response) => {
   const id = request.params.id;
-  const candidateData = await CandidateModel.findByPk(id);
-  console.log(candidateData);
+  const candidateData = await candidateDetails.findByPk(id);
+
   try {
     if (!candidateData || candidateData.length < 0) {
       return response.status(500).json({ ack: 0, msg: `invalid candidate id` });
     } else {
       const [data] = await Promise.all([
-        CandidateModel.destroy({
+        candidateDetails.destroy({
           where: { id },
         }),
-        CommentModel.destroy({
+        Comments.destroy({
           where: { candidateId: id },
         }),
-        InterviewModel.destroy({
+        Interview.destroy({
           where: { candidateId: id },
         }),
 
         response
           .status(200)
           .json({ ack: 1, data: ` data deleted successfully` }),
-      ]).catch((error) => {
-        console.log(`1234567890`, error);
-      });
+      ]).catch((error) => {});
     }
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
@@ -91,9 +86,9 @@ exports.candidatePagination = async (request, response) => {
   const limit = parseInt(elements);
   const offset = parseInt(limit * (page - 1));
   try {
-    const { count, rows } = await CandidateModel.findAndCountAll({
+    const { count, rows } = await candidateDetails.findAndCountAll({
       //order: [["followUpDate", "DESc"]],
-      include: { model: CommentModel },
+      include: { model: Comments },
       where: {
         [Op.or]: [
           { fullName: { [Op.like]: `%${searchParam}%` } },
@@ -122,17 +117,17 @@ exports.candidatePagination = async (request, response) => {
 //Get Candidate
 exports.getCandidate = async (request, response) => {
   const candidateId = request.params.candidateId;
-  const candidateData = await CandidateModel.findByPk(candidateId);
-  const commentData = await CommentModel.findOne({
+  const candidateData = await candidateDetails.findByPk(candidateId);
+  const commentData = await Comments.findOne({
     where: { candidateId: candidateId },
   });
   try {
     if (!candidateData && candidateData == null) {
       return response.status(500).json({ ack: 0, msg: `invalid candidateId` });
     } else {
-      const data = await CandidateModel.findOne({
+      const data = await candidateDetails.findOne({
         where: { id: candidateId },
-        include: { model: CommentModel },
+        include: { model: Comments },
       });
       response.status(200).json({ ack: 1, data: data });
     }
@@ -144,7 +139,7 @@ exports.getCandidate = async (request, response) => {
 exports.getSingleCandidate = async (request, response) => {
   const candidateId = request.params.candidateId;
   try {
-    const data = await CandidateModel.findByPk(candidateId);
+    const data = await candidateDetails.findByPk(candidateId);
     response.status(200).json({ ack: 1, data: data });
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
@@ -156,7 +151,7 @@ exports.createInterview = async (request, response) => {
   const candidateId = request.params.candidateId;
   const user = request.body;
 
-  const candidateData = await CandidateModel.findByPk(candidateId);
+  const candidateData = await candidateDetails.findByPk(candidateId);
   const userId = request.userId;
   const info = {
     schedule: user.schedule,
@@ -168,7 +163,7 @@ exports.createInterview = async (request, response) => {
     if (!candidateData && candidateData == null) {
       return response.status(500).json({ ack: 0, msg: `invalid candidateId` });
     } else {
-      interviewData = await InterviewModel.create(info);
+      interviewData = await Interview.create(info);
       response.status(200).json({ ack: 1, data: interviewData });
     }
   } catch (error) {
@@ -188,12 +183,12 @@ exports.updateInterview = async (request, response) => {
     interviewAssignTo: request.body.interviewAssignTo,
   };
 
-  const interviewData = await InterviewModel.findByPk(interviewId);
+  const interviewData = await Interview.findByPk(interviewId);
   try {
     if (!interviewData || interviewData == null) {
       return response.status(500).json({ ack: 0, msg: `invalid interview id` });
     } else {
-      const updatedData = await InterviewModel.update(data, {
+      const updatedData = await Interview.update(data, {
         where: { id: interviewId },
       });
       response
@@ -210,7 +205,7 @@ exports.updateInterview = async (request, response) => {
 exports.deleteInterview = async (request, response) => {
   const interviewId = request.params.interviewId;
 
-  const interviewData = await InterviewModel.findByPk(interviewId);
+  const interviewData = await Interview.findByPk(interviewId);
 
   try {
     if (!interviewData || interviewData == null) {
@@ -218,7 +213,7 @@ exports.deleteInterview = async (request, response) => {
         .status(500)
         .json({ ack: 0, msg: `please give valid interview id` });
     } else {
-      const interviewToDelete = await InterviewModel.destroy({
+      const interviewToDelete = await Interview.destroy({
         where: { id: interviewId },
       });
       response
@@ -236,7 +231,7 @@ exports.interviewPagination = async (request, response) => {
   const limit = parseInt(elements);
   const offset = parseInt(limit * (page - 1));
   try {
-    const { count, rows } = await InterviewModel.findAndCountAll({
+    const { count, rows } = await Interview.findAndCountAll({
       //order: [["followUpDate", "DESc"]],
       include: [
         {
