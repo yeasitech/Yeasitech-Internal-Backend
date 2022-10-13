@@ -337,15 +337,15 @@ exports.getAllEmployeePagination = async (request, response) => {
         "onBoardingStatus",
         "isAdmin",
         "isActive",
+        "departmentId",
       ],
+      include: { model: Department },
       include: [
         {
           model: EmployeeDetails,
-          // attributes: ["employeeImage"],
-          // where: {
-          //   employeeId: { [Op.like]: `%${employeeId}%` },
-          // },
+          attributes: ["employeeImage", "employeeId"],
         },
+        { model: Department },
       ],
       where: {
         [Op.or]: [
@@ -614,5 +614,36 @@ exports.setDeactive = async (request, response) => {
     response
       .status(500)
       .json({ ack: 0, data: error.message || `Server Error` });
+  }
+};
+
+// delete user
+exports.deleteUser = async (request, response) => {
+  const id = request.params.id;
+  const userData = await User.findByPk(id);
+
+  try {
+    if (!userData) {
+      return response.status(500).json({ ack: 0, msg: `invalid user id` });
+    } else {
+      await EmployeeExperience.destroy({
+        where: { userId: id },
+      }),
+        await BankDetails.destroy({
+          where: { userId: id },
+        }),
+        await EducationDetails.destroy({
+          where: { userId: id },
+        }),
+        await EmployeeDetails.destroy({
+          where: { userId: id },
+        }),
+        await User.destroy({
+          where: { id: id },
+        });
+      response.status(200).json({ ack: 1, msg: ` User Deleted successfully` });
+    }
+  } catch (error) {
+    response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
   }
 };
