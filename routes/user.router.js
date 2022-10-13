@@ -78,7 +78,11 @@ userRouter.put(
   AdminAuthorization,
   userController.setDeactive
 );
-
+userRouter.delete(
+  "/deleteuser/:id",
+  AdminAuthorization,
+  userController.deleteUser
+);
 //salary
 salaryRouter.post(
   "/employeeSalary",
