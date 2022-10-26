@@ -309,10 +309,7 @@ exports.getEmployeeByDesignation = async (request, response) => {
   const getEmployee = await User.findAll({
     where: { designationId: designationId },
   });
-  response
-    .status(200)
-
-    .json({ ack: 1, data: getEmployee });
+  response.status(200).json({ ack: 1, data: getEmployee });
 };
 
 //employee pagination
@@ -337,13 +334,14 @@ exports.getAllEmployeePagination = async (request, response) => {
         "isActive",
         "departmentId",
       ],
-      include: { model: Department },
+
       include: [
         {
           model: EmployeeDetails,
           attributes: ["employeeImage", "employeeId"],
         },
         { model: Department },
+        { model: Designation },
       ],
       where: {
         [Op.or]: [
