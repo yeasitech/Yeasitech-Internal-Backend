@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
     guardianName: DataTypes.STRING,
     employeeId: DataTypes.STRING,
     employeeImage: DataTypes.STRING,
-    aadharNumber: DataTypes.BIGINT,
+    aadharNumber: DataTypes.STRING,
     aadharFrontImage: DataTypes.STRING,
     aadharBackImage: DataTypes.STRING,
     voterIdNo: DataTypes.STRING,

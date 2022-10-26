@@ -27,13 +27,11 @@ exports.createUser = async (request, response) => {
   const user = request.body;
   if (!user)
     return response.status(200).json({ ack: 1, msg: `Please give valid user` });
-  const allDept = await Department.findByPk(user.department);
-
-  const allDesignation = await Designation.findOne({
-    where: { designation: user.designation },
-  });
 
   try {
+    const allDept = await Department.findByPk(user.department);
+    const allDesignation = await Designation.findByPk(user.designation);
+
     const checkForIfExists = await User.findOne({
       where: { email: request.body.email },
     });
@@ -393,7 +391,16 @@ exports.searchUser = async (request, response) => {
     let employeeWhere = {};
     let includes = [];
     let where = {};
-
+    //   Promise.all(
+    //     await answer.map((value, key) => {
+    //       Option.create({
+    //         text: value.text,
+    //         order: key + 1,
+    //         questionId: questionData.id,
+    //         isCorrect: value.isCorrect,
+    //       });
+    //     })
+    //   );
     if (firstName && firstName !== "") {
       where["firstName"] = { [Op.like]: `%${firstName}%` };
     }
