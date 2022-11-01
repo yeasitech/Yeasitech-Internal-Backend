@@ -19,7 +19,6 @@ exports.createAssets = async (request, response) => {
       "isActive",
     ],
   });
-
   try {
     if (!userData || userData.length < 0) {
       response.status(500).json({ ack: 0, msg: `invalid userId ` });

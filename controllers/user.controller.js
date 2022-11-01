@@ -15,6 +15,7 @@ const {
   createEmployeeSchema,
   loginSchema,
   employeeDetailsSchema,
+  changePasswordSchema,
 } = require("./validation/user.validation");
 
 //create new user
@@ -650,5 +651,70 @@ exports.deleteUser = async (request, response) => {
     }
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
+  }
+};
+
+// Change Password
+exports.changePassword = async (request, response) => {
+  const { error } = changePasswordSchema.validate(request.body);
+  const id = request.userId;
+
+  if (error) {
+    response.status(200).json({ ack: 0, msg: error.details[0].message });
+  } else {
+    try {
+      const checkForIfExists = await User.findOne({
+        where: { id, isActive: 1 },
+      });
+      if (checkForIfExists === null) {
+        response.status(200).json({ ack: 0, msg: "User not Found" });
+        return;
+      }
+
+      if (
+        bcrypt.compareSync(
+          request.body.newPassword,
+          checkForIfExists.dataValues.password
+        )
+      ) {
+        response
+          .status(200)
+          .json({ ack: 0, msg: "You can not use your old password" });
+        return;
+      }
+      const isPasswordMatchs = bcrypt.compareSync(
+        request.body.password,
+        checkForIfExists.dataValues.password
+      );
+      if (isPasswordMatchs) {
+        const hash = bcrypt.hashSync(request.body.newPassword, 10);
+
+        await User.update(
+          {
+            password: hash,
+          },
+          {
+            where: {
+              id: checkForIfExists.dataValues.id,
+            },
+          }
+        );
+
+        response.status(200).json({
+          ack: 1,
+          msg: "password changed successfully",
+        });
+      } else {
+        response.status(200).json({
+          ack: 0,
+          msg: "password does not match",
+        });
+      }
+    } catch (error) {
+      console.log("error", error);
+      response
+        .status(500)
+        .json({ ack: 0, msg: error.message || "Server error" });
+    }
   }
 };
