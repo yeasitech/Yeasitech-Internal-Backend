@@ -26,4 +26,15 @@ const loginSchema = Joi.object({
 const employeeDetailsSchema = Joi.object({
   email: Joi.string().required().email({ minDomainSegments: 2 }).label("Email"),
 });
-module.exports = { createEmployeeSchema, loginSchema, employeeDetailsSchema };
+
+const changePasswordSchema = Joi.object({
+  password: Joi.string().required().label("Password"),
+  newPassword: Joi.string().required().label("New Password"),
+});
+
+module.exports = {
+  createEmployeeSchema,
+  loginSchema,
+  employeeDetailsSchema,
+  changePasswordSchema,
+};

@@ -28,7 +28,7 @@ userRouter.post("/login", userController.logIn);
 userRouter.post("/employeeOnboarding", userController.employeeDetails);
 userRouter.get(
   "/getEmployee/:id",
-
+  AdminAuthorization,
   userController.allSingleUser
 );
 userRouter.get(
@@ -78,11 +78,17 @@ userRouter.put(
   AdminAuthorization,
   userController.setDeactive
 );
-userRouter.delete(
+userRouter.patch(
+  "/changePassword",
+  AdminAuthorization,
+  userController.changePassword
+);
+userRouter.patch(
   "/deleteuser/:id",
   AdminAuthorization,
   userController.deleteUser
 );
+
 //salary
 salaryRouter.post(
   "/employeeSalary",
