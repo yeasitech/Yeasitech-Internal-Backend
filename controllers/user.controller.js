@@ -289,6 +289,8 @@ exports.oneEmployeeDetails = async (request, response) => {
         { model: EducationDetails, order: `passoutYear` },
         { model: EmployeeExperience },
         { model: BankDetails },
+        { model: Department },
+        { model: Designation },
       ],
       // order: [
       //   [{ model: EducationDetails }, "passoutYear", "DESC"],
@@ -670,13 +672,11 @@ exports.changePassword = async (request, response) => {
         response.status(200).json({ ack: 0, msg: "User not Found" });
         return;
       }
-
-      if (
-        bcrypt.compareSync(
-          request.body.newPassword,
-          checkForIfExists.dataValues.password
-        )
-      ) {
+      const isNewPasswordMatch = bcrypt.compareSync(
+        request.body.newPassword,
+        checkForIfExists.dataValues.password
+      );
+      if (isNewPasswordMatch) {
         response
           .status(200)
           .json({ ack: 0, msg: "You can not use your old password" });
@@ -706,7 +706,7 @@ exports.changePassword = async (request, response) => {
         });
       } else {
         response.status(200).json({
-          ack: 0,
+          ack: 1,
           msg: "password does not match",
         });
       }
