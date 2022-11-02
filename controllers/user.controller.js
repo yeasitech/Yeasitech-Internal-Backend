@@ -11,6 +11,7 @@ const {
   EmployeeExperience,
   BankDetails,
   Interview,
+  Assets,
 } = require("../models");
 const {
   createEmployeeSchema,
@@ -657,6 +658,9 @@ exports.deleteUser = async (request, response) => {
         await Interview.destroy({
           where: { interviewAssignTo: id },
         });
+      await Assets.destroy({
+        where: { interviewAssignTo: id },
+      });
       await User.destroy({
         where: { id: id },
       });
