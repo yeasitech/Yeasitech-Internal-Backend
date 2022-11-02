@@ -261,9 +261,16 @@ exports.allSingleUser = async (request, response) => {
         "id",
         "email",
         "dateOfJoining",
+        "onBoardingStatus",
       ],
     });
-    response.status(200).json({ ack: 1, data: allData });
+    if (allData.onBoardingStatus === true) {
+      return response
+        .status(200)
+        .json({ ack: 0, msg: `you are already onboarded` });
+    } else {
+      response.status(200).json({ ack: 1, data: allData });
+    }
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
   }
