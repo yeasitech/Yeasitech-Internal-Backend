@@ -267,7 +267,7 @@ exports.allSingleUser = async (request, response) => {
     if (allData.onBoardingStatus === true) {
       return response
         .status(200)
-        .json({ ack: 0, msg: `you are already onboarded` });
+        .json({ ack: 1, msg: `you are already onboarded` });
     } else {
       response.status(200).json({ ack: 1, data: allData });
     }
