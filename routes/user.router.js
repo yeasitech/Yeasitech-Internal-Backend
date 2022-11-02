@@ -26,11 +26,7 @@ const userLoginRouter = Router();
 userRouter.post("/createEmployee", userController.createUser);
 userRouter.post("/login", userController.logIn);
 userRouter.post("/employeeOnboarding", userController.employeeDetails);
-userRouter.get(
-  "/getEmployee/:id",
-  AdminAuthorization,
-  userController.allSingleUser
-);
+userRouter.get("/getEmployee/:id", userController.allSingleUser);
 userRouter.get(
   "/getAllEmployee",
   AdminAuthorization,
