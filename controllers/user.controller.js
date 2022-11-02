@@ -10,6 +10,7 @@ const {
   Designation,
   EmployeeExperience,
   BankDetails,
+  Interview,
 } = require("../models");
 const {
   createEmployeeSchema,
@@ -471,7 +472,7 @@ exports.editOneEmployeePersonalData = async (request, response) => {
 
         //response.status(200).json({ ack: 1, msg: data }),
       ]).catch((error) => {});
-      response.status(200).json({ ack: 1, data: data });
+      response.status(200).json({ ack: 1, msg: ` user updated successfully` });
     }
   } catch (error) {
     response.status(500).json({ ack: 1, msg: error.message || `Server Error` });
@@ -653,9 +654,12 @@ exports.deleteUser = async (request, response) => {
         await EmployeeDetails.destroy({
           where: { userId: id },
         }),
-        await User.destroy({
-          where: { id: id },
+        await Interview.destroy({
+          where: { interviewAssignTo: id },
         });
+      await User.destroy({
+        where: { id: id },
+      });
       response.status(200).json({ ack: 1, msg: ` User Deleted successfully` });
     }
   } catch (error) {

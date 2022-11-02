@@ -79,7 +79,7 @@ userRouter.patch(
   AdminAuthorization,
   userController.changePassword
 );
-userRouter.patch(
+userRouter.delete(
   "/deleteuser/:id",
   AdminAuthorization,
   userController.deleteUser
