@@ -659,7 +659,7 @@ exports.deleteUser = async (request, response) => {
           where: { interviewAssignTo: id },
         });
       await Assets.destroy({
-        where: { interviewAssignTo: id },
+        where: { userId: id },
       });
       await User.destroy({
         where: { id: id },
