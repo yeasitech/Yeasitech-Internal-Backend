@@ -14,6 +14,8 @@ const {
   Assets,
   Comments,
   Leave,
+  Salary,
+  Expenses,
 } = require("../models");
 const {
   createEmployeeSchema,
@@ -660,6 +662,9 @@ exports.deleteUser = async (request, response) => {
         await Interview.destroy({
           where: { interviewAssignTo: id },
         });
+      await Expenses.destroy({
+        where: { UserId: id },
+      });
       await Assets.destroy({
         where: { userId: id },
       });
@@ -667,6 +672,9 @@ exports.deleteUser = async (request, response) => {
         where: { userId: id },
       });
       await Leave.destroy({
+        where: { userId: id },
+      });
+      await Salary.destroy({
         where: { userId: id },
       });
       await User.destroy({
