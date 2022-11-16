@@ -730,7 +730,6 @@ exports.changePassword = async (request, response) => {
             },
           }
         );
-
         response.status(200).json({
           ack: 1,
           msg: "password changed successfully",
@@ -749,3 +748,8 @@ exports.changePassword = async (request, response) => {
     }
   }
 };
+
+// Reset password
+// exports.resetPassword=async(request,response)=>{
+
+// }
