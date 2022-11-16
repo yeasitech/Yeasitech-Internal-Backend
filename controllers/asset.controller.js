@@ -23,7 +23,7 @@ exports.createAssets = async (request, response) => {
     if (!userData || userData.length < 0) {
       response.status(500).json({ ack: 0, msg: `invalid userId ` });
     } else {
-      const createAsset = await Assets.create({ ...data, userId: userId });
+      const createAsset = await Assets.create({ ...data });
       response.status(200).json({
         ack: 1,
         msg: "successfully created",
