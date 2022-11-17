@@ -253,6 +253,11 @@ exports.interviewPagination = async (request, response) => {
       //     { skills: { [Op.like]: "%" + searchParam + "%" } },
       //   ],
       // },
+      ...(searchParam && {
+        where: {
+          schedule: { [Op.eq]: `%${searchParam}%` },
+        },
+      }),
       limit,
       offset,
     });
