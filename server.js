@@ -82,7 +82,7 @@ const interviewSchedule = nodeCron.schedule(
     await Promise.all(
       data.map((candidate) => {
         let dataBase = candidate.dataValues;
-        const followUpDate = new Date(dataBase.followUpDate).getDate();
+        const follow = new Date(dataBase.followUpDate).getDate();
         const followUpMonth = new Date(dataBase.followUpDate).getMonth();
 
         const scheduleDate = new Date(dataBase.schedule).getDate();
