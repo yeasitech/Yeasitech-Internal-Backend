@@ -227,12 +227,35 @@ exports.deleteInterview = async (request, response) => {
 
 //interview pagiantion
 exports.interviewPagination = async (request, response) => {
-  const { elements, page, searchParam = "" } = request.query;
+  const { elements, page, searchParam, searchByDate = "" } = request.query;
   const limit = parseInt(elements);
   const offset = parseInt(limit * (page - 1));
+  let where = {};
+  if (searchParam) {
+    where = {
+      [Op.or]: [
+        {
+          "$InterviewAssignedTo.firstName$": {
+            [Op.like]: `%${searchParam}%`,
+          },
+        },
+        {
+          "$InterviewAssignedBy.firstName$": {
+            [Op.like]: `%${searchParam}%`,
+          },
+        },
+      ],
+    };
+  }
+  if (searchByDate) {
+    where = {
+      schedule: { [Op.eq]: `%${searchByDate}%` },
+    };
+  }
   try {
     const { count, rows } = await Interview.findAndCountAll({
       //order: [["followUpDate", "DESc"]],
+      where,
       include: [
         {
           model: User,
@@ -245,19 +268,15 @@ exports.interviewPagination = async (request, response) => {
           attributes: ["firstName", "middleName", "lastName"],
         },
       ],
-      // where: {
-      //   [Op.or]: [
-      //     { fullName: { [Op.like]: `%${searchParam}%` } },
-      //     { email: { [Op.like]: `%${searchParam}%` } },
-      //     { contactNumber: { [Op.like]: `%${searchParam}%` } },
-      //     { skills: { [Op.like]: "%" + searchParam + "%" } },
-      //   ],
-      // },
-      ...(searchParam && {
-        where: {
-          schedule: { [Op.eq]: `%${searchParam}%` },
-        },
-      }),
+      // ...(searchByDate && {
+      //   where: {
+      //     //  [Op.or]: [
+      //     // { interviewAssignBy: { [Op.like]: `%${searchParam}%` } },
+      //     // { interviewAssignTo: { [Op.like]: `%${searchParam}%` } },
+      //     schedule: { [Op.eq]: `%${searchByDate}%` },
+      //     //],
+      //   },
+      // }),
       limit,
       offset,
     });
