@@ -1,5 +1,6 @@
 const { candidateDetails, User, Comments, Interview } = require("../models");
 const { Op } = require("sequelize");
+const { request } = require("express");
 //create Candidate
 exports.createCandidate = async (request, response) => {
   const user = request.body;
@@ -289,6 +290,42 @@ exports.interviewPagination = async (request, response) => {
       page: parseInt(page),
       elementsPerPage: limit,
     });
+  } catch (error) {
+    response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
+  }
+};
+
+// schedule of candiadate Interview
+exports.getInterviewByCandidate = async (request, response) => {
+  const candidateId = request.params.candidateId;
+  try {
+    if (!candidateId) {
+      response
+        .status(500)
+        .json({ ack: 0, msg: `please give valid candidate id` });
+    }
+    const interviewData = await Interview.findAll({
+      where: { candidateId: candidateId },
+      attributes: { exclude: ["createdAt", "updatedAt"] },
+      include: [
+        {
+          model: User,
+          as: "InterviewAssignedTo",
+          attributes: ["firstName", "middleName", "lastName"],
+        },
+        {
+          model: User,
+          as: "InterviewAssignedBy",
+          attributes: ["firstName", "middleName", "lastName"],
+        },
+        { model: candidateDetails, attributes: ["fullname"] },
+      ],
+    });
+    if (interviewData.length <= 0) {
+      response.status(500).json({ ack: 0, msg: `No Interview Details` });
+    } else {
+      response.status(200).json({ ack: 0, data: interviewData });
+    }
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
   }
