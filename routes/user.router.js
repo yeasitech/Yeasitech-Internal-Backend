@@ -290,7 +290,11 @@ candidateRouter.get(
   AdminAuthorization,
   candidateController.interviewPagination
 );
-
+candidateRouter.get(
+  "/scheduleInterviewList/:candidateId",
+  AdminAuthorization,
+  candidateController.getInterviewByCandidate
+);
 //comment;
 commentRouter.post(
   "/createComment/:candidateId",
