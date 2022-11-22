@@ -8,6 +8,7 @@ const candidateController = require("../controllers/candidate.controller");
 const commentController = require("../controllers/comment.controller");
 const expenseController = require("../controllers/expense.controller");
 const userLoginController = require("../controllers/userLogin.controller");
+const skillController = require("../controllers/skill.controller");
 const Authorization = require("../middleware/isAuth");
 const AdminAuthorization = require("../middleware/isAdmin");
 const { Router } = require("express");
@@ -21,6 +22,7 @@ const candidateRouter = Router();
 const commentRouter = Router();
 const expenseRouter = Router();
 const userLoginRouter = Router();
+const skillRouter = Router();
 
 //userRouter
 userRouter.post("/createEmployee", userController.createUser);
@@ -295,6 +297,16 @@ candidateRouter.get(
   AdminAuthorization,
   candidateController.getInterviewByCandidate
 );
+//skills
+skillRouter.post(
+  "/createSkill",
+  AdminAuthorization,
+  skillController.createSkill
+);
+skillRouter.get("/list", AdminAuthorization, skillController.getSkills);
+skillRouter.delete("/:id", AdminAuthorization, skillController.deleteSkills);
+skillRouter.put("/:id", AdminAuthorization, skillController.editSkills);
+
 //comment;
 commentRouter.post(
   "/createComment/:candidateId",
@@ -358,4 +370,5 @@ module.exports = {
   commentRouter,
   expenseRouter,
   userLoginRouter,
+  skillRouter,
 };

@@ -11,7 +11,6 @@ module.exports = (sequelize, DataTypes) => {
     cv: DataTypes.STRING,
     followUpDate: { type: DataTypes.DATEONLY, allowNull: true },
     contactNumber: DataTypes.STRING,
-    skills: DataTypes.TEXT,
     interviewSchedule: DataTypes.BOOLEAN,
     isSelected: DataTypes.BOOLEAN,
   });
@@ -20,6 +19,9 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "candidateId",
     });
     candidateDetails.hasMany(models.Comments, {
+      foreignKey: "candidateId",
+    });
+    candidateDetails.hasMany(models.CandidateSkill, {
       foreignKey: "candidateId",
     });
   };
