@@ -1,27 +1,42 @@
-const { candidateDetails, User, Comments, Interview } = require("../models");
+const {
+  candidateDetails,
+  User,
+  Comments,
+  Interview,
+  CandidateSkill,
+  Skills,
+} = require("../models");
 const { Op } = require("sequelize");
-const { request } = require("express");
+
+const candidateSkillModel = require("../models/candidateSkill.model");
 //create Candidate
 exports.createCandidate = async (request, response) => {
   const user = request.body;
-  const candidateInfo = {
-    fullName: user.fullName,
-    email: user.email,
-    followUpDate: user.followUpDate,
-    cv: user.cv,
-    skills: user.skills,
-    contactNumber: user.contactNumber,
-    interviewSchedule: false,
-    isSelected: false,
-  };
+  // const candidateInfo = {
+  //   fullName: user.fullName,
+  //   email: user.email,
+  //   followUpDate: user.followUpDate,
+  //   cv: user.cv,
+  //   skills: user.skills,
+  //   contactNumber: user.contactNumber,
+  //   interviewSchedule: false,
+  //   isSelected: false,
+  // };
+  console.log(user);
   try {
-    const candidate = await candidateDetails.create(candidateInfo);
+    const createCandidate = await candidateDetails.create({
+      ...user.candidateInfo,
+    });
+    await Promise.all([
+      user.skillIds.map(async (value) => {
+        await CandidateSkill.create({
+          skillId: value.id,
+          candidateId: createCandidate.id,
+        });
+      }),
+    ]);
 
-    // const { comment } = user;
-    // const commentCreate = { comment: user.comment, candidateId };
-    // const commentRes = await Comments.create(commentCreate);
-
-    response.status(200).json({ ack: 1, data: candidate });
+    response.status(200).json({ ack: 1, data: createCandidate });
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `server error` });
   }
@@ -33,7 +48,7 @@ exports.candidateUpdate = async (request, response) => {
   const { candidateInfo } = request.body;
   const searchData = await candidateDetails.findByPk(id);
   try {
-    if (!searchData || searchData.length < 0) {
+    if (!searchData) {
       response.status(500).json({ ack: 0, msg: `invalid id passed ` });
     } else {
       const updatedData = await candidateDetails.update(
@@ -41,6 +56,14 @@ exports.candidateUpdate = async (request, response) => {
         {
           where: { id: id },
         }
+      );
+      const deleteCandiadteSkills = await CandidateSkill.destroy({
+        where: { candidateId: id },
+      });
+      await Promise.all(
+        request.body.skillIds.map(async (value) => {
+          await CandidateSkill.create({ candidateId: id, skillId: value.id });
+        })
       );
       response
         .status(200)
@@ -89,13 +112,23 @@ exports.candidatePagination = async (request, response) => {
   try {
     const { count, rows } = await candidateDetails.findAndCountAll({
       //order: [["followUpDate", "DESc"]],
-      include: { model: Comments },
+      attributes: { exclude: ["createdAt", "updatedAt"] },
+      include: [
+        { model: Comments },
+        {
+          model: CandidateSkill,
+          attributes: { exclude: ["createdAt", "updatedAt"] },
+          include: {
+            model: Skills,
+            attributes: { exclude: ["createdAt", "updatedAt"] },
+          },
+        },
+      ],
       where: {
         [Op.or]: [
           { fullName: { [Op.like]: `%${searchParam}%` } },
           { email: { [Op.like]: `%${searchParam}%` } },
           { contactNumber: { [Op.like]: `%${searchParam}%` } },
-          { skills: { [Op.like]: "%" + searchParam + "%" } },
         ],
       },
       limit,
