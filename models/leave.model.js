@@ -31,6 +31,7 @@ module.exports = (sequelize, DataTypes) => {
     numberOfDays: DataTypes.INTEGER,
     reasonOfLeave: DataTypes.STRING,
     status: DataTypes.STRING,
+    approvedBy: DataTypes.UUID,
   });
   Leave.associate = function (models) {
     Leave.belongsTo(models.User, {

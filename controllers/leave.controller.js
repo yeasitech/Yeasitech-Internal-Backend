@@ -112,9 +112,12 @@ exports.leaveUpdate = async (request, response) => {
     if (!leaveData || leaveData.length < 0) {
       response.status(500).json({ ack: 0, msg: `invalid leave id ` });
     } else {
-      const UpdatedData = await Leave.update(leaveInfo, {
-        where: { id: id },
-      });
+      const UpdatedData = await Leave.update(
+        { ...leaveInfo, approvedBy: request.userId },
+        {
+          where: { id: id },
+        }
+      );
       response.status(200).json({ ack: 1, msg: `leave updated successfully` });
     }
   } catch (error) {

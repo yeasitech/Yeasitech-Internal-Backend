@@ -31,27 +31,28 @@ exports.deleteSkills = async (request, response) => {
   const id = request.params.id;
   try {
     const skillData = await Skills.findByPk(id);
-    const cabdidateSkillData = await CandidateSkill.findAll({
+    const candidateSkillData = await CandidateSkill.findAll({
       where: { skillId: id },
     });
     if (!id) {
       return response.status(500).json({ ack: 0, msg: `No id Found` });
     }
-    if (cabdidateSkillData.length <= 0) {
-      return response
-        .status(500)
-        .json({ ack: 0, msg: `No candiadte Skill data Found` });
-    }
     if (!skillData) {
       return response.status(500).json({ ack: 0, msg: `No skill data Found` });
-    } else {
-      const [data] = await Promise.all([
-        CandidateSkill.destroy({ where: { skillId: id } }),
-        Skills.destroy({ where: { id: id } }),
-      ]);
-      response
-        .status(200)
-        .json({ ack: 1, msg: ` Skill deleted Successfully`, data: data });
+    }
+    if (skillData) {
+      if (!candidateSkillData.length) {
+        let data = await Skills.destroy({ where: { id: id } });
+        response
+          .status(200)
+          .json({ ack: 1, msg: ` Skill deleted Successfully`, data: data });
+      } else {
+        await CandidateSkill.destroy({ where: { skillId: id } });
+        let data = await Skills.destroy({ where: { id: id } });
+        response
+          .status(200)
+          .json({ ack: 1, msg: ` Skill deleted Successfully`, data: data });
+      }
     }
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `server error` });
