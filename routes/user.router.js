@@ -303,9 +303,10 @@ skillRouter.post(
   AdminAuthorization,
   skillController.createSkill
 );
-skillRouter.get("/list", AdminAuthorization, skillController.getSkills);
+skillRouter.get("/suggestion", AdminAuthorization, skillController.getSkills);
 skillRouter.delete("/:id", AdminAuthorization, skillController.deleteSkills);
 skillRouter.put("/:id", AdminAuthorization, skillController.editSkills);
+skillRouter.get("/list", AdminAuthorization, skillController.skillPagination);
 
 //comment;
 commentRouter.post(

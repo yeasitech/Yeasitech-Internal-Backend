@@ -22,7 +22,7 @@ exports.createCandidate = async (request, response) => {
   //   interviewSchedule: false,
   //   isSelected: false,
   // };
-  console.log(user);
+
   try {
     const createCandidate = await candidateDetails.create({
       ...user.candidateInfo,
