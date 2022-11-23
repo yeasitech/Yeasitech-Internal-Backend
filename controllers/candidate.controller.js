@@ -106,7 +106,12 @@ exports.deleteCandidate = async (request, response) => {
 
 // Candidate Pagination
 exports.candidatePagination = async (request, response) => {
-  const { elements, page, searchParam = "" } = request.query;
+  const {
+    elements,
+    page,
+    searchParam = "",
+    searchBySkillId = "",
+  } = request.query;
   const limit = parseInt(elements);
   const offset = parseInt(limit * (page - 1));
   try {
@@ -117,6 +122,9 @@ exports.candidatePagination = async (request, response) => {
         { model: Comments },
         {
           model: CandidateSkill,
+          where: {
+            skillId: { [Op.like]: `%${searchBySkillId}%` },
+          },
           attributes: { exclude: ["createdAt", "updatedAt"] },
           include: {
             model: Skills,
@@ -131,9 +139,13 @@ exports.candidatePagination = async (request, response) => {
           { contactNumber: { [Op.like]: `%${searchParam}%` } },
         ],
       },
+      // ...(searchBySkillId && {
+      //   where: { skillId: { [Op.like]: `%${searchBySkillId}%` } },
+      // }),
       limit,
       offset,
     });
+
     response.status(200).json({
       ack: 1,
       data: rows,
