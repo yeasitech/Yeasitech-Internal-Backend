@@ -7,7 +7,9 @@ exports.createSkill = async (request, response) => {
   try {
     const data = await Skills.create(skillData);
 
-    response.status(200).json({ ack: 1, data: data });
+    response
+      .status(200)
+      .json({ ack: 1, msg: `skill created successfully`, data: data });
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `server error` });
   }
@@ -32,8 +34,16 @@ exports.deleteSkills = async (request, response) => {
     const cabdidateSkillData = await CandidateSkill.findAll({
       where: { skillId: id },
     });
-    if (!id || !skillData || cabdidateSkillData.length <= 0) {
+    if (!id) {
       return response.status(500).json({ ack: 0, msg: `No id Found` });
+    }
+    if (cabdidateSkillData.length <= 0) {
+      return response
+        .status(500)
+        .json({ ack: 0, msg: `No candiadte Skill data Found` });
+    }
+    if (!skillData) {
+      return response.status(500).json({ ack: 0, msg: `No skill data Found` });
     } else {
       const [data] = await Promise.all([
         CandidateSkill.destroy({ where: { skillId: id } }),
@@ -60,15 +70,39 @@ exports.editSkills = async (request, response) => {
         { skill: request.body.skill },
         { where: { id: id } }
       );
-      response
-        .status(200)
-        .json({
-          ack: 1,
-          msg: ` Skill updated Successfully`,
-          data: updateSkill,
-        });
+      response.status(200).json({
+        ack: 1,
+        msg: ` Skill updated Successfully`,
+        data: updateSkill,
+      });
     }
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `server error` });
+  }
+};
+
+//skill pagination
+exports.skillPagination = async (request, response) => {
+  const { elements, page } = request.query;
+  const limit = parseInt(elements);
+  const offset = parseInt(limit * (page - 1));
+
+  try {
+    const { count, rows } = await Skills.findAndCountAll({
+      limit,
+      offset,
+      //order: [["createdAt", "AESC"]],
+    });
+    response.status(200).json({
+      ack: 1,
+      data: rows,
+      elementCount: rows.length,
+      totalElements: count,
+      totalpage: Math.ceil(count / elements),
+      page: parseInt(page),
+      elementsPerPage: limit,
+    });
+  } catch (error) {
+    response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
   }
 };

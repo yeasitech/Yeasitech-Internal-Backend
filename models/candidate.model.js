@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
     cv: DataTypes.STRING,
     followUpDate: { type: DataTypes.DATEONLY, allowNull: true },
     contactNumber: DataTypes.STRING,
-    interviewSchedule: DataTypes.BOOLEAN,
+    interviewSchedule: { type: DataTypes.DATEONLY, allowNull: true },
     isSelected: DataTypes.BOOLEAN,
   });
   candidateDetails.associate = function (models) {
