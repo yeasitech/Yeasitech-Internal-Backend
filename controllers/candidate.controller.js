@@ -123,7 +123,7 @@ exports.candidatePagination = async (request, response) => {
         {
           model: CandidateSkill,
           where: {
-            skillId: { [Op.like]: `%${searchBySkillId}%` },
+            skillId: { [Op.eq]: `${searchBySkillId}` },
           },
           attributes: { exclude: ["createdAt", "updatedAt"] },
           include: {
