@@ -120,7 +120,6 @@ exports.candidatePagination = async (request, response) => {
       skillId: { [Op.eq]: `${searchBySkillId}` },
     };
   }
-  console.log(where);
   try {
     const { count, rows } = await candidateDetails.findAndCountAll({
       //order: [["followUpDate", "DESc"]],
