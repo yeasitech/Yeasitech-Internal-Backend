@@ -5,10 +5,12 @@ const {
   Interview,
   CandidateSkill,
   Skills,
+  Department,
 } = require("../models");
 const { Op } = require("sequelize");
 
 const candidateSkillModel = require("../models/candidateSkill.model");
+const { departmentRouter } = require("../routes/user.router");
 //create Candidate
 exports.createCandidate = async (request, response) => {
   const user = request.body;
@@ -111,6 +113,9 @@ exports.candidatePagination = async (request, response) => {
     page,
     searchParam = "",
     searchBySkillId = "",
+    searchByExperience = "",
+    fromDate,
+    toDate,
   } = request.query;
   const limit = parseInt(elements);
   const offset = parseInt(limit * (page - 1));
@@ -129,10 +134,18 @@ exports.candidatePagination = async (request, response) => {
           { fullName: { [Op.like]: `%${searchParam}%` } },
           { email: { [Op.like]: `%${searchParam}%` } },
           { contactNumber: { [Op.like]: `%${searchParam}%` } },
+          //{ yearsOfExperience: { [Op.eq]: `${searchByExperience}` } },
         ],
+        // followUpDate: {
+        //   [Op.and]: {
+        //     [Op.gte]: fromDate,
+        //     [Op.lte]: toDate,
+        //   },
+        // },
       },
       include: [
         { model: Comments },
+        { model: Department, attributes: ["id", "department"] },
         {
           model: CandidateSkill,
           where,
@@ -143,10 +156,10 @@ exports.candidatePagination = async (request, response) => {
           },
         },
       ],
+      ...(searchByExperience && {
+        where: { yearsOfExperience: { [Op.eq]: `${searchByExperience}` } },
+      }),
 
-      // ...(searchBySkillId && {
-      //   where: { skillId: { [Op.like]: `%${searchBySkillId}%` } },
-      // }),
       limit,
       offset,
     });
@@ -318,6 +331,7 @@ exports.interviewPagination = async (request, response) => {
           as: "InterviewAssignedBy",
           attributes: ["firstName", "middleName", "lastName"],
         },
+        { model: candidateDetails, attributes: ["fullname"] },
       ],
       // ...(searchByDate && {
       //   where: {

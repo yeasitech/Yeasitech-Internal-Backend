@@ -13,6 +13,8 @@ module.exports = (sequelize, DataTypes) => {
     contactNumber: DataTypes.STRING,
     interviewSchedule: { type: DataTypes.DATEONLY, allowNull: true },
     isSelected: DataTypes.BOOLEAN,
+    departmentId: DataTypes.INTEGER,
+    yearsOfExperience: DataTypes.INTEGER,
   });
   candidateDetails.associate = function (models) {
     candidateDetails.hasMany(models.Interview, {
@@ -23,6 +25,9 @@ module.exports = (sequelize, DataTypes) => {
     });
     candidateDetails.hasMany(models.CandidateSkill, {
       foreignKey: "candidateId",
+    });
+    candidateDetails.belongsTo(models.Department, {
+      foreignKey: "departmentId",
     });
   };
   return candidateDetails;
