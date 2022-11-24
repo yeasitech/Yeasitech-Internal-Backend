@@ -114,24 +114,16 @@ exports.candidatePagination = async (request, response) => {
   } = request.query;
   const limit = parseInt(elements);
   const offset = parseInt(limit * (page - 1));
+  let where = {};
+  if (searchBySkillId) {
+    where = {
+      skillId: { [Op.eq]: `${searchBySkillId}` },
+    };
+  }
   try {
     const { count, rows } = await candidateDetails.findAndCountAll({
       //order: [["followUpDate", "DESc"]],
       attributes: { exclude: ["createdAt", "updatedAt"] },
-      include: [
-        { model: Comments },
-        {
-          model: CandidateSkill,
-          where: {
-            skillId: { [Op.eq]: `${searchBySkillId}` },
-          },
-          attributes: { exclude: ["createdAt", "updatedAt"] },
-          include: {
-            model: Skills,
-            attributes: { exclude: ["createdAt", "updatedAt"] },
-          },
-        },
-      ],
       where: {
         [Op.or]: [
           { fullName: { [Op.like]: `%${searchParam}%` } },
@@ -139,6 +131,19 @@ exports.candidatePagination = async (request, response) => {
           { contactNumber: { [Op.like]: `%${searchParam}%` } },
         ],
       },
+      include: [
+        { model: Comments },
+        {
+          model: CandidateSkill,
+          where,
+          attributes: { exclude: ["createdAt", "updatedAt"] },
+          include: {
+            model: Skills,
+            attributes: { exclude: ["createdAt", "updatedAt"] },
+          },
+        },
+      ],
+
       // ...(searchBySkillId && {
       //   where: { skillId: { [Op.like]: `%${searchBySkillId}%` } },
       // }),
