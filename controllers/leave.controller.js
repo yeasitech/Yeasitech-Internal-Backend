@@ -108,12 +108,14 @@ exports.leaveUpdate = async (request, response) => {
   const id = request.params.id;
   const { leaveInfo } = request.body;
   const leaveData = await Leave.findByPk(id);
+  const userData = await User.findByPk(request.userId);
+
   try {
     if (!leaveData || leaveData.length < 0) {
       response.status(500).json({ ack: 0, msg: `invalid leave id ` });
     } else {
       const UpdatedData = await Leave.update(
-        { ...leaveInfo, approvedBy: request.userId },
+        { ...leaveInfo, approvedBy: userData.firstName },
         {
           where: { id: id },
         }
