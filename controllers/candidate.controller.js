@@ -113,18 +113,27 @@ exports.candidatePagination = async (request, response) => {
     page,
     searchParam = "",
     searchBySkillId = "",
-    searchByExperience = "",
+    // searchByExperience = "",
     fromDate,
     toDate,
+    startRange = "",
+    endRange = "",
   } = request.query;
   const limit = parseInt(elements);
   const offset = parseInt(limit * (page - 1));
   let where = {};
+  let rangeWhere = {};
   if (searchBySkillId) {
     where = {
       skillId: { [Op.eq]: `${searchBySkillId}` },
     };
   }
+  if (startRange && endRange) {
+    rangeWhere = {
+      yearsOfExperience: { [Op.between]: [startRange, endRange] },
+    };
+  }
+
   try {
     const { count, rows } = await candidateDetails.findAndCountAll({
       //order: [["followUpDate", "DESc"]],
@@ -136,6 +145,7 @@ exports.candidatePagination = async (request, response) => {
           { contactNumber: { [Op.like]: `%${searchParam}%` } },
           //{ yearsOfExperience: { [Op.eq]: `${searchByExperience}` } },
         ],
+        ...rangeWhere,
         // followUpDate: {
         //   [Op.and]: {
         //     [Op.gte]: fromDate,
@@ -156,9 +166,6 @@ exports.candidatePagination = async (request, response) => {
           },
         },
       ],
-      ...(searchByExperience && {
-        where: { yearsOfExperience: { [Op.eq]: `${searchByExperience}` } },
-      }),
 
       limit,
       offset,
