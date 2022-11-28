@@ -120,25 +120,34 @@ exports.candidatePagination = async (request, response) => {
     toDate,
     startRange = "",
     endRange = "",
+    startDateRange = "",
+    endDateRange = "",
   } = request.query;
   const limit = parseInt(elements);
   const offset = parseInt(limit * (page - 1));
   let where = {};
   let rangeWhere = {};
+  let dateRangeWhere = {};
   if (searchBySkillId) {
     where = {
       skillId: { [Op.eq]: `${searchBySkillId}` },
     };
   }
+  if (startDateRange && endDateRange) {
+    dateRangeWhere = {
+      followUpDate: { [Op.between]: [startDateRange, endDateRange] },
+    };
+  }
+  console.log("sdfghjk", dateRangeWhere, limit, offset);
   if (startRange && endRange) {
-    rangeWhere = {
+    dateRangeWhere = {
       yearsOfExperience: { [Op.between]: [startRange, endRange] },
     };
   }
 
   try {
     const { count, rows } = await candidateDetails.findAndCountAll({
-      //order: [["followUpDate", "DESc"]],
+      order: [["id", "ASC"]],
       attributes: { exclude: ["createdAt", "updatedAt"] },
       where: {
         [Op.or]: [
@@ -148,6 +157,7 @@ exports.candidatePagination = async (request, response) => {
           //{ yearsOfExperience: { [Op.eq]: `${searchByExperience}` } },
         ],
         ...rangeWhere,
+        ...dateRangeWhere,
         // followUpDate: {
         //   [Op.and]: {
         //     [Op.gte]: fromDate,
@@ -168,7 +178,6 @@ exports.candidatePagination = async (request, response) => {
           },
         },
       ],
-
       limit,
       offset,
     });
