@@ -13,7 +13,8 @@ const candidateSkillModel = require("../models/candidateSkill.model");
 const { departmentRouter } = require("../routes/user.router");
 //create Candidate
 exports.createCandidate = async (request, response) => {
-  const user = request.body;
+  const { skillIds, candidateInfo } = request.body;
+
   // const candidateInfo = {
   //   fullName: user.fullName,
   //   email: user.email,
@@ -21,16 +22,17 @@ exports.createCandidate = async (request, response) => {
   //   cv: user.cv,
   //   skills: user.skills,
   //   contactNumber: user.contactNumber,
-  //   interviewSchedule: false,
+  //   interviewSchedule: user.interviewSchedule,
   //   isSelected: false,
   // };
 
   try {
     const createCandidate = await candidateDetails.create({
-      ...user.candidateInfo,
+      ...candidateInfo,
+      isSelected: false,
     });
     await Promise.all([
-      user.skillIds.map(async (value) => {
+      skillIds.map(async (value) => {
         await CandidateSkill.create({
           skillId: value.id,
           candidateId: createCandidate.id,
@@ -170,13 +172,13 @@ exports.candidatePagination = async (request, response) => {
       limit,
       offset,
     });
-
+    const data = await candidateDetails.count();
     response.status(200).json({
       ack: 1,
       data: rows,
       elementPerPage: rows.length,
-      totalData: count,
-      totalpage: Math.ceil(count / elements),
+      totalData: data,
+      totalpage: Math.ceil(data / elements),
       page: parseInt(page),
       elementsPerPage: limit,
     });
