@@ -185,7 +185,7 @@ exports.candidatePagination = async (request, response) => {
     response.status(200).json({
       ack: 1,
       data: rows,
-      elementPerPage: rows.length,
+      // elementPerPage: rows.length,
       totalData: data,
       totalpage: Math.ceil(data / elements),
       page: parseInt(page),
@@ -323,6 +323,11 @@ exports.interviewPagination = async (request, response) => {
         },
         {
           "$InterviewAssignedBy.firstName$": {
+            [Op.like]: `%${searchParam}%`,
+          },
+        },
+        {
+          "$candidateDetail.fullname$": {
             [Op.like]: `%${searchParam}%`,
           },
         },
