@@ -55,9 +55,16 @@ exports.createLeaveByUser = async (request, response) => {
 // get employee leaves
 
 exports.getLeavePagiantion = async (request, response) => {
-  const { elements, page, employeeName = "", leaveFrom = "" } = request.query;
+  const {
+    elements,
+    page,
+    employeeName = "",
+    leaveFrom = "",
+    searchByStatus,
+  } = request.query;
   const limit = parseInt(elements);
   const offset = parseInt(limit * (page - 1));
+
   try {
     const { count, rows } = await Leave.findAndCountAll({
       include: [
@@ -86,6 +93,20 @@ exports.getLeavePagiantion = async (request, response) => {
           leaveFrom: { [Op.eq]: `%${leaveFrom}%` },
         },
       }),
+      ...(searchByStatus && {
+        where: {
+          [Op.or]: [
+            { status: { [Op.like]: `%${searchByStatus}%` } },
+            { leaveType: { [Op.like]: `%${searchByStatus}%` } },
+          ],
+        },
+      }),
+      // [Op.or]: [
+      //   { fullName: { [Op.like]: `%${searchParam}%` } },
+      //   { email: { [Op.like]: `%${searchParam}%` } },
+      //   { contactNumber: { [Op.like]: `%${searchParam}%` } },
+      //   //{ yearsOfExperience: { [Op.eq]: `${searchByExperience}` } },
+      // ],
       limit,
       offset,
     });
