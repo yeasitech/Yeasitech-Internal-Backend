@@ -138,7 +138,6 @@ exports.candidatePagination = async (request, response) => {
       followUpDate: { [Op.between]: [startDateRange, endDateRange] },
     };
   }
-  console.log("sdfghjk", dateRangeWhere, limit, offset);
   if (startRange && endRange) {
     dateRangeWhere = {
       yearsOfExperience: { [Op.between]: [startRange, endRange] },
