@@ -13,7 +13,8 @@ const candidateSkillModel = require("../models/candidateSkill.model");
 const { departmentRouter } = require("../routes/user.router");
 //create Candidate
 exports.createCandidate = async (request, response) => {
-  const user = request.body;
+  const { skillIds, candidateInfo } = request.body;
+
   // const candidateInfo = {
   //   fullName: user.fullName,
   //   email: user.email,
@@ -21,32 +22,25 @@ exports.createCandidate = async (request, response) => {
   //   cv: user.cv,
   //   skills: user.skills,
   //   contactNumber: user.contactNumber,
-  //   interviewSchedule: false,
+  //   interviewSchedule: user.interviewSchedule,
   //   isSelected: false,
   // };
 
   try {
-    const departmentData = await Department.findByPk(
-      user.candidateInfo.departmentId
-    );
-    if (!departmentData) {
-      return response
-        .status(200)
-        .json({ ack: 0, msg: "No Department available" });
-    } else {
-      const createCandidate = await candidateDetails.create({
-        ...user.candidateInfo,
-      });
-      await Promise.all([
-        user.skillIds.map(async (value) => {
-          await CandidateSkill.create({
-            skillId: value.id,
-            candidateId: createCandidate.id,
-          });
-        }),
-      ]);
-      response.status(200).json({ ack: 1, data: createCandidate });
-    }
+    const createCandidate = await candidateDetails.create({
+      ...candidateInfo,
+      isSelected: false,
+    });
+    await Promise.all([
+      skillIds.map(async (value) => {
+        await CandidateSkill.create({
+          skillId: value.id,
+          candidateId: createCandidate.id,
+        });
+      }),
+    ]);
+
+    response.status(200).json({ ack: 1, data: createCandidate });
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `server error` });
   }
@@ -121,21 +115,39 @@ exports.candidatePagination = async (request, response) => {
     page,
     searchParam = "",
     searchBySkillId = "",
-    searchByExperience = "",
+    // searchByExperience = "",
     fromDate,
     toDate,
+    startRange = "",
+    endRange = "",
+    startDateRange = "",
+    endDateRange = "",
   } = request.query;
   const limit = parseInt(elements);
   const offset = parseInt(limit * (page - 1));
   let where = {};
+  let rangeWhere = {};
+  let dateRangeWhere = {};
   if (searchBySkillId) {
     where = {
       skillId: { [Op.eq]: `${searchBySkillId}` },
     };
   }
+  if (startDateRange && endDateRange) {
+    dateRangeWhere = {
+      followUpDate: { [Op.between]: [startDateRange, endDateRange] },
+    };
+  }
+  console.log("sdfghjk", dateRangeWhere, limit, offset);
+  if (startRange && endRange) {
+    dateRangeWhere = {
+      yearsOfExperience: { [Op.between]: [startRange, endRange] },
+    };
+  }
+
   try {
     const { count, rows } = await candidateDetails.findAndCountAll({
-      //order: [["followUpDate", "DESc"]],
+      order: [["id", "ASC"]],
       attributes: { exclude: ["createdAt", "updatedAt"] },
       where: {
         [Op.or]: [
@@ -144,6 +156,8 @@ exports.candidatePagination = async (request, response) => {
           { contactNumber: { [Op.like]: `%${searchParam}%` } },
           //{ yearsOfExperience: { [Op.eq]: `${searchByExperience}` } },
         ],
+        ...rangeWhere,
+        ...dateRangeWhere,
         // followUpDate: {
         //   [Op.and]: {
         //     [Op.gte]: fromDate,
@@ -164,20 +178,16 @@ exports.candidatePagination = async (request, response) => {
           },
         },
       ],
-      ...(searchByExperience && {
-        where: { yearsOfExperience: { [Op.eq]: `${searchByExperience}` } },
-      }),
-
       limit,
       offset,
     });
-
+    const data = await candidateDetails.count();
     response.status(200).json({
       ack: 1,
       data: rows,
-      elementPerPage: rows.length,
-      totalData: count,
-      totalpage: Math.ceil(count / elements),
+      // elementPerPage: rows.length,
+      totalData: data,
+      totalpage: Math.ceil(data / elements),
       page: parseInt(page),
       elementsPerPage: limit,
     });
@@ -313,6 +323,11 @@ exports.interviewPagination = async (request, response) => {
         },
         {
           "$InterviewAssignedBy.firstName$": {
+            [Op.like]: `%${searchParam}%`,
+          },
+        },
+        {
+          "$candidateDetail.fullname$": {
             [Op.like]: `%${searchParam}%`,
           },
         },

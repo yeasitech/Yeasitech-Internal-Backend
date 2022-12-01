@@ -95,6 +95,7 @@ salaryRouter.post(
 );
 
 salaryRouter.get("/:userId", AdminAuthorization, salaryController.getSalary);
+salaryRouter.put("/:id", AdminAuthorization, salaryController.editSalary);
 //userRouter.put("/editProfile/:id", userController.editProfile);
 
 //deptRouter
