@@ -60,11 +60,18 @@ exports.getLeavePagiantion = async (request, response) => {
     page,
     employeeName = "",
     leaveFrom = "",
-    searchByStatus,
+    startDate = "",
+    endDate = "",
+    searchByStatus = "",
   } = request.query;
   const limit = parseInt(elements);
   const offset = parseInt(limit * (page - 1));
-
+  // let rangeWhere = {};
+  // if (startDate && endDate) {
+  //   rangeWhere = {
+  //     //  leaveTo: { [Op.lte]: `${endDate}` },
+  //   };
+  // }
   try {
     const { count, rows } = await Leave.findAndCountAll({
       include: [
@@ -77,8 +84,6 @@ exports.getLeavePagiantion = async (request, response) => {
           ],
           where: {
             firstName: { [Op.like]: `%${employeeName}%` },
-            //   // { middleName: { [Op.like]: `%${employeeName}%` } },
-            //   // { lastName: { [Op.like]: `%${employeeName}%` } },
           },
         },
       ],
@@ -101,12 +106,11 @@ exports.getLeavePagiantion = async (request, response) => {
           ],
         },
       }),
-      // [Op.or]: [
-      //   { fullName: { [Op.like]: `%${searchParam}%` } },
-      //   { email: { [Op.like]: `%${searchParam}%` } },
-      //   { contactNumber: { [Op.like]: `%${searchParam}%` } },
-      //   //{ yearsOfExperience: { [Op.eq]: `${searchByExperience}` } },
-      // ],
+      ...(startDate &&
+        endDate && {
+          where: { leaveFrom: { [Op.between]: [startDate, endDate] } },
+        }),
+
       limit,
       offset,
     });
