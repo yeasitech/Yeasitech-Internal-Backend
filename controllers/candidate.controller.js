@@ -26,19 +26,27 @@ exports.createCandidate = async (request, response) => {
   // };
 
   try {
-    const createCandidate = await candidateDetails.create({
-      ...user.candidateInfo,
-    });
-    await Promise.all([
-      user.skillIds.map(async (value) => {
-        await CandidateSkill.create({
-          skillId: value.id,
-          candidateId: createCandidate.id,
-        });
-      }),
-    ]);
-
-    response.status(200).json({ ack: 1, data: createCandidate });
+    const departmentData = await Department.findByPk(
+      user.candidateInfo.departmentId
+    );
+    if (!departmentData) {
+      return response
+        .status(200)
+        .json({ ack: 0, msg: "No Department available" });
+    } else {
+      const createCandidate = await candidateDetails.create({
+        ...user.candidateInfo,
+      });
+      await Promise.all([
+        user.skillIds.map(async (value) => {
+          await CandidateSkill.create({
+            skillId: value.id,
+            candidateId: createCandidate.id,
+          });
+        }),
+      ]);
+      response.status(200).json({ ack: 1, data: createCandidate });
+    }
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `server error` });
   }
