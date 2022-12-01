@@ -51,3 +51,34 @@ exports.getSalary = async (request, response) => {
       .json({ ack: 0, status: `error`, msg: error.message || `Server Error` });
   }
 };
+
+exports.editSalary = async (request, response) => {
+  const id = request.params.id;
+  const body = request.body;
+  try {
+    if (!id) {
+      return response.status(200).json({ ack: 1, msg: `user not exists` });
+    } else {
+      const salaryDetails = await Salary.findAll({
+        where: { id },
+      });
+      if (salaryDetails.length <= 0) {
+        return response
+          .status(200)
+          .json({ ack: 1, msg: `user don't have any salary information` });
+      } else {
+        const editSalary = await Salary.update(
+          {
+            ...body,
+          },
+          { where: { id: id } }
+        );
+      }
+      response.status(200).json({ ack: 1, msg: editSalary });
+    }
+  } catch (error) {
+    response
+      .status(500)
+      .json({ ack: 0, status: `error`, msg: error.message || `Server Error` });
+  }
+};
