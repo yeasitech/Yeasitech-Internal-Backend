@@ -81,6 +81,7 @@ exports.createUser = async (request, response) => {
 // Log In User
 exports.logIn = async (request, response) => {
   const { error } = loginSchema.validate(request.body);
+
   if (error) {
     response.status(200).json({ ack: 1, msg: error.details[0].message });
     return false;

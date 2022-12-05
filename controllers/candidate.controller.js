@@ -208,7 +208,14 @@ exports.getCandidate = async (request, response) => {
     } else {
       const data = await candidateDetails.findOne({
         where: { id: candidateId },
-        include: { model: Comments },
+        include: [
+          { model: Comments },
+          {
+            model: CandidateSkill,
+            attributes: ["skillId"],
+            include: { model: Skills, attributes: [`id`, "skill"] },
+          },
+        ],
       });
       response.status(200).json({ ack: 1, data: data });
     }

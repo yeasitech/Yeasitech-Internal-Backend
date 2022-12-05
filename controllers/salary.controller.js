@@ -73,8 +73,10 @@ exports.editSalary = async (request, response) => {
           },
           { where: { id: id } }
         );
+        response
+          .status(200)
+          .json({ ack: 1, msg: "Salary edited successfully", msg: editSalary });
       }
-      response.status(200).json({ ack: 1, msg: editSalary });
     }
   } catch (error) {
     response
