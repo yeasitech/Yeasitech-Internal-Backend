@@ -103,16 +103,8 @@ salaryRouter.put(
 //userRouter.put("/editProfile/:id", userController.editProfile);
 
 //deptRouter
-departmentRouter.post(
-  "/dept",
-
-  departmentController.createDepartment
-);
-departmentRouter.post(
-  "/designation",
-
-  departmentController.createDesignation
-);
+departmentRouter.post("/dept", departmentController.createDepartment);
+departmentRouter.post("/designation", departmentController.createDesignation);
 departmentRouter.get(
   "/department",
   AdminAuthorization,

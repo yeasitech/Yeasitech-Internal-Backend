@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken");
 
 const isAuthenticated = (request, response, next) => {
   const bearerHeader = request.headers["authorization"];
-  console.log(`bearerHeader`, bearerHeader);
+  //console.log(`bearerHeader`, bearerHeader);
   request.timezone = request.headers["timezone"];
   //Check if bearer is undefined
   if (typeof bearerHeader !== "undefined") {

@@ -49,11 +49,11 @@ exports.createCandidate = async (request, response) => {
 // Candiadte Update
 exports.candidateUpdate = async (request, response) => {
   const id = request.params.id;
-  const { candidateInfo } = request.body;
+  const { candidateInfo, skillIds } = request.body;
   const searchData = await candidateDetails.findByPk(id);
   try {
     if (!searchData) {
-      response.status(500).json({ ack: 0, msg: `invalid id passed ` });
+      response.status(500).json({ ack: 0, msg: `invalid id passed` });
     } else {
       const updatedData = await candidateDetails.update(
         { ...candidateInfo },
@@ -64,9 +64,13 @@ exports.candidateUpdate = async (request, response) => {
       const deleteCandiadteSkills = await CandidateSkill.destroy({
         where: { candidateId: id },
       });
+      const newSkills = skillIds.map((value) => {
+        return value.id;
+      });
+      const uniqueSkillId = [...new Set(newSkills)];
       await Promise.all(
-        request.body.skillIds.map(async (value) => {
-          await CandidateSkill.create({ candidateId: id, skillId: value.id });
+        uniqueSkillId.map(async (value) => {
+          await CandidateSkill.create({ candidateId: id, skillId: value });
         })
       );
       response
