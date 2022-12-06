@@ -9,6 +9,8 @@ const commentController = require("../controllers/comment.controller");
 const expenseController = require("../controllers/expense.controller");
 const userLoginController = require("../controllers/userLogin.controller");
 const skillController = require("../controllers/skill.controller");
+const payrollController = require("../controllers/payroll.controller");
+
 const Authorization = require("../middleware/isAuth");
 const AdminAuthorization = require("../middleware/isAdmin");
 const { Router } = require("express");
@@ -23,6 +25,7 @@ const commentRouter = Router();
 const expenseRouter = Router();
 const userLoginRouter = Router();
 const skillRouter = Router();
+const payrollRouter = Router();
 
 //userRouter
 userRouter.post("/createEmployee", userController.createUser);
@@ -357,6 +360,29 @@ userLoginRouter.post(
 );
 userLoginRouter.put("/:token", userLoginController.resetPassword);
 
+//payroll
+payrollRouter.post(
+  "/create",
+  AdminAuthorization,
+  payrollController.createPayroll
+);
+payrollRouter.put(
+  "/edit/:id",
+  AdminAuthorization,
+  payrollController.editPayroll
+);
+payrollRouter.put(
+  "/isProcess/:id",
+  AdminAuthorization,
+  payrollController.editIsProcess
+);
+payrollRouter.get("/list", AdminAuthorization, payrollController.payrollList);
+payrollRouter.delete(
+  "/delete/:id",
+  AdminAuthorization,
+  payrollController.deletePayroll
+);
+
 module.exports = {
   userRouter,
   departmentRouter,
@@ -369,4 +395,5 @@ module.exports = {
   expenseRouter,
   userLoginRouter,
   skillRouter,
+  payrollRouter,
 };

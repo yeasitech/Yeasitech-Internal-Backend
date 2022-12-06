@@ -13,6 +13,7 @@ const {
   expenseRouter,
   userLoginRouter,
   skillRouter,
+  payrollRouter,
 } = require("./routes/user.router");
 const express = require("express");
 const app = express();
@@ -37,6 +38,7 @@ app.use("/comment", commentRouter);
 app.use("/expense", expenseRouter);
 app.use("/userLogin", userLoginRouter);
 app.use("/skill", skillRouter);
+app.use("/payroll", payrollRouter);
 
 const birthday = nodeCron.schedule(
   " 5 0 * * *  ",

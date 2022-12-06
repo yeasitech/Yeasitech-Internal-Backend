@@ -82,9 +82,9 @@ exports.getLeavePagiantion = async (request, response) => {
             { model: EmployeeDetails, attributes: ["employeeImage"] },
             { model: Designation, attributes: ["designation"] },
           ],
-          where: {
-            firstName: { [Op.like]: `%${employeeName}%` },
-          },
+          // where: {
+          //   firstName: { [Op.like]: `%${employeeName}%` },
+          // },
         },
       ],
       // where: {
@@ -103,6 +103,7 @@ exports.getLeavePagiantion = async (request, response) => {
           [Op.or]: [
             { status: { [Op.like]: `%${searchByStatus}%` } },
             { leaveType: { [Op.like]: `%${searchByStatus}%` } },
+            { "$User.firstName$": { [Op.like]: `%${searchByStatus}%` } },
           ],
         },
       }),
