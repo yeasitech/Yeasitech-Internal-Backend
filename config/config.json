@@ -1,7 +1,7 @@
 {
   "development": {
     "username": "root",
-    "password": "Sayantan@1996",
+    "password": "",
     "database": "yeasitech_ems",
     "host": "127.0.0.1",
     "dialect": "mysql"

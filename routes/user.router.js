@@ -382,6 +382,40 @@ payrollRouter.delete(
   AdminAuthorization,
   payrollController.deletePayroll
 );
+//payrollSheet
+payrollRouter.post(
+  "/payrollSheet",
+  AdminAuthorization,
+  payrollController.createPayrollSheet
+);
+payrollRouter.delete(
+  "/deleteSheet/:id",
+  AdminAuthorization,
+  payrollController.deletePayrollSheet
+);
+
+payrollRouter.get(
+  "/sheetList",
+  AdminAuthorization,
+  payrollController.payrollSheetList
+);
+
+payrollRouter.get(
+  "/single/:id",
+  AdminAuthorization,
+  payrollController.singlePayrollSheet
+);
+
+payrollRouter.put(
+  "/editSheet/:id",
+  AdminAuthorization,
+  payrollController.editPayrollSheet
+);
+payrollRouter.get(
+  "/sheetListToExcell",
+  AdminAuthorization,
+  payrollController.payrollSheetListToExcell
+);
 
 module.exports = {
   userRouter,
