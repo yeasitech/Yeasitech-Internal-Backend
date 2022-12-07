@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   payrollSheet.init(
     {
-      userId: DataTypes.UUID,
+      name: DataTypes.STRING,
       salary: DataTypes.FLOAT,
       presentDays: DataTypes.INTEGER,
       totalSalary: DataTypes.FLOAT,
