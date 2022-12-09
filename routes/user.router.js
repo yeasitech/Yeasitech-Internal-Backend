@@ -412,9 +412,9 @@ payrollRouter.put(
   payrollController.editPayrollSheet
 );
 payrollRouter.get(
-  "/sheetListToExcell",
+  "/sheetListToExcel",
   AdminAuthorization,
-  payrollController.payrollSheetListToExcell
+  payrollController.payrollSheetListToExcel
 );
 
 module.exports = {

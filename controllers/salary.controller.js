@@ -21,7 +21,7 @@ exports.employeeSalary = async (request, response) => {
 
       response.status(200).json({
         ack: 1,
-        data: `Salary updated sccessfully`,
+        msg: `Salary created sccessfully`,
       });
     }
   } catch (error) {
