@@ -1,16 +1,35 @@
 const moment = require("moment");
 const XLSX = require("xlsx");
 const { format } = require("date-fns");
-
+const { Op } = require("sequelize");
 const { payroll, payrollSheet, User, Salary } = require("../models");
 
 exports.createPayroll = async (request, response) => {
+  const body = request.body;
   try {
-    const departmentTypes = await payroll.create({
-      ...request.body,
+    const createPayroll = await payroll.create({
+      ...body.payroll,
       isProcessed: false,
     });
-    response.status(200).json({ ack: 1, data: departmentTypes });
+
+    const createPayrollSheet = await Promise.all(
+      body.sheet.map((data) => {
+        return payrollSheet.create({ ...data, payrollId: createPayroll.id });
+      })
+    );
+    const totalPayableAmount = createPayrollSheet.map((data) => {
+      return data.totalPayable;
+    });
+    const sumOfTotalPayableAmount = totalPayableAmount.reduce(
+      (accumulator, currentValue) => accumulator + currentValue
+    );
+    const updatedPayroll = await payroll.update(
+      { total: sumOfTotalPayableAmount },
+      { where: { id: createPayroll.id } }
+    );
+    response
+      .status(200)
+      .json({ ack: 1, data: createPayroll, createPayrollSheet });
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `server error` });
   }
@@ -266,16 +285,26 @@ exports.editPayrollSheet = async (request, response) => {
   }
 };
 
-exports.payrollSheetListToExcell = async (request, response) => {
+exports.payrollSheetListToExcel = async (request, response) => {
   const { elements, page } = request.query;
   const limit = parseInt(elements);
   const offset = parseInt(limit * (page - 1));
 
+  const month = moment().month() + 1;
+  const year = moment().year();
+  const fromDate = moment(`${year}-${month}-01`);
+  const toDate = fromDate.add(1, "month").subtract(1, "second");
+  console.log("toDate", toDate.format());
+  console.log("fromDate", fromDate.format());
+
   try {
     const payrollSheetData = await payrollSheet.findAll({
       attributes: { exclude: ["id", "createdAt", "updatedAt", "payrollId"] },
-      //order: [["createdAt", "AESC"]],
+      where: {
+        createdAt: { [Op.between]: [fromDate.format(), toDate.format()] },
+      },
     });
+
     const now = new Date();
     const date = format(now, "yyyyMMddHHmmss");
     const data = payrollSheetData.map((e) => e.dataValues);
