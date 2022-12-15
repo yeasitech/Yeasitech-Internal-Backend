@@ -412,7 +412,7 @@ payrollRouter.put(
   payrollController.editPayrollSheet
 );
 payrollRouter.get(
-  "/sheetListToExcel",
+  "/sheetListToExcel/:id",
   AdminAuthorization,
   payrollController.payrollSheetListToExcel
 );
