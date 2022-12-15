@@ -100,7 +100,7 @@ exports.editIsProcess = async (request, response) => {
         response.status(500).json({ ack: 0, msg: `invalid payroll Data` });
       } else {
         const updatedPayroll = await payroll.update(
-          { isProcessed: !payrollData.isProcessed },
+          { isProcessed: 1, processingDate: new Date() },
           {
             where: { id },
           }
@@ -124,7 +124,7 @@ exports.deletePayroll = async (request, response) => {
     else {
       const payrollData = await payroll.findByPk(id);
       if (!payrollData) {
-        response.status(500).json({ ack: 0, msg: `invalid payroll Data` });
+        response.status(500).json({ ack: 0, msg: `invalid payroll id` });
       } else {
         const deletedPayroll = await payroll.destroy({
           where: { id },
@@ -287,6 +287,7 @@ exports.editPayrollSheet = async (request, response) => {
 
 exports.payrollSheetListToExcel = async (request, response) => {
   const { elements, page } = request.query;
+  const id = request.params.id;
   const limit = parseInt(elements);
   const offset = parseInt(limit * (page - 1));
 
@@ -294,14 +295,12 @@ exports.payrollSheetListToExcel = async (request, response) => {
   const year = moment().year();
   const fromDate = moment(`${year}-${month}-01`);
   const toDate = fromDate.add(1, "month").subtract(1, "second");
-  console.log("toDate", toDate.format());
-  console.log("fromDate", fromDate.format());
-
   try {
     const payrollSheetData = await payrollSheet.findAll({
-      attributes: { exclude: ["id", "createdAt", "updatedAt", "payrollId"] },
+      //attributes: { exclude: ["id", "createdAt", "updatedAt", "payrollId"] },
       where: {
-        createdAt: { [Op.between]: [fromDate.format(), toDate.format()] },
+        payrollId: id,
+        // createdAt: { [Op.between]: [fromDate.format(), toDate.format()] },
       },
     });
 

@@ -171,7 +171,7 @@ exports.employeeDetails = async (request, response) => {
       else {
         personal.userId = user.id;
         let getAllEmployee = await EmployeeDetails.findAll({
-          order: [["employeeId", "DESC"]],
+          order: [["createdAt", "DESC"]],
           limit: 1,
         });
         let employeeIdToSave;
