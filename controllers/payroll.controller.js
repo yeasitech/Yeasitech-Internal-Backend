@@ -2,6 +2,9 @@ const moment = require("moment");
 const XLSX = require("xlsx");
 const { format } = require("date-fns");
 const { Op } = require("sequelize");
+const { Parser } = require("json2csv");
+const fs = require("fs/promises");
+
 const { payroll, payrollSheet, User, Salary } = require("../models");
 
 exports.createPayroll = async (request, response) => {
@@ -120,11 +123,11 @@ exports.deletePayroll = async (request, response) => {
   const id = request.params.id;
   try {
     if (!id && id.length <= 0)
-      response.status(500).json({ ack: 0, msg: `invalid payrollId` });
+      response.status(500).json({ ack: 0, msg: `invalid payroll Id` });
     else {
       const payrollData = await payroll.findByPk(id);
       if (!payrollData) {
-        response.status(500).json({ ack: 0, msg: `invalid payroll Data` });
+        response.status(500).json({ ack: 0, msg: `invalid payroll Id` });
       } else {
         const deletedPayroll = await payroll.destroy({
           where: { id },
@@ -289,35 +292,55 @@ exports.payrollSheetListToExcel = async (request, response) => {
   const { elements, page } = request.query;
   const limit = parseInt(elements);
   const offset = parseInt(limit * (page - 1));
-
-  const month = moment().month() + 1;
-  const year = moment().year();
-  const fromDate = moment(`${year}-${month}-01`);
-  const toDate = fromDate.add(1, "month").subtract(1, "second");
-  console.log("toDate", toDate.format());
-  console.log("fromDate", fromDate.format());
+  const id = request.params.id;
 
   try {
     const payrollSheetData = await payrollSheet.findAll({
-      attributes: { exclude: ["id", "createdAt", "updatedAt", "payrollId"] },
       where: {
-        createdAt: { [Op.between]: [fromDate.format(), toDate.format()] },
+        payrollId: id,
       },
     });
 
     const now = new Date();
     const date = format(now, "yyyyMMddHHmmss");
-    const data = payrollSheetData.map((e) => e.dataValues);
-    console.log(data);
-    const workSheet = XLSX.utils.json_to_sheet(data);
-    const workBook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workBook, workSheet, "Employee_payroll_Sheet");
 
-    XLSX.write(workBook, { bookType: "xlsx", type: "buffer" });
+    const fields = [
+      {
+        label: "Employee Name",
+        value: "name",
+      },
+      {
+        label: "Salary",
+        value: "salary",
+      },
+      {
+        label: "Present days",
+        value: "presentDays",
+      },
+      {
+        label: "Calculated salary",
+        value: "totalSalary",
+      },
+      {
+        label: "Tax",
+        value: "tax",
+      },
+      {
+        label: "Bonus",
+        value: "bonus",
+      },
+      {
+        label: "Total payable",
+        value: "totalPayable",
+      },
+    ];
 
-    XLSX.write(workBook, { bookType: "xlsx", type: "binary" });
-    //XLSX.writeFile(workBook, `${date}.xlsx`);
-
+    const json2csvParser = new Parser({ fields });
+    const csv = json2csvParser.parse(payrollSheetData);
+    console.log(">>>>>", csv);
+    const csvBuffer = Buffer.from(csv);
+    // console.log(csvBuffer);
+    await fs.writeFile(`payroleDataSheet_${date}.csv`, csvBuffer);
     response.status(200).json({
       ack: 1,
       data: payrollSheetData,
