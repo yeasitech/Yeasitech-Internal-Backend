@@ -265,7 +265,7 @@ exports.allEmployee = async (request, response) => {
     //   attributes: ["id", "userId", "currentSalary"],
     //   where: { userId: { [Op.in]: userId } },
     //   order: [["updatedAt", "DESC"]],
-    //   //limit: 1,
+    //   limit: 1,
     // });
     response.status(200).json({ ack: 1, data: allData });
   } catch (error) {

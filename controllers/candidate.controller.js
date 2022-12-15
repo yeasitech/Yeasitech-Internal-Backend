@@ -129,11 +129,11 @@ exports.candidatePagination = async (request, response) => {
   } = request.query;
   const limit = parseInt(elements);
   const offset = parseInt(limit * (page - 1));
-  let where = {};
+  let skillWhere = {};
   let rangeWhere = {};
   let dateRangeWhere = {};
-  if (searchBySkillId) {
-    where = {
+  if (searchBySkillId && searchBySkillId !== "") {
+    skillWhere = {
       skillId: { [Op.eq]: `${searchBySkillId}` },
     };
   }
@@ -173,12 +173,15 @@ exports.candidatePagination = async (request, response) => {
         { model: Department, attributes: ["id", "department"] },
         {
           model: CandidateSkill,
-          where,
+          where: { ...skillWhere },
           attributes: { exclude: ["createdAt", "updatedAt"] },
           include: {
             model: Skills,
             attributes: { exclude: ["createdAt", "updatedAt"] },
           },
+          ...(Object.keys(skillWhere).length > 0
+            ? { required: true }
+            : { required: false }),
         },
       ],
       limit,
