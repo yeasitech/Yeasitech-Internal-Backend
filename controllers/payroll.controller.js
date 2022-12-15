@@ -17,16 +17,16 @@ exports.createPayroll = async (request, response) => {
         return payrollSheet.create({ ...data, payrollId: createPayroll.id });
       })
     );
-    const totalPayableAmount = createPayrollSheet.map((data) => {
-      return data.totalPayable;
-    });
-    const sumOfTotalPayableAmount = totalPayableAmount.reduce(
-      (accumulator, currentValue) => accumulator + currentValue
-    );
-    const updatedPayroll = await payroll.update(
-      { total: sumOfTotalPayableAmount },
-      { where: { id: createPayroll.id } }
-    );
+    // const totalPayableAmount = createPayrollSheet.map((data) => {
+    //   return data.totalPayable;
+    // });
+    // const sumOfTotalPayableAmount = totalPayableAmount.reduce(
+    //   (accumulator, currentValue) => accumulator + currentValue
+    // );
+    // const updatedPayroll = await payroll.update(
+    //   { total: sumOfTotalPayableAmount },
+    //   { where: { id: createPayroll.id } }
+    // );
     response
       .status(200)
       .json({ ack: 1, data: createPayroll, createPayrollSheet });
