@@ -395,7 +395,7 @@ payrollRouter.delete(
 );
 
 payrollRouter.get(
-  "/sheetList",
+  "/sheetList/:id",
   AdminAuthorization,
   payrollController.payrollSheetList
 );
