@@ -14,22 +14,32 @@ exports.createPayroll = async (request, response) => {
       ...body.payroll,
       isProcessed: false,
     });
-
+    // let totalDays = 30;
     const createPayrollSheet = await Promise.all(
       body.sheet.map((data) => {
-        return payrollSheet.create({ ...data, payrollId: createPayroll.id });
+        return payrollSheet.create({
+          ...data,
+          payrollId: createPayroll.id,
+        });
       })
     );
-    const totalPayableAmount = createPayrollSheet.map((data) => {
-      return data.totalPayable;
-    });
-    const sumOfTotalPayableAmount = totalPayableAmount.reduce(
-      (accumulator, currentValue) => accumulator + currentValue
-    );
-    const updatedPayroll = await payroll.update(
-      { total: sumOfTotalPayableAmount },
-      { where: { id: createPayroll.id } }
-    );
+    // let a = createPayrollSheet.map((value) => value.dataValues.salary);
+
+    // console.log(
+    //   `qwertyuiop`,
+    //   Object.values({ ...a }).reduce((i, f) => i + f)
+    // );
+
+    // const totalPayableAmount = createPayrollSheet.map((data) => {
+    //   return data.totalPayable;
+    // });
+    // const sumOfTotalPayableAmount = totalPayableAmount.reduce(
+    //   (accumulator, currentValue) => accumulator + currentValue
+    // );
+    // const updatedPayroll = await payroll.update(
+    //   { total: sumOfTotalPayableAmount },
+    //   { where: { id: createPayroll.id } }
+    // );
     response
       .status(200)
       .json({ ack: 1, data: createPayroll, createPayrollSheet });
@@ -243,6 +253,8 @@ exports.payrollSheetList = async (request, response) => {
       page: parseInt(page),
       elementsPerPage: limit,
     });
+    const a = await payrollSheet.findAll();
+    console.log(a);
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
   }

@@ -1,5 +1,7 @@
-"use strict";
-const { Model, INTEGER } = require("sequelize");
+'use strict';
+const {
+  Model
+} = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class payroll extends Model {
     /**
@@ -11,25 +13,15 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  payroll.init(
-    {
-      month: DataTypes.STRING,
-      processingDate: DataTypes.DATEONLY,
-      isProcessed: DataTypes.BOOLEAN,
-      generateDate: DataTypes.DATEONLY,
-      total: DataTypes.FLOAT,
-      //totalDays: { types: DataTypes.INTEGER, defaultValue: 30 },
-    },
-    {
-      sequelize,
-      modelName: "payroll",
-    }
-  );
-  payroll.associate = function (models) {
-    payroll.hasMany(models.payrollSheet, {
-      foreignKey: "payrollId",
-    });
-  };
-
+  payroll.init({
+    month: DataTypes.STRING,
+    processingDate: DataTypes.DATE,
+    generateDate: DataTypes.DATE,
+    total: DataTypes.FLOAT,
+    isProcessed: DataTypes.BOOLEAN
+  }, {
+    sequelize,
+    modelName: 'payroll',
+  });
   return payroll;
 };

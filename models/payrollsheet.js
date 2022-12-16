@@ -1,5 +1,7 @@
-"use strict";
-const { Model } = require("sequelize");
+'use strict';
+const {
+  Model
+} = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class payrollSheet extends Model {
     /**
@@ -11,26 +13,19 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  payrollSheet.init(
-    {
-      name: DataTypes.STRING,
-      salary: DataTypes.FLOAT,
-      presentDays: DataTypes.INTEGER,
-      totalSalary: DataTypes.FLOAT,
-      tax: DataTypes.FLOAT,
-      bonus: DataTypes.FLOAT,
-      totalPayable: DataTypes.FLOAT,
-    },
-    {
-      sequelize,
-      modelName: "payrollSheet",
-    }
-  );
-  payrollSheet.associate = function (models) {
-    payrollSheet.belongsTo(models.payroll, {
-      foreignKey: "payrollId",
-    });
-  };
-
+  payrollSheet.init({
+    name: DataTypes.STRING,
+    salary: DataTypes.FLOAT,
+    presentDays: DataTypes.INTEGER,
+    totalSalary: DataTypes.FLOAT,
+    tax: DataTypes.FLOAT,
+    bonus: DataTypes.FLOAT,
+    totalDays: DataTypes.INTEGER,
+    totalPayable: DataTypes.FLOAT,
+    payrollId: DataTypes.INTEGER
+  }, {
+    sequelize,
+    modelName: 'payrollSheet',
+  });
   return payrollSheet;
 };
