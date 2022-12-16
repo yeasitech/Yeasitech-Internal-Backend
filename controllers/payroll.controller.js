@@ -20,12 +20,6 @@ exports.createPayroll = async (request, response) => {
         });
       })
     );
-    // let a = createPayrollSheet.map((value) => value.dataValues.salary);
-
-    // console.log(
-    //   `qwertyuiop`,
-    //   Object.values({ ...a }).reduce((i, f) => i + f)
-    // );
 
     // const totalPayableAmount = createPayrollSheet.map((data) => {
     //   return data.totalPayable;
@@ -207,9 +201,9 @@ exports.createPayrollSheet = async (request, response) => {
 exports.deletePayrollSheet = async (request, response) => {
   const id = request.params.id;
   try {
-    if (!id && id.length <= 0)
+    if (!id && id.length <= 0) {
       response.status(500).json({ ack: 0, msg: `invalid id` });
-    else {
+    } else {
       const payrollData = await payrollSheet.findByPk(id);
       if (!payrollData) {
         response.status(500).json({ ack: 0, msg: `No Data found` });
@@ -230,28 +224,25 @@ exports.deletePayrollSheet = async (request, response) => {
 };
 
 exports.payrollSheetList = async (request, response) => {
-  const { elements, page } = request.query;
-  const limit = parseInt(elements);
-  const offset = parseInt(limit * (page - 1));
+  const payrollId = request.params.id;
+  // const limit = parseInt(elements);
+  // const offset = parseInt(limit * (page - 1));
 
   try {
-    const { count, rows: payrollSheetData } =
-      await payrollSheet.findAndCountAll({
-        limit,
-        offset,
-        //order: [["createdAt", "AESC"]],
-      });
-    response.status(200).json({
-      ack: 1,
-      data: payrollSheetData,
-      elementCount: payrollSheetData.length,
-      totalElements: count,
-      totalpage: Math.ceil(count / elements),
-      page: parseInt(page),
-      elementsPerPage: limit,
+    const patrollData = await payroll.findAll({
+      where: { id: payrollId },
     });
-    const a = await payrollSheet.findAll();
-    console.log(a);
+    if (patrollData.length <= 0) {
+      response.status(500).json({ ack: 0, msg: `No data found` });
+    } else {
+      const patrollSheetData = await payrollSheet.findAll({
+        where: { payrollId: payrollId },
+      });
+      response.status(200).json({
+        ack: 1,
+        data: patrollSheetData,
+      });
+    }
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
   }
@@ -298,24 +289,17 @@ exports.editPayrollSheet = async (request, response) => {
 };
 
 exports.payrollSheetListToExcel = async (request, response) => {
-  const { elements, page } = request.query;
   const id = request.params.id;
-  const limit = parseInt(elements);
-  const offset = parseInt(limit * (page - 1));
-
   const month = moment().month() + 1;
   const year = moment().year();
   const fromDate = moment(`${year}-${month}-01`);
   const toDate = fromDate.add(1, "month").subtract(1, "second");
   try {
     const payrollSheetData = await payrollSheet.findAll({
-      //attributes: { exclude: ["id", "createdAt", "updatedAt", "payrollId"] },
       where: {
         payrollId: id,
-        // createdAt: { [Op.between]: [fromDate.format(), toDate.format()] },
       },
     });
-
     const now = new Date();
     const date = format(now, "yyyyMMddHHmmss");
     const data = payrollSheetData.map((e) => e.dataValues);
@@ -332,11 +316,6 @@ exports.payrollSheetListToExcel = async (request, response) => {
     response.status(200).json({
       ack: 1,
       data: payrollSheetData,
-      // elementCount: payrollSheetData.length,
-      // totalElements: count,
-      // totalpage: Math.ceil(count / elements),
-      // page: parseInt(page),
-      // elementsPerPage: limit,
     });
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
