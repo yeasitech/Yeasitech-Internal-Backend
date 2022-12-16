@@ -11,12 +11,22 @@ exports.createPayroll = async (request, response) => {
       ...body.payroll,
       isProcessed: false,
     });
-
+    // let totalDays = 30;
     const createPayrollSheet = await Promise.all(
       body.sheet.map((data) => {
-        return payrollSheet.create({ ...data, payrollId: createPayroll.id });
+        return payrollSheet.create({
+          ...data,
+          payrollId: createPayroll.id,
+        });
       })
     );
+    // let a = createPayrollSheet.map((value) => value.dataValues.salary);
+
+    // console.log(
+    //   `qwertyuiop`,
+    //   Object.values({ ...a }).reduce((i, f) => i + f)
+    // );
+
     // const totalPayableAmount = createPayrollSheet.map((data) => {
     //   return data.totalPayable;
     // });
@@ -240,6 +250,8 @@ exports.payrollSheetList = async (request, response) => {
       page: parseInt(page),
       elementsPerPage: limit,
     });
+    const a = await payrollSheet.findAll();
+    console.log(a);
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
   }
