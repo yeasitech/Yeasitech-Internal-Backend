@@ -23,12 +23,6 @@ exports.createPayroll = async (request, response) => {
         });
       })
     );
-    // let a = createPayrollSheet.map((value) => value.dataValues.salary);
-
-    // console.log(
-    //   `qwertyuiop`,
-    //   Object.values({ ...a }).reduce((i, f) => i + f)
-    // );
 
     // const totalPayableAmount = createPayrollSheet.map((data) => {
     //   return data.totalPayable;
@@ -134,7 +128,7 @@ exports.payrollList = async (request, response) => {
   }
 };
 
-// is precessing update
+// Processing date update
 exports.editIsProcess = async (request, response) => {
   const id = request.params.id;
   try {
@@ -156,7 +150,6 @@ exports.editIsProcess = async (request, response) => {
             where: { id },
           }
         );
-        console.log("dfghj", date);
         response
           .status(200)
           .json({ ack: 1, msg: `Successfully Updated payroll` });
@@ -176,15 +169,18 @@ exports.deletePayroll = async (request, response) => {
     else {
       const payrollData = await payroll.findByPk(id);
       if (!payrollData) {
-        response.status(500).json({ ack: 0, msg: `invalid payroll Id` });
+        response.status(200).json({ ack: 0, msg: `invalid payroll Id` });
       } else {
+        const deleteSheet = await payrollSheet.destroy({
+          where: { payrollId: id },
+        });
         const deletedPayroll = await payroll.destroy({
           where: { id },
         });
         response.status(200).json({
           ack: 1,
-          msg: `Successfully Deleted payroll`,
-          data: deletedPayroll,
+          msg: `Successfully Deleted payroll and payroll-sheet`,
+          data: { deletedPayroll, deleteSheet },
         });
       }
     }
@@ -192,66 +188,13 @@ exports.deletePayroll = async (request, response) => {
     response.status(500).json({ ack: 0, msg: error.message || "Server Error" });
   }
 };
-exports.createPayrollSheet = async (request, response) => {
-  try {
-    const { presentDays, bonus, tax, userId, totalPayable, totalSalary } =
-      request.body;
-    const salaryData = await Salary.findOne({
-      order: [["updatedAt", "DESC"]],
-      where: { userId },
-    });
-
-    const userData = await User.findOne({
-      where: { id: userId },
-      attributes: ["firstName", "middleName", "lastName"],
-    });
-    if (!userData) {
-      response
-        .status(200)
-        .json({ ack: 1, data: "No User found  with this userid" });
-      return;
-    }
-    if (!salaryData) {
-      response
-        .status(200)
-        .json({ ack: 1, data: "No salary data found  with this userid" });
-      return;
-    }
-    //console.log(`qwertyuiop`, salaryData.dataValues.currentSalary);
-    //const daysInMongth = moment().daysInMonth();
-    // const totalSalary =
-    //   (salaryData.dataValues.currentSalary / daysInMongth) * presentDays;
-
-    const fullName =
-      userData.dataValues.firstName +
-      " " +
-      // userData.dataValues.middleName +
-      // " " +
-      userData.dataValues.lastName;
-    let payload = {
-      presentDays,
-      totalSalary,
-      tax,
-      bonus,
-      totalPayable,
-      // totalPayable: totalSalary + bonus - tax,
-      salary: salaryData.dataValues.currentSalary,
-      name: fullName,
-    };
-    const payrollSheetData = await payrollSheet.create(payload);
-    //console.log("sdfghjk", payrollSheetData);
-    response.status(200).json({ ack: 1, data: payrollSheetData });
-  } catch (error) {
-    response.status(500).json({ ack: 0, msg: error.message || `server error` });
-  }
-};
 
 exports.deletePayrollSheet = async (request, response) => {
   const id = request.params.id;
   try {
-    if (!id && id.length <= 0)
+    if (!id && id.length <= 0) {
       response.status(500).json({ ack: 0, msg: `invalid id` });
-    else {
+    } else {
       const payrollData = await payrollSheet.findByPk(id);
       if (!payrollData) {
         response.status(500).json({ ack: 0, msg: `No Data found` });
@@ -272,28 +215,25 @@ exports.deletePayrollSheet = async (request, response) => {
 };
 
 exports.payrollSheetList = async (request, response) => {
-  const { elements, page } = request.query;
-  const limit = parseInt(elements);
-  const offset = parseInt(limit * (page - 1));
+  const payrollId = request.params.id;
+  // const limit = parseInt(elements);
+  // const offset = parseInt(limit * (page - 1));
 
   try {
-    const { count, rows: payrollSheetData } =
-      await payrollSheet.findAndCountAll({
-        limit,
-        offset,
-        //order: [["createdAt", "AESC"]],
-      });
-    response.status(200).json({
-      ack: 1,
-      data: payrollSheetData,
-      elementCount: payrollSheetData.length,
-      totalElements: count,
-      totalpage: Math.ceil(count / elements),
-      page: parseInt(page),
-      elementsPerPage: limit,
+    const payrollData = await payroll.findOne({
+      where: { id: payrollId },
     });
-    const a = await payrollSheet.findAll();
-    console.log(a);
+    if (payrollData.length <= 0) {
+      response.status(500).json({ ack: 0, msg: `No data found` });
+    } else {
+      const payrollSheetData = await payrollSheet.findAll({
+        where: { payrollId: payrollId },
+      });
+      response.status(200).json({
+        ack: 1,
+        data: { payrollData, payrollSheetData },
+      });
+    }
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
   }
@@ -340,10 +280,15 @@ exports.editPayrollSheet = async (request, response) => {
 };
 
 exports.payrollSheetListToExcel = async (request, response) => {
+  const id = request.params.id;
+  const month = moment().month() + 1;
+  const year = moment().year();
+  const fromDate = moment(`${year}-${month}-01`);
+  const toDate = fromDate.add(1, "month").subtract(1, "second");
   const { elements, page } = request.query;
   const limit = parseInt(elements);
   const offset = parseInt(limit * (page - 1));
-  const id = request.params.id;
+  //const id = request.params.id;
 
   try {
     const payrollSheetData = await payrollSheet.findAll({
@@ -351,7 +296,6 @@ exports.payrollSheetListToExcel = async (request, response) => {
         payrollId: id,
       },
     });
-
     const now = new Date();
     const date = format(now, "yyyyMMddHHmmss");
 
@@ -401,11 +345,6 @@ exports.payrollSheetListToExcel = async (request, response) => {
     response.status(200).json({
       ack: 1,
       data: payrollSheetData,
-      // elementCount: payrollSheetData.length,
-      // totalElements: count,
-      // totalpage: Math.ceil(count / elements),
-      // page: parseInt(page),
-      // elementsPerPage: limit,
     });
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });

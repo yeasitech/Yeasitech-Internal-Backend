@@ -9,10 +9,6 @@ module.exports = {
      * Example:
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
-    queryInterface.addColumn("payrolls", "totalDays", {
-      type: Sequelize.INTEGER,
-      defaultValue: 30,
-    });
   },
 
   async down(queryInterface, Sequelize) {

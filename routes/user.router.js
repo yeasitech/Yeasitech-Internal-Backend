@@ -383,11 +383,11 @@ payrollRouter.delete(
   payrollController.deletePayroll
 );
 //payrollSheet
-payrollRouter.post(
-  "/payrollSheet",
-  AdminAuthorization,
-  payrollController.createPayrollSheet
-);
+// payrollRouter.post(
+//   "/payrollSheet",
+//   AdminAuthorization,
+//   payrollController.createPayrollSheet
+// );
 payrollRouter.delete(
   "/deleteSheet/:id",
   AdminAuthorization,
@@ -395,7 +395,7 @@ payrollRouter.delete(
 );
 
 payrollRouter.get(
-  "/sheetList",
+  "/sheetList/:id",
   AdminAuthorization,
   payrollController.payrollSheetList
 );
