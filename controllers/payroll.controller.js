@@ -47,6 +47,39 @@ exports.createPayroll = async (request, response) => {
     response.status(500).json({ ack: 0, msg: error.message || `server error` });
   }
 };
+//edit payroll with sheet
+
+exports.editPayrollWithSheet = async (request, response) => {
+  const body = request.body;
+  const payrollId = request.params.id;
+  //console.log("data", request.body.payroll);
+
+  try {
+    const dataSheet = await payrollSheet.findAll({
+      where: { payrollId: payrollId },
+    });
+    const payrollData = await payroll.findOne({ where: { id: payrollId } });
+    if (!dataSheet || !payrollData) {
+      response.status(200).json({ ack: 0, msg: `No data found with this id ` });
+    } else {
+      const updatedPayroll = await payroll.update(
+        { ...request.body.payroll },
+        { where: { id: payrollId } }
+      );
+
+      const updatedPayrollSheet = await Promise.all(
+        body.sheet.map((data) => {
+          return payrollSheet.update({ ...data }, { where: { id: data.id } });
+        })
+      );
+      response
+        .status(200)
+        .json({ ack: 1, data: { updatedPayroll, updatedPayrollSheet } });
+    }
+  } catch (error) {
+    response.status(500).json({ ack: 0, msg: error.message || `server error` });
+  }
+};
 
 // edit payroll
 exports.editPayroll = async (request, response) => {
@@ -112,12 +145,18 @@ exports.editIsProcess = async (request, response) => {
       if (!payrollData) {
         response.status(500).json({ ack: 0, msg: `invalid payroll Data` });
       } else {
+        const date = new Date();
+
         const updatedPayroll = await payroll.update(
-          { isProcessed: !payrollData.isProcessed },
+          {
+            isProcessed: !payrollData.isProcessed,
+            processingDate: date,
+          },
           {
             where: { id },
           }
         );
+        console.log("dfghj", date);
         response
           .status(200)
           .json({ ack: 1, msg: `Successfully Updated payroll` });
@@ -352,7 +391,13 @@ exports.payrollSheetListToExcel = async (request, response) => {
     console.log(">>>>>", csv);
     const csvBuffer = Buffer.from(csv);
     // console.log(csvBuffer);
-    await fs.writeFile(`payroleDataSheet_${date}.csv`, csvBuffer);
+    // let fileName = await fs.writeFile(
+    //   `payroleDataSheet_${date}.csv`,
+    //   csvBuffer
+    // );
+    // response.download(`${fileName}`, function (error) {
+    //   console.log("Error : ", error);
+    // });
     response.status(200).json({
       ack: 1,
       data: payrollSheetData,
