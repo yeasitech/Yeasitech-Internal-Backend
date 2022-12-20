@@ -2,6 +2,9 @@ const moment = require("moment");
 const XLSX = require("xlsx");
 const { format } = require("date-fns");
 const { Op } = require("sequelize");
+const { Parser } = require("json2csv");
+const fs = require("fs/promises");
+
 const { payroll, payrollSheet, User, Salary } = require("../models");
 
 exports.createPayroll = async (request, response) => {
@@ -34,6 +37,39 @@ exports.createPayroll = async (request, response) => {
     response
       .status(200)
       .json({ ack: 1, data: createPayroll, createPayrollSheet });
+  } catch (error) {
+    response.status(500).json({ ack: 0, msg: error.message || `server error` });
+  }
+};
+//edit payroll with sheet
+
+exports.editPayrollWithSheet = async (request, response) => {
+  const body = request.body;
+  const payrollId = request.params.id;
+  //console.log("data", request.body.payroll);
+
+  try {
+    const dataSheet = await payrollSheet.findAll({
+      where: { payrollId: payrollId },
+    });
+    const payrollData = await payroll.findOne({ where: { id: payrollId } });
+    if (!dataSheet || !payrollData) {
+      response.status(200).json({ ack: 0, msg: `No data found with this id ` });
+    } else {
+      const updatedPayroll = await payroll.update(
+        { ...request.body.payroll },
+        { where: { id: payrollId } }
+      );
+
+      const updatedPayrollSheet = await Promise.all(
+        body.sheet.map((data) => {
+          return payrollSheet.update({ ...data }, { where: { id: data.id } });
+        })
+      );
+      response
+        .status(200)
+        .json({ ack: 1, data: { updatedPayroll, updatedPayrollSheet } });
+    }
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `server error` });
   }
@@ -92,7 +128,7 @@ exports.payrollList = async (request, response) => {
   }
 };
 
-// is precessing update
+// Processing date update
 exports.editIsProcess = async (request, response) => {
   const id = request.params.id;
   try {
@@ -103,8 +139,13 @@ exports.editIsProcess = async (request, response) => {
       if (!payrollData) {
         response.status(500).json({ ack: 0, msg: `invalid payroll Data` });
       } else {
+        const date = new Date();
+
         const updatedPayroll = await payroll.update(
-          { isProcessed: 1, processingDate: new Date() },
+          {
+            isProcessed: !payrollData.isProcessed,
+            processingDate: date,
+          },
           {
             where: { id },
           }
@@ -124,77 +165,27 @@ exports.deletePayroll = async (request, response) => {
   const id = request.params.id;
   try {
     if (!id && id.length <= 0)
-      response.status(500).json({ ack: 0, msg: `invalid payrollId` });
+      response.status(500).json({ ack: 0, msg: `invalid payroll Id` });
     else {
       const payrollData = await payroll.findByPk(id);
       if (!payrollData) {
-        response.status(500).json({ ack: 0, msg: `invalid payroll id` });
+        response.status(200).json({ ack: 0, msg: `invalid payroll Id` });
       } else {
+        const deleteSheet = await payrollSheet.destroy({
+          where: { payrollId: id },
+        });
         const deletedPayroll = await payroll.destroy({
           where: { id },
         });
         response.status(200).json({
           ack: 1,
-          msg: `Successfully Deleted payroll`,
-          data: deletedPayroll,
+          msg: `Successfully Deleted payroll and payroll-sheet`,
+          data: { deletedPayroll, deleteSheet },
         });
       }
     }
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || "Server Error" });
-  }
-};
-exports.createPayrollSheet = async (request, response) => {
-  try {
-    const { presentDays, bonus, tax, userId, totalPayable, totalSalary } =
-      request.body;
-    const salaryData = await Salary.findOne({
-      order: [["updatedAt", "DESC"]],
-      where: { userId },
-    });
-
-    const userData = await User.findOne({
-      where: { id: userId },
-      attributes: ["firstName", "middleName", "lastName"],
-    });
-    if (!userData) {
-      response
-        .status(200)
-        .json({ ack: 1, data: "No User found  with this userid" });
-      return;
-    }
-    if (!salaryData) {
-      response
-        .status(200)
-        .json({ ack: 1, data: "No salary data found  with this userid" });
-      return;
-    }
-    //console.log(`qwertyuiop`, salaryData.dataValues.currentSalary);
-    //const daysInMongth = moment().daysInMonth();
-    // const totalSalary =
-    //   (salaryData.dataValues.currentSalary / daysInMongth) * presentDays;
-
-    const fullName =
-      userData.dataValues.firstName +
-      " " +
-      // userData.dataValues.middleName +
-      // " " +
-      userData.dataValues.lastName;
-    let payload = {
-      presentDays,
-      totalSalary,
-      tax,
-      bonus,
-      totalPayable,
-      // totalPayable: totalSalary + bonus - tax,
-      salary: salaryData.dataValues.currentSalary,
-      name: fullName,
-    };
-    const payrollSheetData = await payrollSheet.create(payload);
-    //console.log("sdfghjk", payrollSheetData);
-    response.status(200).json({ ack: 1, data: payrollSheetData });
-  } catch (error) {
-    response.status(500).json({ ack: 0, msg: error.message || `server error` });
   }
 };
 
@@ -229,18 +220,18 @@ exports.payrollSheetList = async (request, response) => {
   // const offset = parseInt(limit * (page - 1));
 
   try {
-    const patrollData = await payroll.findAll({
+    const payrollData = await payroll.findOne({
       where: { id: payrollId },
     });
-    if (patrollData.length <= 0) {
+    if (payrollData.length <= 0) {
       response.status(500).json({ ack: 0, msg: `No data found` });
     } else {
-      const patrollSheetData = await payrollSheet.findAll({
+      const payrollSheetData = await payrollSheet.findAll({
         where: { payrollId: payrollId },
       });
       response.status(200).json({
         ack: 1,
-        data: patrollSheetData,
+        data: { payrollData, payrollSheetData },
       });
     }
   } catch (error) {
@@ -294,6 +285,11 @@ exports.payrollSheetListToExcel = async (request, response) => {
   const year = moment().year();
   const fromDate = moment(`${year}-${month}-01`);
   const toDate = fromDate.add(1, "month").subtract(1, "second");
+  const { elements, page } = request.query;
+  const limit = parseInt(elements);
+  const offset = parseInt(limit * (page - 1));
+  //const id = request.params.id;
+
   try {
     const payrollSheetData = await payrollSheet.findAll({
       where: {
@@ -302,17 +298,50 @@ exports.payrollSheetListToExcel = async (request, response) => {
     });
     const now = new Date();
     const date = format(now, "yyyyMMddHHmmss");
-    const data = payrollSheetData.map((e) => e.dataValues);
-    console.log(data);
-    const workSheet = XLSX.utils.json_to_sheet(data);
-    const workBook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workBook, workSheet, "Employee_payroll_Sheet");
 
-    XLSX.write(workBook, { bookType: "xlsx", type: "buffer" });
+    const fields = [
+      {
+        label: "Employee Name",
+        value: "name",
+      },
+      {
+        label: "Salary",
+        value: "salary",
+      },
+      {
+        label: "Present days",
+        value: "presentDays",
+      },
+      {
+        label: "Calculated salary",
+        value: "totalSalary",
+      },
+      {
+        label: "Tax",
+        value: "tax",
+      },
+      {
+        label: "Bonus",
+        value: "bonus",
+      },
+      {
+        label: "Total payable",
+        value: "totalPayable",
+      },
+    ];
 
-    XLSX.write(workBook, { bookType: "xlsx", type: "binary" });
-    //XLSX.writeFile(workBook, `${date}.xlsx`);
-
+    const json2csvParser = new Parser({ fields });
+    const csv = json2csvParser.parse(payrollSheetData);
+    console.log(">>>>>", csv);
+    const csvBuffer = Buffer.from(csv);
+    // console.log(csvBuffer);
+    // let fileName = await fs.writeFile(
+    //   `payroleDataSheet_${date}.csv`,
+    //   csvBuffer
+    // );
+    // response.download(`${fileName}`, function (error) {
+    //   console.log("Error : ", error);
+    // });
     response.status(200).json({
       ack: 1,
       data: payrollSheetData,

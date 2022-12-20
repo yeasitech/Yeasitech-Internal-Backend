@@ -383,11 +383,11 @@ payrollRouter.delete(
   payrollController.deletePayroll
 );
 //payrollSheet
-payrollRouter.post(
-  "/payrollSheet",
-  AdminAuthorization,
-  payrollController.createPayrollSheet
-);
+// payrollRouter.post(
+//   "/payrollSheet",
+//   AdminAuthorization,
+//   payrollController.createPayrollSheet
+// );
 payrollRouter.delete(
   "/deleteSheet/:id",
   AdminAuthorization,
@@ -415,6 +415,12 @@ payrollRouter.get(
   "/sheetListToExcel/:id",
   AdminAuthorization,
   payrollController.payrollSheetListToExcel
+);
+
+payrollRouter.put(
+  "/payrollWithSheet/:id",
+  AdminAuthorization,
+  payrollController.editPayrollWithSheet
 );
 
 module.exports = {
