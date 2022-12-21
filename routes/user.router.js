@@ -10,6 +10,7 @@ const expenseController = require("../controllers/expense.controller");
 const userLoginController = require("../controllers/userLogin.controller");
 const skillController = require("../controllers/skill.controller");
 const payrollController = require("../controllers/payroll.controller");
+const clientController = require("../controllers/client.controller");
 
 const Authorization = require("../middleware/isAuth");
 const AdminAuthorization = require("../middleware/isAdmin");
@@ -26,6 +27,7 @@ const expenseRouter = Router();
 const userLoginRouter = Router();
 const skillRouter = Router();
 const payrollRouter = Router();
+const clientRouter = Router();
 
 //userRouter
 userRouter.post("/createEmployee", userController.createUser);
@@ -422,6 +424,28 @@ payrollRouter.put(
   AdminAuthorization,
   payrollController.editPayrollWithSheet
 );
+//Client routes
+clientRouter.post(
+  "/createClient",
+  AdminAuthorization,
+  clientController.createClient
+);
+clientRouter.get(
+  "/clientList",
+  AdminAuthorization,
+  clientController.clientList
+);
+clientRouter.get(
+  "/getSingleClient/:id",
+  AdminAuthorization,
+  clientController.getSingleClient
+);
+clientRouter.delete("/:id", AdminAuthorization, clientController.deleteClient);
+clientRouter.put(
+  "/editClient/:id",
+  AdminAuthorization,
+  clientController.editClient
+);
 
 module.exports = {
   userRouter,
@@ -436,4 +460,5 @@ module.exports = {
   userLoginRouter,
   skillRouter,
   payrollRouter,
+  clientRouter,
 };

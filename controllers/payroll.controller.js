@@ -4,6 +4,7 @@ const { format } = require("date-fns");
 const { Op } = require("sequelize");
 const { Parser } = require("json2csv");
 const fs = require("fs/promises");
+require("dotenv").config();
 
 const { payroll, payrollSheet, User, Salary } = require("../models");
 
@@ -223,7 +224,7 @@ exports.payrollSheetList = async (request, response) => {
     const payrollData = await payroll.findOne({
       where: { id: payrollId },
     });
-    if (payrollData.length <= 0) {
+    if (!payrollData) {
       response.status(500).json({ ack: 0, msg: `No data found` });
     } else {
       const payrollSheetData = await payrollSheet.findAll({
@@ -281,14 +282,8 @@ exports.editPayrollSheet = async (request, response) => {
 
 exports.payrollSheetListToExcel = async (request, response) => {
   const id = request.params.id;
-  const month = moment().month() + 1;
-  const year = moment().year();
-  const fromDate = moment(`${year}-${month}-01`);
-  const toDate = fromDate.add(1, "month").subtract(1, "second");
-  const { elements, page } = request.query;
-  const limit = parseInt(elements);
-  const offset = parseInt(limit * (page - 1));
-  //const id = request.params.id;
+  const ACCESS_KEY = process.env.AWS_ACCESS_KEY;
+  const SECRET_KEY = process.env.AWS_SECRET_KEY;
 
   try {
     const payrollSheetData = await payrollSheet.findAll({
@@ -296,56 +291,62 @@ exports.payrollSheetListToExcel = async (request, response) => {
         payrollId: id,
       },
     });
-    const now = new Date();
-    const date = format(now, "yyyyMMddHHmmss");
+    if (payrollSheetData.length == 0) {
+      response.status(200).json({
+        ack: 1,
+        data: payrollSheetData,
+        msg: `No data found.`,
+      });
+    } else {
+      const now = new Date();
+      const date = format(now, "yyyyMMddHHmmss");
 
-    const fields = [
-      {
-        label: "Employee Name",
-        value: "name",
-      },
-      {
-        label: "Salary",
-        value: "salary",
-      },
-      {
-        label: "Present days",
-        value: "presentDays",
-      },
-      {
-        label: "Calculated salary",
-        value: "totalSalary",
-      },
-      {
-        label: "Tax",
-        value: "tax",
-      },
-      {
-        label: "Bonus",
-        value: "bonus",
-      },
-      {
-        label: "Total payable",
-        value: "totalPayable",
-      },
-    ];
+      const fields = [
+        {
+          label: "Employee Name",
+          value: "name",
+        },
+        {
+          label: "Salary",
+          value: "salary",
+        },
+        {
+          label: "Present days",
+          value: "presentDays",
+        },
+        {
+          label: "Calculated salary",
+          value: "totalSalary",
+        },
+        {
+          label: "Tax",
+          value: "tax",
+        },
+        {
+          label: "Bonus",
+          value: "bonus",
+        },
+        {
+          label: "Total payable",
+          value: "totalPayable",
+        },
+      ];
 
-    const json2csvParser = new Parser({ fields });
-    const csv = json2csvParser.parse(payrollSheetData);
-    console.log(">>>>>", csv);
-    const csvBuffer = Buffer.from(csv);
-    // console.log(csvBuffer);
-    // let fileName = await fs.writeFile(
-    //   `payroleDataSheet_${date}.csv`,
-    //   csvBuffer
-    // );
-    // response.download(`${fileName}`, function (error) {
-    //   console.log("Error : ", error);
-    // });
-    response.status(200).json({
-      ack: 1,
-      data: payrollSheetData,
-    });
+      const json2csvParser = new Parser({ fields });
+      const csv = json2csvParser.parse(payrollSheetData);
+      // console.log(">>>>>", csv);
+      const csvBuffer = Buffer.from(csv);
+      //console.log(csvBuffer);
+      // let fileName = await fs.writeFile(
+      //   `payroleDataSheet_${date}.csv`,
+      //   csvBuffer
+      // );
+
+      response.status(200).json({
+        ack: 1,
+        data: payrollSheetData,
+      });
+    }
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
   }
