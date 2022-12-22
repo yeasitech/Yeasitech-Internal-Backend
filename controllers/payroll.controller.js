@@ -326,24 +326,24 @@ exports.payrollSheetListToExcel = async (request, response) => {
       const fields = [
         {
           label: "CUSTOMER NAME",
-          value: "name",
+          value: "dataValues.name",
         },
         {
           label: "ACCOUNT NUMBER",
-          value: "accountNumber",
+          value: "dataValues.accountNumber",
         },
         {
           label: "IFSC CODE",
-          value: "ifscCode",
+          value: "dataValues.ifscCode",
         },
         {
           label: "SALARY",
-          value: "totalPayable",
+          value: "dataValues.totalPayable",
         },
       ];
+
       const json2csvParser = new Parser({ fields });
       const csv = json2csvParser.parse(payrollSheetData);
-      //console.log("csv", csv);
       const csvBuffer = Buffer.from(csv);
       const params = {
         Bucket: BUCKET,
