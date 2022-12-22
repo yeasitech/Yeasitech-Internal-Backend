@@ -16,6 +16,8 @@ module.exports = (sequelize, DataTypes) => {
     gender: DataTypes.STRING,
     address: DataTypes.STRING,
     profileImage: DataTypes.STRING,
+    contactPerson: DataTypes.STRING,
+    designation: DataTypes.STRING,
     isActive: DataTypes.BOOLEAN,
   });
   clientDetails.associate = function (models) {};

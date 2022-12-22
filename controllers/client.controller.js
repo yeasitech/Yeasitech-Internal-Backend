@@ -20,10 +20,18 @@ exports.createClient = async (request, response) => {
     const checkForIfExists = await clientDetails.findOne({
       where: { email: request.body.email },
     });
+    const checkByClientId = await clientDetails.findOne({
+      where: { clientId: request.body.clientId },
+    });
     if (checkForIfExists) {
       response.status(200).json({
         ack: 0,
         msg: "Client exists with this email",
+      });
+    } else if (checkByClientId) {
+      response.status(200).json({
+        ack: 0,
+        msg: "Client exists with this ClientId",
       });
     } else {
       const clientRecord = {
@@ -37,6 +45,8 @@ exports.createClient = async (request, response) => {
         gender: client.gender,
         address: client.address,
         profileImage: client.profileImage,
+        contactPerson: client.contactPerson,
+        designation: client.designation,
         isActive: true,
       };
 
