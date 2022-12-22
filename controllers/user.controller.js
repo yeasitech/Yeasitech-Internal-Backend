@@ -147,7 +147,7 @@ exports.employeeDetails = async (request, response) => {
   const { error } = employeeDetailsSchema.validate({ email });
   if (error) {
     return response.status(400).json({
-      ack: 1,
+      ack: 0,
       error: "invalid email Id",
       msg: error.details[0].message,
     });
