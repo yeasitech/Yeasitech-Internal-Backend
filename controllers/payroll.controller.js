@@ -1,4 +1,5 @@
 const moment = require("moment");
+const { S3 } = require("aws-sdk");
 const XLSX = require("xlsx");
 const { format } = require("date-fns");
 const { Op } = require("sequelize");
@@ -6,7 +7,13 @@ const { Parser } = require("json2csv");
 const fs = require("fs/promises");
 require("dotenv").config();
 
-const { payroll, payrollSheet, User, Salary } = require("../models");
+const {
+  payroll,
+  payrollSheet,
+  User,
+  Salary,
+  BankDetails,
+} = require("../models");
 
 exports.createPayroll = async (request, response) => {
   const body = request.body;
@@ -284,17 +291,32 @@ exports.payrollSheetListToExcel = async (request, response) => {
   const id = request.params.id;
   const ACCESS_KEY = process.env.AWS_ACCESS_KEY;
   const SECRET_KEY = process.env.AWS_SECRET_KEY;
+  const BUCKET = process.env.AWS_BUCKET;
+  const s3 = new S3({ accessKeyId: ACCESS_KEY, secretAccessKey: SECRET_KEY });
 
   try {
     const payrollSheetData = await payrollSheet.findAll({
       where: {
         payrollId: id,
       },
+      attributes: ["name", "totalPayable", "userId"],
     });
+
+    for (let i = 0; i < payrollSheetData.length; i++) {
+      let userIds = payrollSheetData[i].userId;
+
+      let bankInfo = await BankDetails.findOne({
+        where: { userId: userIds },
+        attributes: ["accountNumber", "ifscCode"],
+      });
+      payrollSheetData[i].dataValues.accountNumber =
+        bankInfo.dataValues.accountNumber;
+      payrollSheetData[i].dataValues.ifscCode = bankInfo.dataValues.ifscCode;
+    }
+
     if (payrollSheetData.length == 0) {
       response.status(200).json({
         ack: 1,
-        data: payrollSheetData,
         msg: `No data found.`,
       });
     } else {
@@ -303,48 +325,41 @@ exports.payrollSheetListToExcel = async (request, response) => {
 
       const fields = [
         {
-          label: "Employee Name",
+          label: "CUSTOMER NAME",
           value: "name",
         },
         {
-          label: "Salary",
-          value: "salary",
+          label: "ACCOUNT NUMBER",
+          value: "accountNumber",
         },
         {
-          label: "Present days",
-          value: "presentDays",
+          label: "IFSC CODE",
+          value: "ifscCode",
         },
         {
-          label: "Calculated salary",
-          value: "totalSalary",
-        },
-        {
-          label: "Tax",
-          value: "tax",
-        },
-        {
-          label: "Bonus",
-          value: "bonus",
-        },
-        {
-          label: "Total payable",
+          label: "SALARY",
           value: "totalPayable",
         },
       ];
-
       const json2csvParser = new Parser({ fields });
       const csv = json2csvParser.parse(payrollSheetData);
-      // console.log(">>>>>", csv);
+      //console.log("csv", csv);
       const csvBuffer = Buffer.from(csv);
-      //console.log(csvBuffer);
-      // let fileName = await fs.writeFile(
-      //   `payroleDataSheet_${date}.csv`,
-      //   csvBuffer
-      // );
-
+      const params = {
+        Bucket: BUCKET,
+        Key: `Payroll_${date}.csv`,
+        Body: csvBuffer,
+        ContentType: "text/csv",
+      };
+      const uploadData = await s3.upload(params).promise();
+      const url = uploadData.Location;
+      const result = await payroll.update(
+        { url: uploadData.Location },
+        { where: { id: id } }
+      );
       response.status(200).json({
         ack: 1,
-        data: payrollSheetData,
+        data: { payrollSheetData, url },
       });
     }
   } catch (error) {
