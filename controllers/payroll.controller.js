@@ -309,9 +309,16 @@ exports.payrollSheetListToExcel = async (request, response) => {
         where: { userId: userIds },
         attributes: ["accountNumber", "ifscCode"],
       });
-      payrollSheetData[i].dataValues.accountNumber =
-        bankInfo.dataValues.accountNumber;
-      payrollSheetData[i].dataValues.ifscCode = bankInfo.dataValues.ifscCode;
+      if (!bankInfo) {
+        return response.status(200).json({
+          ack: 0,
+          msg: `No bank details found `,
+        });
+      } else {
+        payrollSheetData[i].dataValues.accountNumber =
+          bankInfo.dataValues.accountNumber;
+        payrollSheetData[i].dataValues.ifscCode = bankInfo.dataValues.ifscCode;
+      }
     }
 
     if (payrollSheetData.length == 0) {
