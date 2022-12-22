@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       month: DataTypes.STRING,
       processingDate: DataTypes.DATEONLY,
-      generateDate: DataTypes.DATE,
+      generateDate: DataTypes.DATEONLY,
       total: DataTypes.FLOAT,
       isProcessed: DataTypes.BOOLEAN,
       url: DataTypes.STRING,
