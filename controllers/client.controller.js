@@ -86,14 +86,27 @@ exports.editClient = async (request, response) => {
 };
 
 exports.clientList = async (request, response) => {
-  const { elements, page } = request.query;
+  const {
+    elements,
+    page,
+    searchByName = "",
+    searchByDesignation = "",
+    searchByClientId = "",
+  } = request.query;
   const limit = parseInt(elements);
   const offset = parseInt(limit * (page - 1));
-
+  console.log(searchByName);
   try {
     const { count, rows } = await clientDetails.findAndCountAll({
       order: [["id", "ASC"]],
       attributes: { exclude: ["createdAt", "updatedAt"] },
+      where: { firstName: { [Op.like]: `%${searchByName}%` } },
+      ...(searchByDesignation && {
+        where: { designation: { [Op.like]: `%${searchByDesignation}%` } },
+      }),
+      ...(searchByClientId && {
+        where: { clientId: { [Op.like]: `%${searchByClientId}%` } },
+      }),
 
       limit,
       offset,

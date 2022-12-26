@@ -4,7 +4,7 @@ const XLSX = require("xlsx");
 const { format } = require("date-fns");
 const { Op } = require("sequelize");
 const { Parser } = require("json2csv");
-const fs = require("fs/promises");
+//const fs = require("fs/promises");
 require("dotenv").config();
 
 const {
