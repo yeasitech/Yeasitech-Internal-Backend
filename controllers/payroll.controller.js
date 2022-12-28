@@ -22,11 +22,26 @@ exports.createPayroll = async (request, response) => {
       ...body.payroll,
       isProcessed: false,
     });
-    // let totalDays = 30;
     const createPayrollSheet = await Promise.all(
-      body.sheet.map((data) => {
+      body.sheet.map(async (data) => {
+        const salaryData = await Salary.findOne({
+          order: [["updatedAt", "DESC"]],
+          where: { userId: data.userId },
+        });
+        let currentSalary = salaryData.dataValues.currentSalary;
+        let totalSalary = (data.presentDays / data.totalDays) * currentSalary;
+        let totalPayable = totalSalary + data.bonus - data.tax;
+
         return payrollSheet.create({
-          ...data,
+          name: data.name,
+          salary: currentSalary,
+          presentDays: data.presentDays,
+          totalDays: data.totalDays,
+          totalSalary: totalSalary,
+          tax: data.tax,
+          bonus: data.bonus,
+          totalPayable: totalPayable,
+          userId: data.userId,
           payrollId: createPayroll.id,
         });
       })
@@ -310,10 +325,11 @@ exports.payrollSheetListToExcel = async (request, response) => {
         attributes: ["accountNumber", "ifscCode"],
       });
       if (!bankInfo) {
-        return response.status(200).json({
-          ack: 0,
-          msg: `No bank details found `,
-        });
+        // return response.status(200).json({
+        //   ack: 0,
+        //   msg: `No bank details found `,
+        // });
+        delete bankInfo.dataValues;
       } else {
         payrollSheetData[i].dataValues.accountNumber =
           bankInfo.dataValues.accountNumber;
