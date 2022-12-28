@@ -155,13 +155,17 @@ exports.employeeDetails = async (request, response) => {
 
   try {
     let user = await User.findOne({ where: { email: email } });
+    if (!user)
+      return response
+        .status(200)
+        .json({ ack: 0, msg: `employee not exists with this email` });
     if (user.onBoardingStatus == true) {
       return response
         .status(200)
         .json({ ack: 0, msg: `you are already onboarded` });
     }
     if (email !== user.email)
-      return response.status(200).json({ ack: 1, msg: `employee not exists` });
+      return response.status(200).json({ ack: 0, msg: `employee not exists` });
     else {
       //personal details
       if (!personal)
@@ -197,35 +201,38 @@ exports.employeeDetails = async (request, response) => {
       }
 
       // Eduaction Details
-      if (!education)
-        response
-          .status(200)
-          .json({ ack: 1, msg: `please provide education details` });
-      else {
-        await education.map((data) => {
-          EducationDetails.create({ ...data, userId: user.id });
-        });
+      if (education) {
+        await Promise.all(
+          education.map(async (data) => {
+            //console.log({ ...data });
+            await EducationDetails.create({ ...data, userId: user.id });
+          })
+        );
       }
 
-      //experience details
+      // //experience details
       if (!experience)
         response
           .status(200)
           .json({ ack: 1, msg: `please provide experience details` });
       else {
-        await experience.map((data) => {
-          EmployeeExperience.create({ ...data, userId: user.id });
-        });
+        await Promise.all(
+          experience.map(async (data) => {
+            await EmployeeExperience.create({ ...data, userId: user.id });
+          })
+        );
       }
-      //bank details
+      // //bank details
       if (!BankDetails)
         response
           .status(200)
           .json({ ack: 1, msg: `please provide bank details` });
       else {
-        await bankDetails.map((data) => {
-          BankDetails.create({ ...data, userId: user.id });
-        });
+        await Promise.all(
+          bankDetails.map(async (data) => {
+            await BankDetails.create({ ...data, userId: user.id });
+          })
+        );
       }
       await User.update(
         { onBoardingStatus: true },
