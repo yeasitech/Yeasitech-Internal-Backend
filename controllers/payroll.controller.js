@@ -29,46 +29,45 @@ exports.createPayroll = async (request, response) => {
           attributes: ["id"],
         });
 
-        if (userData) {
-          const salaryData = await Salary.findOne({
-            order: [["updatedAt", "DESC"]],
-            where: { userId: data.userId },
-          });
-          if (salaryData) {
-            let currentSalary = salaryData.dataValues.currentSalary;
-            let totalSalary =
-              (data.presentDays / data.totalDays) * currentSalary;
-            let totalPayable = totalSalary + data.bonus - data.tax;
-
-            await payrollSheet.create({
-              name: data.name,
-              salary: currentSalary,
-              presentDays: data.presentDays,
-              totalDays: data.totalDays,
-              totalSalary: totalSalary,
-              tax: data.tax,
-              bonus: data.bonus,
-              totalPayable: totalPayable,
-              userId: data.userId,
-              payrollId: createPayroll.id,
-            });
-            return response.status(200).json({
-              ack: 1,
-              msg: "successfully created payroll & payroll sheet",
-              // data: createPayroll,
-              // payrollSheetData,
-            });
-          } else {
-            return response.status(200).json({
-              ack: 0,
-              msg: `salary not found for the user`,
-            });
-          }
-        } else {
+        if (!userData) {
           return response.status(200).json({
             ack: 0,
             msg: `no user found`,
           });
+        } else {
+          const salaryData = await Salary.findOne({
+            order: [["updatedAt", "DESC"]],
+            where: { userId: data.userId },
+          });
+          if (!salaryData) {
+            return response.status(200).json({
+              ack: 0,
+              msg: `salary not found for the user`,
+            });
+          } else {
+            // let currentSalary = salaryData.dataValues.currentSalary;
+            // let totalSalary =
+            //   (data.presentDays / data.totalDays) * currentSalary;
+            // let totalPayable = totalSalary + data.bonus - data.tax;
+            // await payrollSheet.create({
+            //   name: data.name,
+            //   salary: currentSalary,
+            //   presentDays: data.presentDays,
+            //   totalDays: data.totalDays,
+            //   totalSalary: totalSalary,
+            //   tax: data.tax,
+            //   bonus: data.bonus,
+            //   totalPayable: totalPayable,
+            //   userId: data.userId,
+            //   payrollId: createPayroll.id,
+            // });
+            // return response.status(200).json({
+            //   ack: 1,
+            //   msg: "successfully created payroll & payroll sheet",
+            //   // data: createPayroll,
+            //   // payrollSheetData,
+            // });
+          }
         }
       })
     );
