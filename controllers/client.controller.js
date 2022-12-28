@@ -2,7 +2,10 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { Op } = require("sequelize");
 const { clientDetails } = require("../models");
-const { createClientSchema } = require("./validation/client.validation");
+const {
+  createClientSchema,
+  updateClientSchema,
+} = require("./validation/client.validation");
 
 exports.createClient = async (request, response) => {
   const { error } = createClientSchema.validate(request.body);
@@ -64,6 +67,10 @@ exports.createClient = async (request, response) => {
 
 exports.editClient = async (request, response) => {
   const id = request.params.id;
+  const { error } = updateClientSchema.validate(request.body);
+  if (error) {
+    return response.status(200).json({ ack: 0, msg: error.details[0].message });
+  }
   try {
     const client = request.body;
     const data = await clientDetails.findByPk(id);
