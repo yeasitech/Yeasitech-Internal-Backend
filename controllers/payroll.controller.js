@@ -22,45 +22,58 @@ exports.createPayroll = async (request, response) => {
       ...body.payroll,
       isProcessed: false,
     });
-    const createPayrollSheet = await Promise.all(
+    /* const createPayrollSheet = */ await Promise.all(
       body.sheet.map(async (data) => {
-        const salaryData = await Salary.findOne({
-          order: [["updatedAt", "DESC"]],
-          where: { userId: data.userId },
+        const userData = await User.findOne({
+          where: { id: data.userId },
+          attributes: ["id"],
         });
-        let currentSalary = salaryData.dataValues.currentSalary;
-        let totalSalary = (data.presentDays / data.totalDays) * currentSalary;
-        let totalPayable = totalSalary + data.bonus - data.tax;
 
-        return payrollSheet.create({
-          name: data.name,
-          salary: currentSalary,
-          presentDays: data.presentDays,
-          totalDays: data.totalDays,
-          totalSalary: totalSalary,
-          tax: data.tax,
-          bonus: data.bonus,
-          totalPayable: totalPayable,
-          userId: data.userId,
-          payrollId: createPayroll.id,
-        });
+        if (userData) {
+          const salaryData = await Salary.findOne({
+            order: [["updatedAt", "DESC"]],
+            where: { userId: data.userId },
+          });
+          if (salaryData) {
+            let currentSalary = salaryData.dataValues.currentSalary;
+            let totalSalary =
+              (data.presentDays / data.totalDays) * currentSalary;
+            let totalPayable = totalSalary + data.bonus - data.tax;
+
+            await payrollSheet.create({
+              name: data.name,
+              salary: currentSalary,
+              presentDays: data.presentDays,
+              totalDays: data.totalDays,
+              totalSalary: totalSalary,
+              tax: data.tax,
+              bonus: data.bonus,
+              totalPayable: totalPayable,
+              userId: data.userId,
+              payrollId: createPayroll.id,
+            });
+            return response.status(200).json({
+              ack: 1,
+              msg: "successfully created payroll & payroll sheet",
+              // data: createPayroll,
+              // payrollSheetData,
+            });
+          } else {
+            return response.status(200).json({
+              ack: 0,
+              msg: `salary not found for the user`,
+            });
+          }
+        } else {
+          return response.status(200).json({
+            ack: 0,
+            msg: `no user found`,
+          });
+        }
       })
     );
-
-    // const totalPayableAmount = createPayrollSheet.map((data) => {
-    //   return data.totalPayable;
-    // });
-    // const sumOfTotalPayableAmount = totalPayableAmount.reduce(
-    //   (accumulator, currentValue) => accumulator + currentValue
-    // );
-    // const updatedPayroll = await payroll.update(
-    //   { total: sumOfTotalPayableAmount },
-    //   { where: { id: createPayroll.id } }
-    // );
-    response
-      .status(200)
-      .json({ ack: 1, data: createPayroll, createPayrollSheet });
   } catch (error) {
+    console.log("error", error);
     response.status(500).json({ ack: 0, msg: error.message || `server error` });
   }
 };
