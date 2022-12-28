@@ -9,7 +9,6 @@ const createClientSchema = Joi.object({
     .required()
     .label("Email"),
   phone: Joi.number().required().label("Phone Number"),
-  clientId: Joi.string().max(30).optional().label("Client ID").min(0),
   companyName: Joi.string().optional().label("Company Name").min(0),
   gender: Joi.string().optional().label("Gender").min(0),
   address: Joi.string().optional().label("Address").min(0),
@@ -27,7 +26,6 @@ const updateClientSchema = Joi.object({
     .optional()
     .label("Email"),
   phone: Joi.number().optional().label("Phone Number"),
-  clientId: Joi.string().max(30).optional().label("Client ID").min(0),
   companyName: Joi.string().optional().label("Company Name").min(0),
   gender: Joi.string().optional().label("Gender").min(0),
   address: Joi.string().optional().label("Address").min(0),
