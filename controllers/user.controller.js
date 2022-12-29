@@ -262,6 +262,7 @@ exports.allEmployee = async (request, response) => {
           order: [["updatedAt", "DESC"]],
           limit: 1,
         },
+        { model: EmployeeDetails, attributes: ["employeeId"] },
       ],
     });
     // const userId = allData.map((value) => {
