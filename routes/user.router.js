@@ -413,17 +413,22 @@ payrollRouter.put(
   AdminAuthorization,
   payrollController.editPayrollSheet
 );
-payrollRouter.get(
-  "/sheetListToExcel/:id",
-  AdminAuthorization,
-  payrollController.payrollSheetListToExcel
-);
-
+// payrollRouter.get(
+//   "/sheetListToExcel/:id",
+//   AdminAuthorization,
+//   payrollController.payrollSheetListToExcel
+// );
 payrollRouter.put(
   "/payrollWithSheet/:id",
   AdminAuthorization,
   payrollController.editPayrollWithSheet
 );
+payrollRouter.get(
+  "/htmlToPdf",
+  AdminAuthorization,
+  payrollController.htmlToPdf
+);
+
 //Client routes
 clientRouter.post(
   "/createClient",

@@ -4,7 +4,9 @@ const XLSX = require("xlsx");
 const { format } = require("date-fns");
 const { Op } = require("sequelize");
 const { Parser } = require("json2csv");
-//const fs = require("fs/promises");
+const fs = require("fs");
+var path = require("path");
+const { jsPDF } = require("jspdf");
 require("dotenv").config();
 
 const {
@@ -45,11 +47,14 @@ exports.createPayroll = async (request, response) => {
         });
       })
     );
+    let excelData = await payrollSheetListToExcel(createPayroll.id);
+    console.log(`excelData`, excelData);
     return response.status(200).json({
       ack: 1,
       msg: "successfully created payroll & payroll sheet",
       data: createPayroll,
       createPayrollSheet,
+      excelData,
     });
   } catch (error) {
     console.log("error", error);
@@ -294,8 +299,8 @@ exports.editPayrollSheet = async (request, response) => {
   }
 };
 
-exports.payrollSheetListToExcel = async (request, response) => {
-  const id = request.params.id;
+async function payrollSheetListToExcel(id) {
+  // const payrollId = request.params.id;
   const ACCESS_KEY = process.env.AWS_ACCESS_KEY;
   const SECRET_KEY = process.env.AWS_SECRET_KEY;
   const BUCKET = process.env.AWS_BUCKET;
@@ -308,32 +313,48 @@ exports.payrollSheetListToExcel = async (request, response) => {
       },
       attributes: ["name", "totalPayable", "userId"],
     });
+    await Promise.all(
+      payrollSheetData.map(async (e) => {
+        const bankInfo = await BankDetails.findOne({
+          order: [["updatedAt", "DESC"]],
+          where: { userId: e.userId },
+          attributes: ["accountNumber", "ifscCode"],
+        });
+        if (bankInfo == null) {
+          delete e.dataValues.name;
+          delete e.dataValues.totalPayable;
+          delete e.dataValues.userId;
+        } else {
+          e.dataValues.accountNumber = bankInfo.dataValues.accountNumber;
+          e.dataValues.ifscCode = bankInfo.dataValues.ifscCode;
+          e.dataValues.id = bankInfo.dataValues.id;
+        }
+        return e.dataValues;
+      })
+    );
 
-    for (let i = 0; i < payrollSheetData.length; i++) {
-      let userIds = payrollSheetData[i].userId;
+    // for (let i = 0; i < payrollSheetData.length; i++) {
+    //   let userIds = payrollSheetData[i].userId;
 
-      let bankInfo = await BankDetails.findOne({
-        where: { userId: userIds },
-        attributes: ["accountNumber", "ifscCode"],
-      });
-      if (!bankInfo) {
-        // return response.status(200).json({
-        //   ack: 0,
-        //   msg: `No bank details found `,
-        // });
-        delete bankInfo.dataValues;
-      } else {
-        payrollSheetData[i].dataValues.accountNumber =
-          bankInfo.dataValues.accountNumber;
-        payrollSheetData[i].dataValues.ifscCode = bankInfo.dataValues.ifscCode;
-      }
-    }
+    //   let bankInfo = await BankDetails.findOne({
+    //     where: { userId: userIds },
+    //     attributes: ["accountNumber", "ifscCode"],
+    //   });
+    //   if (!bankInfo) {
+    //     // return response.status(200).json({
+    //     //   ack: 0,
+    //     //   msg: `No bank details found `,
+    //     // });
+    //     delete bankInfo.dataValues;
+    //   } else {
+    //     payrollSheetData[i].dataValues.accountNumber =
+    //       bankInfo.dataValues.accountNumber;
+    //     payrollSheetData[i].dataValues.ifscCode = bankInfo.dataValues.ifscCode;
+    //   }
+    // }
 
     if (payrollSheetData.length == 0) {
-      response.status(200).json({
-        ack: 1,
-        msg: `No data found.`,
-      });
+      console.log(`qwertyu7`);
     } else {
       const now = new Date();
       const date = format(now, "yyyyMMddHHmmss");
@@ -358,26 +379,37 @@ exports.payrollSheetListToExcel = async (request, response) => {
       ];
 
       const json2csvParser = new Parser({ fields });
+
       const csv = json2csvParser.parse(payrollSheetData);
+
+      // fs.writeFileSync("./data.csv", csv);
       const csvBuffer = Buffer.from(csv);
+
       const params = {
         Bucket: BUCKET,
         Key: `Payroll_${date}.csv`,
         Body: csvBuffer,
         ContentType: "text/csv",
       };
+      console.log(`params`, params);
       const uploadData = await s3.upload(params).promise();
       const url = uploadData.Location;
-      const result = await payroll.update(
-        { url: uploadData.Location },
-        { where: { id: id } }
-      );
-      response.status(200).json({
-        ack: 1,
-        data: { payrollSheetData, url },
-      });
+
+      const result = await payroll.update({ url: url }, { where: { id: id } });
+
+      return { payrollSheetData, url };
     }
   } catch (error) {
-    response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
+    console.log(error);
   }
-};
+}
+
+// exports.htmlToPdf = async (response) => {
+//   let pdf = new jsPDF();
+//   let template = path.join("pdfTemplate", "index.html");
+//   const data = fs.readFileSync(template);
+//   let options = { format: "Letter" };
+//   pdf.html(data, options);
+//   pdf.save("test.pdf");
+//   console.log(`qwertyui`, data);
+// };

@@ -255,6 +255,7 @@ exports.allEmployee = async (request, response) => {
   try {
     const allData = await User.findAll({
       attributes: ["id", "firstName", "middleName", "lastName"],
+      where: { isActive: true, onBoardingStatus: true },
       include: [
         {
           model: Salary,
@@ -265,16 +266,7 @@ exports.allEmployee = async (request, response) => {
         { model: EmployeeDetails, attributes: ["employeeId"] },
       ],
     });
-    // const userId = allData.map((value) => {
-    //   return value.id;
-    // });
-    // console.log(userId);
-    // const salaryData = await Salary.findAll({
-    //   attributes: ["id", "userId", "currentSalary"],
-    //   where: { userId: { [Op.in]: userId } },
-    //   order: [["updatedAt", "DESC"]],
-    //   limit: 1,
-    // });
+
     response.status(200).json({ ack: 1, data: allData });
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
@@ -576,10 +568,10 @@ exports.bankUpdate = async (request, response) => {
 
   const { bankDetails } = request.body;
 
-  const bankData = await EducationDetails.findByPk(id);
+  const bankData = await BankDetails.findByPk(id);
   try {
-    if (!bankData || bankData.length < 0) {
-      response.status(500).json({ ack: 0, msg: `invalid education Info` });
+    if (!bankData) {
+      response.status(500).json({ ack: 0, msg: `invalid bank Info` });
     } else {
       const updatedData = await bankDetails.map((data) => {
         BankDetails.update(
@@ -606,7 +598,7 @@ exports.makeAdmin = async (request, response) => {
   const id = request.params.id;
   const userData = await User.findByPk(id);
   try {
-    if (!userData || userData == null) {
+    if (!userData) {
       response.status(500).json({ ack: 0, msg: `invalid  userId` });
     }
     if (userData.isAdmin == false) {
@@ -641,7 +633,7 @@ exports.setDeactive = async (request, response) => {
   const userData = await User.findByPk(id);
 
   try {
-    if (!userData || userData == null) {
+    if (!userData) {
       return response.status(500).json({ ack: 0, msg: `invalid  userId` });
     }
     if (userData.isActive == true) {
