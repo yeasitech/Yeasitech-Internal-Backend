@@ -423,11 +423,11 @@ payrollRouter.put(
   AdminAuthorization,
   payrollController.editPayrollWithSheet
 );
-payrollRouter.get(
-  "/htmlToPdf",
-  AdminAuthorization,
-  payrollController.htmlToPdf
-);
+// payrollRouter.get(
+//   "/htmlToPdf",
+//   AdminAuthorization,
+//   payrollController.htmlToPdf
+// );
 
 //Client routes
 clientRouter.post(
