@@ -19,6 +19,7 @@ module.exports = (sequelize, DataTypes) => {
       total: DataTypes.FLOAT,
       isProcessed: DataTypes.BOOLEAN,
       url: DataTypes.STRING,
+      letterHeadUrl: DataTypes.STRING,
     },
     {
       sequelize,
