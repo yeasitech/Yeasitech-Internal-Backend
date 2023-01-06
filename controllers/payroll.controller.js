@@ -4,13 +4,17 @@ const { format } = require("date-fns");
 const { Parser } = require("json2csv");
 const fs = require("fs");
 var path = require("path");
-//const { jsPDF } = require("jspdf");
+
+
 const puppeteer = require("puppeteer");
 const hbs = require("handlebars");
 require("dotenv").config();
 
 const { payroll, payrollSheet, Salary, BankDetails } = require("../models");
-const e = require("express");
+
+
+
+
 
 exports.createPayroll = async (request, response) => {
   const body = request.body;
@@ -89,6 +93,7 @@ exports.createPayroll = async (request, response) => {
     );
 
     let excelData = await payrollSheetListToExcel(createPayroll.id);
+
     let userPdfData = excelData.payrollSheetData.map((e) => e.dataValues);
 
     let pdfdata = {};
@@ -98,6 +103,7 @@ exports.createPayroll = async (request, response) => {
     pdfdata.users = userPdfData;
 
     let pdf = await letterHead(createPayroll.id, pdfdata);
+
 
     return response.status(200).json({
       ack: 1,
@@ -456,6 +462,7 @@ async function payrollSheetListToExcel(id) {
 
       // fs.writeFileSync("./data.csv", csv);
       const csvBuffer = Buffer.from(csv);
+
       let dirName = "payroll";
       if (process.env.ENV == "production") {
         dirName = "docs";
@@ -470,8 +477,7 @@ async function payrollSheetListToExcel(id) {
 
       const uploadData = await s3.upload(params).promise();
       const url = uploadData.Location;
-      //let url = `kdfhksgh`;
-
+   
       await payroll.update({ url: url }, { where: { id: id } });
 
       return { payrollSheetData, url };
@@ -480,6 +486,60 @@ async function payrollSheetListToExcel(id) {
     console.log(error);
   }
 }
+let date = new Date();
+const now = new Date(date.getFullYear(), date.getMonth(), 1);
+const firstDate = format(now, "yyyy/MM/dd");
+console.log(`qwerty6uiop`, firstDate);
+let data = {
+  TotalAmount: 5000,
+  date: firstDate,
+  users: [
+    {},
+    {
+      name: " sayantan",
+      totalPayable: 9516.67,
+      accountNumber: "7875486464654",
+      ifscCode: "1234sgsddc",
+    },
+    {
+      name: " ramjan sk.",
+      totalPayable: 67426.7,
+      accountNumber: "01356545655",
+      ifscCode: "1234656",
+    },
+  ],
+};
+
+async function compareHtmlToPdf(fileName, data) {
+  let template = path.join(__dirname, "..", "pdfTemplate", "index.html");
+  console.log(`readFileSync`, data);
+  const html = fs.readFileSync(template, "utf-8");
+  return hbs.compile(html)(data);
+}
+
+exports.htmlToPdf = async (response) => {
+  try {
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    // await page.setContent(
+    //   "<table><tr><td>1</td><td>ABC</td></tr><tr><td>2</td><td>DEF</td></tr><tr><td>3</td><td>GHI</td></tr></table>"
+    // );
+    const content = await compareHtmlToPdf("index.html", data);
+    await page.setContent(content);
+    // create a pdf document
+    const pdf = await page.pdf({
+      path: "test.pdf",
+      format: "A4",
+      printBackground: true,
+    });
+    console.log(`Done Creating Pdf`);
+    await browser.close();
+    return pdf;
+    //process.exit();
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 // async function compareHtmlToPdf(fileName, data) {
 //   let template = path.join(__dirname, "..", "pdfTemplate", "index.html");
