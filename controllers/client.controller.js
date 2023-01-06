@@ -162,3 +162,22 @@ exports.deleteClient = async (request, response) => {
     response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
   }
 };
+exports.allClient = async (request, response) => {
+  try {
+    const clientData = await clientDetails.findAll({
+      attributes: ["id", "firstName", "lastName"],
+    });
+    if (clientData.length <= 0) {
+      return response.status(500).json({
+        ack: 0,
+        msg: `Client Data Not Available`,
+      });
+    }
+    return response.status(200).json({
+      ack: 0,
+      data: clientData,
+    });
+  } catch (error) {
+    response.status(500).json({ ack: 0, msg: error.message || `Server Error` });
+  }
+};

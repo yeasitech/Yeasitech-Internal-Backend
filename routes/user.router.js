@@ -413,11 +413,7 @@ payrollRouter.put(
   AdminAuthorization,
   payrollController.editPayrollSheet
 );
-// payrollRouter.get(
-//   "/sheetListToExcel/:id",
-//   AdminAuthorization,
-//   payrollController.payrollSheetListToExcel
-// );
+
 payrollRouter.put(
   "/payrollWithSheet/:id",
   AdminAuthorization,
@@ -451,7 +447,7 @@ clientRouter.put(
   AdminAuthorization,
   clientController.editClient
 );
-
+clientRouter.get("/all", AdminAuthorization, clientController.allClient);
 module.exports = {
   userRouter,
   departmentRouter,
