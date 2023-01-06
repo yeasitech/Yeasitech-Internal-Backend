@@ -4,12 +4,13 @@ const { format } = require("date-fns");
 const { Parser } = require("json2csv");
 const fs = require("fs");
 var path = require("path");
-const { jsPDF } = require("jspdf");
+//const { jsPDF } = require("jspdf");
 const puppeteer = require("puppeteer");
 const hbs = require("handlebars");
 require("dotenv").config();
 
 const { payroll, payrollSheet, Salary, BankDetails } = require("../models");
+const e = require("express");
 
 exports.createPayroll = async (request, response) => {
   const body = request.body;
@@ -41,7 +42,19 @@ exports.createPayroll = async (request, response) => {
         });
       })
     );
+    let date = new Date();
+    const now = new Date(date.getFullYear(), date.getMonth(), 1);
+    const firstDate = format(now, "yyyy/MM/dd");
+
     let excelData = await payrollSheetListToExcel(createPayroll.id);
+    let userPdfData = excelData.payrollSheetData.map((e) => e.dataValues);
+
+    let pdfdata = {};
+    pdfdata.TotalAmount = createPayroll.total;
+    pdfdata.date = firstDate;
+    pdfdata.users = userPdfData;
+
+    let pdf = await letterHead(pdfdata);
 
     return response.status(200).json({
       ack: 1,
@@ -49,18 +62,18 @@ exports.createPayroll = async (request, response) => {
       data: createPayroll,
       createPayrollSheet,
       excelData,
+      pdfdata,
     });
   } catch (error) {
     console.log("error", error);
     response.status(500).json({ ack: 0, msg: error.message || `server error` });
   }
 };
-//edit payroll with sheet
 
+//edit payroll with sheet
 exports.editPayrollWithSheet = async (request, response) => {
   const body = request.body;
   const payrollId = request.params.id;
-  //console.log("data", request.body.payroll);
 
   try {
     const dataSheet = await payrollSheet.findAll({
@@ -331,6 +344,48 @@ async function payrollSheetListToExcel(id) {
       console.log(`qwertyu7`);
     } else {
       const now = new Date();
+      const year = now.getFullYear();
+      // const month = now
+      //   .getMonth()
+      //   .toLocaleString("default", { month: "short" });
+      let month;
+      switch (now.getMonth()) {
+        case 0:
+          month = "Jan";
+          break;
+        case 1:
+          month = "Feb";
+          break;
+        case 2:
+          month = "Mar";
+          break;
+        case 3:
+          month = "Apr";
+          break;
+        case 4:
+          month = "May";
+          break;
+        case 5:
+          month = "Jun";
+          break;
+        case 6:
+          month = "Jul";
+          break;
+        case 7:
+          month = "Aug";
+          break;
+        case 8:
+          month = "Sep";
+          break;
+        case 9:
+          month = "Oct";
+          break;
+        case 10:
+          month = "Nov";
+          break;
+        case 11:
+          month = "Dec";
+      }
       const date = format(now, "yyyyMMddHHmmss");
 
       const fields = [
@@ -358,17 +413,21 @@ async function payrollSheetListToExcel(id) {
 
       // fs.writeFileSync("./data.csv", csv);
       const csvBuffer = Buffer.from(csv);
+      let dirName = "payroll";
+      if (process.env.ENV == "production") {
+        dirName = "docs";
+      }
+      const params = {
+        dirName: dirName,
+        Bucket: BUCKET,
+        Key: `${dirName}/${year}-${month}/${date}.csv`,
+        Body: csvBuffer,
+        ContentType: "text/csv",
+      };
 
-      // const params = {
-      //   Bucket: BUCKET,
-      //   Key: `Payroll_${date}.csv`,
-      //   Body: csvBuffer,
-      //   ContentType: "text/csv",
-      // };
-
-      // const uploadData = await s3.upload(params).promise();
-      // const url = uploadData.Location;
-      let url = `qwertyuhb`;
+      const uploadData = await s3.upload(params).promise();
+      const url = uploadData.Location;
+      //let url = `kdfhksgh`;
 
       await payroll.update({ url: url }, { where: { id: id } });
 
@@ -378,45 +437,25 @@ async function payrollSheetListToExcel(id) {
     console.log(error);
   }
 }
-let date = new Date();
-const now = new Date(date.getFullYear(), date.getMonth(), 1);
-const firstDate = format(now, "yyyy/MM/dd");
-console.log(`qwerty6uiop`, firstDate);
-let data = {
-  TotalAmount: 5000,
-  date: firstDate,
-  users: [
-    {},
-    {
-      name: " sayantan",
-      totalPayable: 9516.67,
-      accountNumber: "7875486464654",
-      ifscCode: "1234sgsddc",
-    },
-    {
-      name: " ramjan sk.",
-      totalPayable: 67426.7,
-      accountNumber: "01356545655",
-      ifscCode: "1234656",
-    },
-  ],
-};
 
-async function compareHtmlToPdf(fileName, data) {
-  let template = path.join(__dirname, "..", "pdfTemplate", "index.html");
-  console.log(`readFileSync`, data);
-  const html = fs.readFileSync(template, "utf-8");
-  return hbs.compile(html)(data);
-}
+// async function compareHtmlToPdf(fileName, data) {
+//   let template = path.join(__dirname, "..", "pdfTemplate", "index.html");
+//   console.log(`readFileSync`, data);
+//   const html = fs.readFileSync(template, "utf-8");
+//   return hbs.compile(html)(data);
+// }
 
-exports.htmlToPdf = async (response) => {
+async function letterHead(data) {
   try {
+    let template = path.join(__dirname, "..", "pdfTemplate", "index.html");
+
+    const html = fs.readFileSync(template, "utf-8");
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
-    // await page.setContent(
-    //   "<table><tr><td>1</td><td>ABC</td></tr><tr><td>2</td><td>DEF</td></tr><tr><td>3</td><td>GHI</td></tr></table>"
-    // );
-    const content = await compareHtmlToPdf("index.html", data);
+
+    const content = hbs.compile(html)(data);
+
+    //const content = await compareHtmlToPdf("index.html", data);
     await page.setContent(content);
     // create a pdf document
     const pdf = await page.pdf({
@@ -431,7 +470,7 @@ exports.htmlToPdf = async (response) => {
   } catch (error) {
     console.log(error);
   }
-};
+}
 
 // exports.htmlToPdf = async (response) => {
 //   let doc = new jsPDF();
