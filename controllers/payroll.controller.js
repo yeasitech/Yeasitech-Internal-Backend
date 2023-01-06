@@ -43,18 +43,61 @@ exports.createPayroll = async (request, response) => {
       })
     );
     let date = new Date();
-    const now = new Date(date.getFullYear(), date.getMonth(), 1);
-    const firstDate = format(now, "yyyy/MM/dd");
+    const year = date.getFullYear();
+
+    let month;
+    switch (date.getMonth()) {
+      case 0:
+        month = "January";
+        break;
+      case 1:
+        month = "February";
+        break;
+      case 2:
+        month = "March";
+        break;
+      case 3:
+        month = "April";
+        break;
+      case 4:
+        month = "May";
+        break;
+      case 5:
+        month = "June";
+        break;
+      case 6:
+        month = "July";
+        break;
+      case 7:
+        month = "August";
+        break;
+      case 8:
+        month = "September";
+        break;
+      case 9:
+        month = "October";
+        break;
+      case 10:
+        month = "November";
+        break;
+      case 11:
+        month = "December";
+    }
+    const firstDate = format(
+      new Date(date.getFullYear(), date.getMonth(), 1),
+      "yyyy/MM/dd"
+    );
 
     let excelData = await payrollSheetListToExcel(createPayroll.id);
     let userPdfData = excelData.payrollSheetData.map((e) => e.dataValues);
 
     let pdfdata = {};
+    (pdfdata.year = year), (pdfdata.month = month);
     pdfdata.TotalAmount = createPayroll.total;
     pdfdata.date = firstDate;
     pdfdata.users = userPdfData;
 
-    let pdf = await letterHead(pdfdata);
+    let pdf = await letterHead(createPayroll.id, pdfdata);
 
     return response.status(200).json({
       ack: 1,
@@ -445,8 +488,12 @@ async function payrollSheetListToExcel(id) {
 //   return hbs.compile(html)(data);
 // }
 
-async function letterHead(data) {
+async function letterHead(payrollId, data) {
   try {
+    const ACCESS_KEY = process.env.AWS_ACCESS_KEY;
+    const SECRET_KEY = process.env.AWS_SECRET_KEY;
+    const BUCKET = process.env.AWS_BUCKET;
+    const s3 = new S3({ accessKeyId: ACCESS_KEY, secretAccessKey: SECRET_KEY });
     let template = path.join(__dirname, "..", "pdfTemplate", "index.html");
 
     const html = fs.readFileSync(template, "utf-8");
@@ -459,11 +506,68 @@ async function letterHead(data) {
     await page.setContent(content);
     // create a pdf document
     const pdf = await page.pdf({
-      path: "test.pdf",
+      // path: "test.pdf",
       format: "A4",
       printBackground: true,
     });
-    console.log(`Done Creating Pdf`);
+
+    const now = new Date();
+    const year = now.getFullYear();
+    const date = format(now, "yyyyMMddHHmmss");
+    let month;
+    switch (now.getMonth()) {
+      case 0:
+        month = "Jan";
+        break;
+      case 1:
+        month = "Feb";
+        break;
+      case 2:
+        month = "Mar";
+        break;
+      case 3:
+        month = "Apr";
+        break;
+      case 4:
+        month = "May";
+        break;
+      case 5:
+        month = "Jun";
+        break;
+      case 6:
+        month = "Jul";
+        break;
+      case 7:
+        month = "Aug";
+        break;
+      case 8:
+        month = "Sep";
+        break;
+      case 9:
+        month = "Oct";
+        break;
+      case 10:
+        month = "Nov";
+        break;
+      case 11:
+        month = "Dec";
+    }
+    let dirName = "payroll";
+    if (process.env.ENV == "production") {
+      dirName = "docs";
+    }
+    const params = {
+      dirName: dirName,
+      Bucket: BUCKET,
+      Key: `letterHead/${year}-${month}/${date}.pdf`,
+      Body: pdf,
+      ContentType: "application/pdf",
+    };
+
+    const uploadData = await s3.upload(params).promise();
+    const url = uploadData.Location;
+    await payroll.update({ letterHeadUrl: url }, { where: { id: payrollId } });
+    console.log(`Done Creating Pdf`, pdf);
     await browser.close();
     return pdf;
     //process.exit();
