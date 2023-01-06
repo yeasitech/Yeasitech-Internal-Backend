@@ -1,20 +1,13 @@
-const moment = require("moment");
 const { S3 } = require("aws-sdk");
 const { format } = require("date-fns");
 const { Parser } = require("json2csv");
 const fs = require("fs");
 var path = require("path");
-
-
 const puppeteer = require("puppeteer");
 const hbs = require("handlebars");
 require("dotenv").config();
 
 const { payroll, payrollSheet, Salary, BankDetails } = require("../models");
-
-
-
-
 
 exports.createPayroll = async (request, response) => {
   const body = request.body;
@@ -103,7 +96,6 @@ exports.createPayroll = async (request, response) => {
     pdfdata.users = userPdfData;
 
     let pdf = await letterHead(createPayroll.id, pdfdata);
-
 
     return response.status(200).json({
       ack: 1,
@@ -477,7 +469,7 @@ async function payrollSheetListToExcel(id) {
 
       const uploadData = await s3.upload(params).promise();
       const url = uploadData.Location;
-   
+
       await payroll.update({ url: url }, { where: { id: id } });
 
       return { payrollSheetData, url };
