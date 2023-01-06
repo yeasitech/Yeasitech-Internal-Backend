@@ -97,7 +97,7 @@
                                                   href="https://www.yeasitech.com"
                                                   target="_blank"
                                                   ><img
-                                                    src="https://s3.ap-south-1.amazonaws.com/www.yeasitech.com/logo192.png"
+                                                    src="https://www.yeasitech.com/logo-1.png"
                                                     alt=""
                                                     style="display: block"
                                                     width="150"
@@ -139,10 +139,10 @@
                                 behalf of YEASITECH to our employees for the
                                 month of November 2022. I have given a check in
                                 the name of HDFC BANK LTD SALARY amount of Rs
-                                200 from our Current Account 50200053292378.
+                                {{TotalAmount}} from our Current Account 50200053292378.
                               </p>
                               <p>
-                                Please disburse the salary on 01st December 2022
+                                Please disburse the salary on {{date}}
                               </p>
                             </td>
                           </tr>
@@ -158,49 +158,52 @@
                         cellspacing="0"
                         cellpadding="0"
                       >
+                      <thead>
+                        <tr>
+                          <th
+                            style="
+                              border: 1px solid #000;
+                              padding: 5px 8px;
+                              text-align: left;
+                              font-size: 14px;
+                            "
+                          >
+                            CUSTOMER NAME
+                          </th>
+                          <th
+                            style="
+                              border: 1px solid #000;
+                              padding: 5px 8px;
+                              text-align: left;
+                              font-size: 14px;
+                            "
+                          >
+                            ACCOUNT NUMBER
+                          </th>
+                          <th
+                            style="
+                              border: 1px solid #000;
+                              padding: 5px 8px;
+                              text-align: left;
+                              font-size: 14px;
+                            "
+                          >
+                            IFSC CODE
+                          </th>
+                          <th
+                            style="
+                              border: 1px solid #000;
+                              padding: 5px 8px;
+                              text-align: left;
+                              font-size: 14px;
+                            "
+                          >
+                            SALARY
+                          </th>
+                        </tr>
+                      </thead>
                         <tbody>
-                          <tr>
-                            <th
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            >
-                              CUSTOMER NAME
-                            </th>
-                            <th
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            >
-                              ACCOUNT NUMBER
-                            </th>
-                            <th
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            >
-                              IFSC CODE
-                            </th>
-                            <th
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            >
-                              SALARY
-                            </th>
-                          </tr>
+                          {{#each users as |user| }}
                           <tr>
                             <td
                               style="
@@ -210,7 +213,7 @@
                                 font-size: 14px;
                               "
                             >
-                              SAYANTAN GHOSH
+                              {{user.name}}
                             </td>
                             <td
                               style="
@@ -219,25 +222,8 @@
                                 text-align: left;
                                 font-size: 14px;
                               "
-                            ></td>
-                            <td
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            ></td>
-                            <td
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            ></td>
-                          </tr>
-                          <tr>
+                            >{{user.accountNumber}}
+                          </td>
                             <td
                               style="
                                 border: 1px solid #000;
@@ -246,8 +232,8 @@
                                 font-size: 14px;
                               "
                             >
-                              MD JAHIR UDDIN
-                            </td>
+                            {{user.ifscCode}}
+                          </td>
                             <td
                               style="
                                 border: 1px solid #000;
@@ -255,384 +241,10 @@
                                 text-align: left;
                                 font-size: 14px;
                               "
-                            ></td>
-                            <td
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            ></td>
-                            <td
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            ></td>
+                            >  {{user.totalPayable}}
+                          </td>
                           </tr>
-                          <tr>
-                            <td
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            >
-                              MONOWAR IQBAL LAYEK
-                            </td>
-                            <td
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            ></td>
-                            <td
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            ></td>
-                            <td
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            ></td>
-                          </tr>
-                          <tr>
-                            <td
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            >
-                              SAMUEL KABIR
-                            </td>
-                            <td
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            ></td>
-                            <td
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            ></td>
-                            <td
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            ></td>
-                          </tr>
-                          <tr>
-                            <td
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            >
-                              SUDIP NASKAR
-                            </td>
-                            <td
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            ></td>
-                            <td
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            ></td>
-                            <td
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            ></td>
-                          </tr>
-                          <tr>
-                            <td
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            >
-                              AMRIN NOOR ALI SHAIKH
-                            </td>
-                            <td
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            ></td>
-                            <td
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            ></td>
-                            <td
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            ></td>
-                          </tr>
-                          <tr>
-                            <td
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            >
-                              DEBASISH BOSE
-                            </td>
-                            <td
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            ></td>
-                            <td
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            ></td>
-                            <td
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            ></td>
-                          </tr>
-                          <tr>
-                            <td
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            >
-                              RAMJAN SK
-                            </td>
-                            <td
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            ></td>
-                            <td
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            ></td>
-                            <td
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            ></td>
-                          </tr>
-                          <tr>
-                            <td
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            >
-                              SEKH SELIM
-                            </td>
-                            <td
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            ></td>
-                            <td
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            ></td>
-                            <td
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            ></td>
-                          </tr>
-                          <tr>
-                            <td
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            >
-                              MAHABUR HOSSAIN
-                            </td>
-                            <td
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            ></td>
-                            <td
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            ></td>
-                            <td
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            ></td>
-                          </tr>
-                          <tr>
-                            <td
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            >
-                              MUNSHI MEHEBUB JAMAN
-                            </td>
-                            <td
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            ></td>
-                            <td
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            ></td>
-                            <td
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            ></td>
-                          </tr>
-                          <tr>
-                            <td
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            >
-                              SUBHAM SAHA
-                            </td>
-                            <td
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            ></td>
-                            <td
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            ></td>
-                            <td
-                              style="
-                                border: 1px solid #000;
-                                padding: 5px 8px;
-                                text-align: left;
-                                font-size: 14px;
-                              "
-                            ></td>
-                          </tr>
+                          {{/each}}
                         </tbody>
                       </table>
                       <table
@@ -655,7 +267,7 @@
                         <tbody>
                           <tr>
                             <td style="padding: 0px">
-                              <img src="curve.jpg" />
+                              <img src="https://www.yeasitech.com/curve.jpg" />
                             </td>
                           </tr>
                         </tbody>

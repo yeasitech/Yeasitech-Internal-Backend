@@ -1,21 +1,15 @@
 const moment = require("moment");
 const { S3 } = require("aws-sdk");
-const XLSX = require("xlsx");
 const { format } = require("date-fns");
-const { Op } = require("sequelize");
 const { Parser } = require("json2csv");
 const fs = require("fs");
 var path = require("path");
 const { jsPDF } = require("jspdf");
+const puppeteer = require("puppeteer");
+const hbs = require("handlebars");
 require("dotenv").config();
 
-const {
-  payroll,
-  payrollSheet,
-  User,
-  Salary,
-  BankDetails,
-} = require("../models");
+const { payroll, payrollSheet, Salary, BankDetails } = require("../models");
 
 exports.createPayroll = async (request, response) => {
   const body = request.body;
@@ -48,7 +42,7 @@ exports.createPayroll = async (request, response) => {
       })
     );
     let excelData = await payrollSheetListToExcel(createPayroll.id);
-    console.log(`excelData`, excelData);
+
     return response.status(200).json({
       ack: 1,
       msg: "successfully created payroll & payroll sheet",
@@ -300,7 +294,6 @@ exports.editPayrollSheet = async (request, response) => {
 };
 
 async function payrollSheetListToExcel(id) {
-  // const payrollId = request.params.id;
   const ACCESS_KEY = process.env.AWS_ACCESS_KEY;
   const SECRET_KEY = process.env.AWS_SECRET_KEY;
   const BUCKET = process.env.AWS_BUCKET;
@@ -325,6 +318,7 @@ async function payrollSheetListToExcel(id) {
           delete e.dataValues.totalPayable;
           delete e.dataValues.userId;
         } else {
+          delete e.dataValues.userId;
           e.dataValues.accountNumber = bankInfo.dataValues.accountNumber;
           e.dataValues.ifscCode = bankInfo.dataValues.ifscCode;
           e.dataValues.id = bankInfo.dataValues.id;
@@ -332,26 +326,6 @@ async function payrollSheetListToExcel(id) {
         return e.dataValues;
       })
     );
-
-    // for (let i = 0; i < payrollSheetData.length; i++) {
-    //   let userIds = payrollSheetData[i].userId;
-
-    //   let bankInfo = await BankDetails.findOne({
-    //     where: { userId: userIds },
-    //     attributes: ["accountNumber", "ifscCode"],
-    //   });
-    //   if (!bankInfo) {
-    //     // return response.status(200).json({
-    //     //   ack: 0,
-    //     //   msg: `No bank details found `,
-    //     // });
-    //     delete bankInfo.dataValues;
-    //   } else {
-    //     payrollSheetData[i].dataValues.accountNumber =
-    //       bankInfo.dataValues.accountNumber;
-    //     payrollSheetData[i].dataValues.ifscCode = bankInfo.dataValues.ifscCode;
-    //   }
-    // }
 
     if (payrollSheetData.length == 0) {
       console.log(`qwertyu7`);
@@ -385,17 +359,18 @@ async function payrollSheetListToExcel(id) {
       // fs.writeFileSync("./data.csv", csv);
       const csvBuffer = Buffer.from(csv);
 
-      const params = {
-        Bucket: BUCKET,
-        Key: `Payroll_${date}.csv`,
-        Body: csvBuffer,
-        ContentType: "text/csv",
-      };
-      console.log(`params`, params);
-      const uploadData = await s3.upload(params).promise();
-      const url = uploadData.Location;
+      // const params = {
+      //   Bucket: BUCKET,
+      //   Key: `Payroll_${date}.csv`,
+      //   Body: csvBuffer,
+      //   ContentType: "text/csv",
+      // };
 
-      const result = await payroll.update({ url: url }, { where: { id: id } });
+      // const uploadData = await s3.upload(params).promise();
+      // const url = uploadData.Location;
+      let url = `qwertyuhb`;
+
+      await payroll.update({ url: url }, { where: { id: id } });
 
       return { payrollSheetData, url };
     }
@@ -403,13 +378,80 @@ async function payrollSheetListToExcel(id) {
     console.log(error);
   }
 }
+let date = new Date();
+const now = new Date(date.getFullYear(), date.getMonth(), 1);
+const firstDate = format(now, "yyyy/MM/dd");
+console.log(`qwerty6uiop`, firstDate);
+let data = {
+  TotalAmount: 5000,
+  date: firstDate,
+  users: [
+    {},
+    {
+      name: " sayantan",
+      totalPayable: 9516.67,
+      accountNumber: "7875486464654",
+      ifscCode: "1234sgsddc",
+    },
+    {
+      name: " ramjan sk.",
+      totalPayable: 67426.7,
+      accountNumber: "01356545655",
+      ifscCode: "1234656",
+    },
+  ],
+};
+
+async function compareHtmlToPdf(fileName, data) {
+  let template = path.join(__dirname, "..", "pdfTemplate", "index.html");
+  console.log(`readFileSync`, data);
+  const html = fs.readFileSync(template, "utf-8");
+  return hbs.compile(html)(data);
+}
+
+exports.htmlToPdf = async (response) => {
+  try {
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    // await page.setContent(
+    //   "<table><tr><td>1</td><td>ABC</td></tr><tr><td>2</td><td>DEF</td></tr><tr><td>3</td><td>GHI</td></tr></table>"
+    // );
+    const content = await compareHtmlToPdf("index.html", data);
+    await page.setContent(content);
+    // create a pdf document
+    const pdf = await page.pdf({
+      path: "test.pdf",
+      format: "A4",
+      printBackground: true,
+    });
+    console.log(`Done Creating Pdf`);
+    await browser.close();
+    return pdf;
+    //process.exit();
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 // exports.htmlToPdf = async (response) => {
-//   let pdf = new jsPDF();
+//   let doc = new jsPDF();
 //   let template = path.join("pdfTemplate", "index.html");
 //   const data = fs.readFileSync(template);
-//   let options = { format: "Letter" };
-//   pdf.html(data, options);
-//   pdf.save("test.pdf");
-//   console.log(`qwertyui`, data);
+//   // let options = { format: "Letter" };
+//   // pdf.fromHTML(data, options);
+//   // pdf.save("test.pdf");
+//   // console.log(`qwertyui`, data);
+//   try {
+//     var april_2_html_table = "<table><tr><td>1</td><td>ABC</td></tr></table>";
+//     doc.fromHTML(april_2_html_table, 10, 140);
+//     doc.addPage();
+//     const arrayBuffer = doc.output("arraybuffer");
+//     pdf.save("test.pdf");
+//     doc.close();
+
+//     // convert to Buffer
+//     const pdfBuffer = Buffer.from(new Uint8Array(arrayBuffer));
+//   } catch (error) {
+//     console.log(error);
+//   }
 // };
