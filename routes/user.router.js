@@ -448,6 +448,26 @@ clientRouter.put(
   clientController.editClient
 );
 clientRouter.get("/all", AdminAuthorization, clientController.allClient);
+clientRouter.put(
+  "/createClientInvoice",
+  AdminAuthorization,
+  clientController.createClientInvoice
+);
+clientRouter.get(
+  "/invoiceList",
+  AdminAuthorization,
+  clientController.invoiceList
+);
+clientRouter.put(
+  "/invoiceEdit/:id",
+  AdminAuthorization,
+  clientController.editClientInvoice
+);
+clientRouter.delete(
+  "/invoiceDelete/:id",
+  AdminAuthorization,
+  clientController.deleteClientInvoice
+);
 module.exports = {
   userRouter,
   departmentRouter,

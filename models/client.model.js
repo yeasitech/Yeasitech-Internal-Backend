@@ -18,8 +18,15 @@ module.exports = (sequelize, DataTypes) => {
     profileImage: DataTypes.STRING,
     contactPerson: DataTypes.STRING,
     designation: DataTypes.STRING,
+    invoiceDate: DataTypes.DATEONLY,
+    dueDate: DataTypes.DATEONLY,
+    otherInfo: DataTypes.TEXT,
     isActive: DataTypes.BOOLEAN,
   });
-  clientDetails.associate = function (models) {};
+  clientDetails.associate = function (models) {
+    clientDetails.hasMany(models.clientInvoice, {
+      foreignKey: "clientId",
+    });
+  };
   return clientDetails;
 };
