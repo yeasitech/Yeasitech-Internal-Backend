@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body style="font-family: 'Poppins', sans-serif; margin: 0px; padding: 0px">
+    <div
+      style="
+        background-color: #f5f5f5;
+        width: 210mm;
+        height: 297mm;
+        padding: 0px 12px;
+      "
+    >
+      <table style="width: 100%; border-collapse: collapse">
+        <tbody>
+          <tr>
+            <td style="width: 27%; border-collapse: collapse">
+              <img
+                src="data:image/png;base64,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"
+              />
+            </td>
+            <td
+              style="width: 42%; text-align: center; border-collapse: collapse"
+            >
+              <h3 style="margin: 0px; font-size: 28px; color: #6a95d0">
+                Yeasitech
+              </h3>
+              <p
+                style="
+                  text-align: center;
+                  margin: 0px;
+                  font-size: 18px;
+                  font-weight: 400;
+                  color: #000;
+                "
+              >
+                Pay Slip for the month of
+                <span style="font-weight: 500">July 2022</span>
+              </p>
+              <p
+                style="
+                  text-align: center;
+                  margin: 0px;
+                  font-size: 17px;
+                  font-weight: 400;
+                  color: #000;
+                "
+              >
+                Financial Period <span style="font-weight: 500">2023-2024</span>
+              </p>
+            </td>
+            <td style="width: 27%; border-collapse: collapse"></td>
+          </tr>
+        </tbody>
+      </table>
+      <table style="width: 100%; border-collapse: collapse; margin-top: 20px">
+        <tbody>
+          <tr>
+            <td
+              style="
+                background: #fff;
+                padding: 12px 12px;
+                border-radius: 5px;
+                border-collapse: collapse;
+              "
+            >
+              <p style="margin: 0px; display: flex; padding-bottom: 3px">
+                <span style="width: 20%; color: #000; font-weight: 400"
+                  >Name</span
+                ><span style="color: #000; font-weight: 500"
+                  >Mr. Kazi Hasan Ali</span
+                >
+              </p>
+              <p style="margin: 0px; display: flex; padding-bottom: 3px">
+                <span style="width: 20%; color: #000; font-weight: 400"
+                  >Associate Id</span
+                ><span style="color: #000; font-weight: 500">000</span>
+              </p>
+              <p style="margin: 0px; display: flex; padding-bottom: 3px">
+                <span style="width: 20%; color: #000; font-weight: 400"
+                  >Designation</span
+                ><span style="color: #000; font-weight: 500"
+                  >Front-End Developer</span
+                >
+              </p>
+              <p style="margin: 0px; display: flex; padding-bottom: 3px">
+                <span style="width: 20%; color: #000; font-weight: 400"
+                  >Date Of Joining</span
+                ><span style="color: #000; font-weight: 500">19 July 2022</span>
+              </p>
+              <p style="margin: 0px; display: flex; padding-bottom: 3px">
+                <span style="width: 20%; color: #000; font-weight: 400"
+                  >Gender</span
+                ><span style="color: #000; font-weight: 500">Male</span>
+              </p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <table style="width: 100%; border-collapse: collapse; margin: 10px 0px">
+        <tbody>
+          <tr>
+            <td
+              style="
+                background: #fff;
+                padding: 5px 12px;
+                border-radius: 5px;
+                border-collapse: collapse;
+              "
+            >
+              <p
+                style="
+                  margin: 0px;
+                  text-transform: capitalize;
+                  font-size: 18px;
+                  text-align: center;
+                  color: #000;
+                  font-weight: 500;
+                "
+              >
+                Associate Information
+              </p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <table style="width: 100%; border-collapse: collapse">
+        <tbody>
+          <tr>
+            <td
+              style="
+                padding: 12px 12px;
+                border-collapse: collapse;
+                width: 50%;
+                background: #fff;
+                border-top-left-radius: 5px;
+                border-bottom-left-radius: 5px;
+              "
+            >
+              <p style="margin: 0px; display: flex; padding-bottom: 3px">
+                <span style="width: 39%; color: #000; font-weight: 400"
+                  >PF A/C</span
+                ><span style="color: #000; font-weight: 500">-</span>
+              </p>
+              <p style="margin: 0px; display: flex; padding-bottom: 3px">
+                <span style="width: 39%; color: #000; font-weight: 400"
+                  >UAN</span
+                ><span style="color: #000; font-weight: 500">-</span>
+              </p>
+              <p style="margin: 0px; display: flex; padding-bottom: 3px">
+                <span style="width: 39%; color: #000; font-weight: 400"
+                  >SA Policy No</span
+                ><span style="color: #000; font-weight: 500">-</span>
+              </p>
+              <p style="margin: 0px; display: flex; padding-bottom: 3px">
+                <span style="width: 39%; color: #000; font-weight: 400"
+                  >SA LIC ID</span
+                ><span style="color: #000; font-weight: 500">-</span>
+              </p>
+              <p style="margin: 0px; display: flex; padding-bottom: 3px">
+                <span style="width: 39%; color: #000; font-weight: 400"
+                  >Location</span
+                ><span style="color: #000; font-weight: 500">Newtown</span>
+              </p>
+              <p style="margin: 0px; display: flex; padding-bottom: 3px">
+                <span style="width: 39%; color: #000; font-weight: 400"
+                  >Pan</span
+                ><span style="color: #000; font-weight: 500">Xxxxxxxx</span>
+              </p>
+            </td>
+            <td
+              style="
+                padding: 12px 12px;
+                border-collapse: collapse;
+                width: 50%;
+                background: #fff;
+                border-top-right-radius: 5px;
+                border-bottom-right-radius: 5px;
+              "
+            >
+              <p style="margin: 0px; display: flex; padding-bottom: 3px">
+                <span style="width: 58%; color: #000; font-weight: 400"
+                  >Bank A/C</span
+                ><span style="color: #000; font-weight: 500">Xxxxxxx0000</span>
+              </p>
+              <p style="margin: 0px; display: flex; padding-bottom: 3px">
+                <span style="width: 58%; color: #000; font-weight: 400"
+                  >ESI Number</span
+                ><span style="color: #000; font-weight: 500">-</span>
+              </p>
+              <p style="margin: 0px; display: flex; padding-bottom: 3px">
+                <span style="width: 58%; color: #000; font-weight: 400"
+                  >Status</span
+                ><span style="color: #000; font-weight: 500"
+                  >Salary Credited</span
+                >
+              </p>
+              <p style="margin: 0px; display: flex; padding-bottom: 3px">
+                <span style="width: 58%; color: #000; font-weight: 400"
+                  >Available Calender Days</span
+                ><span style="color: #000; font-weight: 500">29</span>
+              </p>
+              <p style="margin: 0px; display: flex; padding-bottom: 3px">
+                <span style="width: 58%; color: #000; font-weight: 400"
+                  >Paid Days</span
+                ><span style="color: #000; font-weight: 500">27</span>
+              </p>
+              <p style="margin: 0px; display: flex; padding-bottom: 3px">
+                <span style="width: 58%; color: #000; font-weight: 400"
+                  >Loss Of Pay Days</span
+                ><span style="color: #000; font-weight: 500">0</span>
+              </p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <table style="width: 100%; border-collapse: collapse; margin-top: 10px">
+        <tbody>
+          <tr
+            style="width: 100%; display: flex; justify-content: space-between"
+          >
+            <td
+              style="
+                background-color: #fff;
+                width: 48.7%;
+                border-collapse: collapse;
+              "
+            >
+              <table style="width: 100%">
+                <tbody>
+                  <tr>
+                    <td
+                      style="
+                        margin: 0px;
+                        text-transform: capitalize;
+                        font-size: 18px;
+                        color: #000;
+                        font-weight: 500;
+                        border-bottom: 1px solid #e9e9e9;
+                        padding: 15px 10px;
+                      "
+                    >
+                      Earnings
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+            <td
+              style="
+                background-color: #fff;
+                width: 48.7%;
+                border-collapse: collapse;
+              "
+            >
+              <table style="width: 100%">
+                <tbody>
+                  <tr>
+                    <td
+                      style="
+                        margin: 0px;
+                        text-transform: capitalize;
+                        font-size: 18px;
+                        color: #000;
+                        font-weight: 500;
+                        border-bottom: 1px solid #e9e9e9;
+                        padding: 15px 10px;
+                      "
+                    >
+                      Deducation
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <table style="width: 100%; border-collapse: collapse">
+        <tbody>
+          <tr
+            style="width: 100%; display: flex; justify-content: space-between"
+          >
+            <td
+              style="
+                background-color: #fff;
+                border-radius: 5px;
+                width: 46.5%;
+                padding: 0px 10px;
+                border-collapse: collapse;
+              "
+            >
+              <table style="width: 100%; border-collapse: collapse">
+                <tr>
+                  <td
+                    style="
+                      border-bottom: 1px solid #e9e9e9;
+                      border-collapse: collapse;
+                      padding: 8px 0px;
+                    "
+                  >
+                    <p style="margin: 0px; color: #000; font-weight: 400">
+                      Basic
+                    </p>
+                  </td>
+                  <td
+                    style="
+                      text-align: right;
+                      border-bottom: 1px solid #e9e9e9;
+                      border-collapse: collapse;
+                      padding: 8px 0px;
+                    "
+                  >
+                    <p style="margin: 0px; color: #000; font-weight: 500">
+                      0000
+                    </p>
+                  </td>
+                </tr>
+                <tr>
+                  <td
+                    style="
+                      border-bottom: 1px solid #e9e9e9;
+                      border-collapse: collapse;
+                      padding: 8px 0px;
+                    "
+                  >
+                    <p style="margin: 0px; color: #000; font-weight: 400">
+                      House Rent Allowance
+                    </p>
+                  </td>
+                  <td
+                    style="
+                      text-align: right;
+                      border-bottom: 1px solid #e9e9e9;
+                      border-collapse: collapse;
+                      padding: 8px 0px;
+                    "
+                  >
+                    <p style="margin: 0px; color: #000; font-weight: 500">
+                      0000
+                    </p>
+                  </td>
+                </tr>
+                <tr>
+                  <td
+                    style="
+                      border-bottom: 1px solid #e9e9e9;
+                      border-collapse: collapse;
+                      padding: 8px 0px;
+                    "
+                  >
+                    <p style="margin: 0px; color: #000; font-weight: 400">
+                      House Rent Allowance
+                    </p>
+                  </td>
+                  <td
+                    style="
+                      text-align: right;
+                      border-bottom: 1px solid #e9e9e9;
+                      border-collapse: collapse;
+                      padding: 8px 0px;
+                    "
+                  >
+                    <p style="margin: 0px; color: #000; font-weight: 500">
+                      0000
+                    </p>
+                  </td>
+                </tr>
+                <tr>
+                  <td
+                    style="
+                      border-bottom: 1px solid #e9e9e9;
+                      border-collapse: collapse;
+                      padding: 8px 0px;
+                    "
+                  >
+                    <p style="margin: 0px; color: #000; font-weight: 400">
+                      Medical Allowance
+                    </p>
+                  </td>
+                  <td
+                    style="
+                      text-align: right;
+                      border-bottom: 1px solid #e9e9e9;
+                      border-collapse: collapse;
+                      padding: 8px 0px;
+                    "
+                  >
+                    <p style="margin: 0px; color: #000; font-weight: 500">
+                      0000
+                    </p>
+                  </td>
+                </tr>
+                <tr>
+                  <td
+                    style="
+                      border-bottom: 1px solid #e9e9e9;
+                      border-collapse: collapse;
+                      padding: 8px 0px;
+                    "
+                  >
+                    <p style="margin: 0px; color: #000; font-weight: 400">
+                      Special Allowance
+                    </p>
+                  </td>
+                  <td
+                    style="
+                      text-align: right;
+                      border-bottom: 1px solid #e9e9e9;
+                      border-collapse: collapse;
+                      padding: 8px 0px;
+                    "
+                  >
+                    <p style="margin: 0px; color: #000; font-weight: 500">
+                      0000
+                    </p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="border-collapse: collapse; padding: 8px 0px">
+                    <p style="margin: 0px; color: #000; font-weight: 400">
+                      Advance Statutory Bonus
+                    </p>
+                  </td>
+                  <td
+                    style="
+                      text-align: right;
+                      border-collapse: collapse;
+                      padding: 8px 0px;
+                    "
+                  >
+                    <p style="margin: 0px; color: #000; font-weight: 500">
+                      0000
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+            <td
+              style="
+                background-color: #fff;
+                border-radius: 5px;
+                width: 46.5%;
+                padding: 0px 10px;
+              "
+            >
+              <table style="width: 100%">
+                <tr>
+                  <td
+                    style="
+                      border-bottom: 1px solid #e9e9e9;
+                      border-collapse: collapse;
+                      padding: 8px 0px;
+                    "
+                  >
+                    <p style="margin: 0px; color: #000; font-weight: 400">
+                      Profession Tax
+                    </p>
+                  </td>
+                  <td
+                    style="
+                      text-align: right;
+                      border-bottom: 1px solid #e9e9e9;
+                      border-collapse: collapse;
+                      padding: 8px 0px;
+                    "
+                  >
+                    <p style="margin: 0px; color: #000; font-weight: 500">
+                      0000
+                    </p>
+                  </td>
+                </tr>
+                <tr>
+                  <td
+                    style="
+                      border-bottom: 1px solid #e9e9e9;
+                      border-collapse: collapse;
+                      padding: 8px 0px;
+                    "
+                  >
+                    <p style="margin: 0px; color: #000; font-weight: 400">
+                      PF-Employee Contribution
+                    </p>
+                  </td>
+                  <td
+                    style="
+                      text-align: right;
+                      border-bottom: 1px solid #e9e9e9;
+                      border-collapse: collapse;
+                      padding: 8px 0px;
+                    "
+                  >
+                    <p style="margin: 0px; color: #000; font-weight: 500">
+                      0000
+                    </p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="border-collapse: collapse; padding: 8px 0px">
+                    <p style="margin: 0px; color: #000; font-weight: 400">
+                      TDS
+                    </p>
+                  </td>
+                  <td
+                    style="
+                      text-align: right;
+                      border-collapse: collapse;
+                      padding: 8px 0px;
+                    "
+                  >
+                    <p style="margin: 0px; color: #000; font-weight: 500">
+                      0000
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <table style="width: 100%; border-collapse: collapse; margin-top: 2px">
+        <tbody>
+          <tr
+            style="width: 100%; display: flex; justify-content: space-between"
+          >
+            <td
+              style="
+                background-color: #fff;
+                width: 48.7%;
+                border-collapse: collapse;
+              "
+            >
+              <table style="width: 100%">
+                <tbody>
+                  <tr>
+                    <td
+                      style="padding: 10px 5px; color: #000; font-weight: 400"
+                    >
+                      (A) Total Earnings
+                    </td>
+                    <td
+                      style="
+                        text-align: right;
+                        padding: 10px 5px;
+                        color: #000;
+                        font-weight: 500;
+                      "
+                    >
+                      000
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+            <td
+              style="
+                background-color: #fff;
+                width: 48.7%;
+                border-collapse: collapse;
+              "
+            >
+              <table style="width: 100%">
+                <tbody>
+                  <tr>
+                    <td
+                      style="padding: 10px 5px; color: #000; font-weight: 400"
+                    >
+                      (B) Total Deducation
+                    </td>
+                    <td
+                      style="
+                        text-align: right;
+                        padding: 10px 5px;
+                        color: #000;
+                        font-weight: 500;
+                      "
+                    >
+                      000
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <table style="width: 100%; border-collapse: collapse; margin: 10px 0px">
+        <tbody>
+          <tr>
+            <td
+              style="
+                background: #fff;
+                padding: 5px 12px;
+                border-radius: 5px;
+                border-collapse: collapse;
+              "
+            >
+              <p
+                style="
+                  margin: 0px;
+                  text-transform: capitalize;
+                  font-size: 18px;
+                  text-align: center;
+                  color: #000;
+                  font-weight: 500;
+                "
+              >
+                Net Salary = (A)-(B) = 1234
+              </p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <table
+        style="
+          width: 100%;
+          height: 90px;
+          background-color: #fff;
+          margin-top: 50px;
+        "
+      >
+        <tbody>
+          <tr>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+      <table style="position: fixed; bottom: 0px; left: 0; width: 210mm">
+        <tbody>
+          <tr>
+            <td style="border-top: 1px solid #ccc">
+              <p
+                style="
+                  margin: 0px auto;
+                  width: 400px;
+                  text-align: center;
+                  font-size: 13px;
+                  color: #000;
+                  font-weight: 400;
+                  padding-top: 3px;
+                "
+              >
+                Registered Office : ASO-104, Astra Tower, Action Area IIC,
+                Newtown, New Town, West Bengal 700135
+              </p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>

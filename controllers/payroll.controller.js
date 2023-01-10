@@ -7,7 +7,15 @@ const puppeteer = require("puppeteer");
 const hbs = require("handlebars");
 require("dotenv").config();
 
-const { payroll, payrollSheet, Salary, BankDetails } = require("../models");
+const {
+  payroll,
+  payrollSheet,
+  Salary,
+  BankDetails,
+  User,
+  EmployeeDetails,
+  Designation,
+} = require("../models");
 
 exports.createPayroll = async (request, response) => {
   const body = request.body;
@@ -30,10 +38,10 @@ exports.createPayroll = async (request, response) => {
           salary: currentSalary,
           presentDays: data.presentDays,
           totalDays: data.totalDays,
-          totalSalary: totalSalary,
+          totalSalary: totalSalary.toFixed(2),
           tax: data.tax,
           bonus: data.bonus,
-          totalPayable: totalPayable,
+          totalPayable: totalPayable.toFixed(2),
           userId: data.userId,
           payrollId: createPayroll.id,
         });
@@ -90,7 +98,8 @@ exports.createPayroll = async (request, response) => {
     let userPdfData = excelData.payrollSheetData.map((e) => e.dataValues);
 
     let pdfdata = {};
-    (pdfdata.year = year), (pdfdata.month = month);
+    pdfdata.year = year;
+    pdfdata.month = month;
     pdfdata.TotalAmount = createPayroll.total;
     pdfdata.date = firstDate;
     pdfdata.users = userPdfData;
@@ -110,6 +119,153 @@ exports.createPayroll = async (request, response) => {
     response.status(500).json({ ack: 0, msg: error.message || `server error` });
   }
 };
+async function payrollSheetListToExcel(id) {
+  const ACCESS_KEY = process.env.AWS_ACCESS_KEY;
+  const SECRET_KEY = process.env.AWS_SECRET_KEY;
+  const BUCKET = process.env.AWS_BUCKET;
+  const s3 = new S3({ accessKeyId: ACCESS_KEY, secretAccessKey: SECRET_KEY });
+
+  try {
+    const payrollSheetData = await payrollSheet.findAll({
+      where: {
+        payrollId: id,
+      },
+      attributes: ["name", "totalPayable", "userId"],
+    });
+    await Promise.all(
+      payrollSheetData.map(async (e) => {
+        const bankInfo = await BankDetails.findOne({
+          order: [["updatedAt", "DESC"]],
+          where: { userId: e.userId },
+          attributes: ["accountNumber", "ifscCode"],
+        });
+        if (bankInfo == null) {
+          delete e.dataValues.name;
+          delete e.dataValues.totalPayable;
+          delete e.dataValues.userId;
+        } else {
+          delete e.dataValues.userId;
+          e.dataValues.accountNumber = bankInfo.dataValues.accountNumber;
+          e.dataValues.ifscCode = bankInfo.dataValues.ifscCode;
+          e.dataValues.id = bankInfo.dataValues.id;
+        }
+        return e.dataValues;
+      })
+    );
+
+    if (payrollSheetData.length == 0) {
+      console.log(`qwertyu7`);
+    } else {
+      const now = new Date();
+      const year = now.getFullYear();
+
+      let month = monthName();
+      const date = format(now, "yyyyMMddHHmmss");
+
+      const fields = [
+        {
+          label: "CUSTOMER NAME",
+          value: "dataValues.name",
+        },
+        {
+          label: "ACCOUNT NUMBER",
+          value: "dataValues.accountNumber",
+        },
+        {
+          label: "IFSC CODE",
+          value: "dataValues.ifscCode",
+        },
+        {
+          label: "SALARY",
+          value: "dataValues.totalPayable",
+        },
+      ];
+
+      const json2csvParser = new Parser({ fields });
+
+      const csv = json2csvParser.parse(payrollSheetData);
+
+      // fs.writeFileSync("./data.csv", csv);
+      const csvBuffer = Buffer.from(csv);
+
+      let dirName = "payroll";
+      if (process.env.ENV == "production") {
+        dirName = "docs";
+      }
+      const params = {
+        dirName: dirName,
+        Bucket: BUCKET,
+        Key: `${dirName}/${year}-${month}/${date}.csv`,
+        Body: csvBuffer,
+        ContentType: "text/csv",
+      };
+
+      const uploadData = await s3.upload(params).promise();
+      const url = uploadData.Location;
+      // let url = `asdfghjk`;
+
+      await payroll.update({ url: url }, { where: { id: id } });
+
+      return { payrollSheetData, url };
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+async function letterHead(payrollId, data) {
+  try {
+    const ACCESS_KEY = process.env.AWS_ACCESS_KEY;
+    const SECRET_KEY = process.env.AWS_SECRET_KEY;
+    const BUCKET = process.env.AWS_BUCKET;
+    const s3 = new S3({ accessKeyId: ACCESS_KEY, secretAccessKey: SECRET_KEY });
+
+    let template = path.join(__dirname, "..", "pdfTemplate", "index.html");
+
+    const html = fs.readFileSync(template, "utf-8");
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+
+    const content = hbs.compile(html)(data);
+
+    //const content = await compareHtmlToPdf("index.html", data);
+    await page.setContent(content);
+    // create a pdf document
+    const pdf = await page.pdf({
+      // path: "test.pdf",
+      format: "A4",
+      printBackground: true,
+    });
+
+    const now = new Date();
+    const year = now.getFullYear();
+    const date = format(now, "yyyyMMddHHmmss");
+
+    let month = monthName();
+    let dirName = "payroll";
+    if (process.env.ENV == "production") {
+      dirName = "docs";
+    }
+    const params = {
+      dirName: dirName,
+      Bucket: BUCKET,
+      Key: `letterHead/${year}-${month}/${date}.pdf`,
+      Body: pdf,
+      ContentType: "application/pdf",
+    };
+
+    const uploadData = await s3.upload(params).promise();
+    const url = uploadData.Location;
+    //let url = `qwertyu`;
+    await payroll.update({ letterHeadUrl: url }, { where: { id: payrollId } });
+
+    await browser.close();
+    return pdf;
+    //process.exit();
+  } catch (error) {
+    console.log(error);
+  }
+}
 
 //edit payroll with sheet
 exports.editPayrollWithSheet = async (request, response) => {
@@ -153,6 +309,10 @@ exports.editPayroll = async (request, response) => {
       const payrollData = await payroll.findByPk(id);
       if (!payrollData) {
         response.status(500).json({ ack: 0, msg: `invalid payroll Data` });
+      } else if (payrollData.isProcessed == true) {
+        response
+          .status(500)
+          .json({ ack: 0, msg: `processed payroll can't be edit able` });
       } else {
         const updatedPayroll = await payroll.update(
           { ...request.body },
@@ -211,22 +371,65 @@ exports.editIsProcess = async (request, response) => {
 
         const updatedPayroll = await payroll.update(
           {
-            isProcessed: !payrollData.isProcessed,
+            isProcessed: true,
             processingDate: date,
           },
           {
             where: { id },
           }
         );
+        // const salarySlip = await generateSalarySlip(payrollData.id);
         response
           .status(200)
-          .json({ ack: 1, msg: `Successfully Updated payroll` });
+          .json({ ack: 1, msg: `Successfully Updated payroll`, salarySlip });
       }
     }
   } catch (error) {
     response.status(500).json({ ack: 0, msg: error.message || "Server Error" });
   }
 };
+async function generateSalarySlip(payrollId) {
+  try {
+    const payrollSheetData = await payrollSheet.findAll({
+      where: { payrollId: payrollId },
+    });
+    if (payrollSheetData.length === 0) return `No payroll Sheet Data `;
+    else {
+      const userId = await Promise.all(
+        payrollSheetData.map(async (e) => {
+          let userId = e.userId;
+          const userData = await User.findOne({
+            // order: [[{ model: BankDetails }, "id", "ASC"]],
+            where: { id: userId },
+            attributes: [
+              "firstName",
+              "middleName",
+              "lastName",
+              "email",
+              "dateOfJoining",
+            ],
+            include: [
+              { model: EmployeeDetails, attributes: ["employeeId", "gender"] },
+              { model: Designation, attributes: ["designation"] },
+            ],
+          });
+          const bankDetails = await BankDetails.findOne({
+            order: [["updatedAt", "DESC"]],
+            attributes: ["accountNumber"],
+            where: { userId: userId },
+          });
+          userData.dataValues.accountNumber =
+            bankDetails.dataValues.accountNumber;
+          return userData.dataValues;
+        })
+      );
+      // console.log(`updatedPayroll`, userId);
+      return userId;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
 
 // delete payroll
 exports.deletePayroll = async (request, response) => {
@@ -284,8 +487,6 @@ exports.deletePayrollSheet = async (request, response) => {
 
 exports.payrollSheetList = async (request, response) => {
   const payrollId = request.params.id;
-  // const limit = parseInt(elements);
-  // const offset = parseInt(limit * (page - 1));
 
   try {
     const payrollData = await payroll.findOne({
@@ -347,161 +548,48 @@ exports.editPayrollSheet = async (request, response) => {
   }
 };
 
-async function payrollSheetListToExcel(id) {
-  const ACCESS_KEY = process.env.AWS_ACCESS_KEY;
-  const SECRET_KEY = process.env.AWS_SECRET_KEY;
-  const BUCKET = process.env.AWS_BUCKET;
-  const s3 = new S3({ accessKeyId: ACCESS_KEY, secretAccessKey: SECRET_KEY });
-
-  try {
-    const payrollSheetData = await payrollSheet.findAll({
-      where: {
-        payrollId: id,
-      },
-      attributes: ["name", "totalPayable", "userId"],
-    });
-    await Promise.all(
-      payrollSheetData.map(async (e) => {
-        const bankInfo = await BankDetails.findOne({
-          order: [["updatedAt", "DESC"]],
-          where: { userId: e.userId },
-          attributes: ["accountNumber", "ifscCode"],
-        });
-        if (bankInfo == null) {
-          delete e.dataValues.name;
-          delete e.dataValues.totalPayable;
-          delete e.dataValues.userId;
-        } else {
-          delete e.dataValues.userId;
-          e.dataValues.accountNumber = bankInfo.dataValues.accountNumber;
-          e.dataValues.ifscCode = bankInfo.dataValues.ifscCode;
-          e.dataValues.id = bankInfo.dataValues.id;
-        }
-        return e.dataValues;
-      })
-    );
-
-    if (payrollSheetData.length == 0) {
-      console.log(`qwertyu7`);
-    } else {
-      const now = new Date();
-      const year = now.getFullYear();
-      // const month = now
-      //   .getMonth()
-      //   .toLocaleString("default", { month: "short" });
-      let month;
-      switch (now.getMonth()) {
-        case 0:
-          month = "Jan";
-          break;
-        case 1:
-          month = "Feb";
-          break;
-        case 2:
-          month = "Mar";
-          break;
-        case 3:
-          month = "Apr";
-          break;
-        case 4:
-          month = "May";
-          break;
-        case 5:
-          month = "Jun";
-          break;
-        case 6:
-          month = "Jul";
-          break;
-        case 7:
-          month = "Aug";
-          break;
-        case 8:
-          month = "Sep";
-          break;
-        case 9:
-          month = "Oct";
-          break;
-        case 10:
-          month = "Nov";
-          break;
-        case 11:
-          month = "Dec";
-      }
-      const date = format(now, "yyyyMMddHHmmss");
-
-      const fields = [
-        {
-          label: "CUSTOMER NAME",
-          value: "dataValues.name",
-        },
-        {
-          label: "ACCOUNT NUMBER",
-          value: "dataValues.accountNumber",
-        },
-        {
-          label: "IFSC CODE",
-          value: "dataValues.ifscCode",
-        },
-        {
-          label: "SALARY",
-          value: "dataValues.totalPayable",
-        },
-      ];
-
-      const json2csvParser = new Parser({ fields });
-
-      const csv = json2csvParser.parse(payrollSheetData);
-
-      // fs.writeFileSync("./data.csv", csv);
-      const csvBuffer = Buffer.from(csv);
-
-      let dirName = "payroll";
-      if (process.env.ENV == "production") {
-        dirName = "docs";
-      }
-      const params = {
-        dirName: dirName,
-        Bucket: BUCKET,
-        Key: `${dirName}/${year}-${month}/${date}.csv`,
-        Body: csvBuffer,
-        ContentType: "text/csv",
-      };
-
-      const uploadData = await s3.upload(params).promise();
-      const url = uploadData.Location;
-
-      await payroll.update({ url: url }, { where: { id: id } });
-
-      return { payrollSheetData, url };
-    }
-  } catch (error) {
-    console.log(error);
+function monthName() {
+  let month;
+  let now = new Date();
+  switch (now.getMonth()) {
+    case 0:
+      month = "January";
+      break;
+    case 1:
+      month = "February";
+      break;
+    case 2:
+      month = "March";
+      break;
+    case 3:
+      month = "April";
+      break;
+    case 4:
+      month = "May";
+      break;
+    case 5:
+      month = "June";
+      break;
+    case 6:
+      month = "July";
+      break;
+    case 7:
+      month = "August";
+      break;
+    case 8:
+      month = "September";
+      break;
+    case 9:
+      month = "October";
+      break;
+    case 10:
+      month = "November";
+      break;
+    case 11:
+      month = "December";
   }
+  return month;
 }
-let date = new Date();
-const now = new Date(date.getFullYear(), date.getMonth(), 1);
-const firstDate = format(now, "yyyy/MM/dd");
-console.log(`qwerty6uiop`, firstDate);
-let data = {
-  TotalAmount: 5000,
-  date: firstDate,
-  users: [
-    {},
-    {
-      name: " sayantan",
-      totalPayable: 9516.67,
-      accountNumber: "7875486464654",
-      ifscCode: "1234sgsddc",
-    },
-    {
-      name: " ramjan sk.",
-      totalPayable: 67426.7,
-      accountNumber: "01356545655",
-      ifscCode: "1234656",
-    },
-  ],
-};
-
 async function compareHtmlToPdf(fileName, data) {
   let template = path.join(__dirname, "..", "pdfTemplate", "index.html");
   console.log(`readFileSync`, data);
@@ -532,102 +620,6 @@ exports.htmlToPdf = async (response) => {
     console.log(error);
   }
 };
-
-// async function compareHtmlToPdf(fileName, data) {
-//   let template = path.join(__dirname, "..", "pdfTemplate", "index.html");
-//   console.log(`readFileSync`, data);
-//   const html = fs.readFileSync(template, "utf-8");
-//   return hbs.compile(html)(data);
-// }
-
-async function letterHead(payrollId, data) {
-  try {
-    const ACCESS_KEY = process.env.AWS_ACCESS_KEY;
-    const SECRET_KEY = process.env.AWS_SECRET_KEY;
-    const BUCKET = process.env.AWS_BUCKET;
-    const s3 = new S3({ accessKeyId: ACCESS_KEY, secretAccessKey: SECRET_KEY });
-    let template = path.join(__dirname, "..", "pdfTemplate", "index.html");
-
-    const html = fs.readFileSync(template, "utf-8");
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-
-    const content = hbs.compile(html)(data);
-
-    //const content = await compareHtmlToPdf("index.html", data);
-    await page.setContent(content);
-    // create a pdf document
-    const pdf = await page.pdf({
-      // path: "test.pdf",
-      format: "A4",
-      printBackground: true,
-    });
-
-    const now = new Date();
-    const year = now.getFullYear();
-    const date = format(now, "yyyyMMddHHmmss");
-    let month;
-    switch (now.getMonth()) {
-      case 0:
-        month = "Jan";
-        break;
-      case 1:
-        month = "Feb";
-        break;
-      case 2:
-        month = "Mar";
-        break;
-      case 3:
-        month = "Apr";
-        break;
-      case 4:
-        month = "May";
-        break;
-      case 5:
-        month = "Jun";
-        break;
-      case 6:
-        month = "Jul";
-        break;
-      case 7:
-        month = "Aug";
-        break;
-      case 8:
-        month = "Sep";
-        break;
-      case 9:
-        month = "Oct";
-        break;
-      case 10:
-        month = "Nov";
-        break;
-      case 11:
-        month = "Dec";
-    }
-    let dirName = "payroll";
-    if (process.env.ENV == "production") {
-      dirName = "docs";
-    }
-    const params = {
-      dirName: dirName,
-      Bucket: BUCKET,
-      Key: `letterHead/${year}-${month}/${date}.pdf`,
-      Body: pdf,
-      ContentType: "application/pdf",
-    };
-
-    const uploadData = await s3.upload(params).promise();
-    const url = uploadData.Location;
-    await payroll.update({ letterHeadUrl: url }, { where: { id: payrollId } });
-    console.log(`Done Creating Pdf`, pdf);
-    await browser.close();
-    return pdf;
-    //process.exit();
-  } catch (error) {
-    console.log(error);
-  }
-}
-
 // exports.htmlToPdf = async (response) => {
 //   let doc = new jsPDF();
 //   let template = path.join("pdfTemplate", "index.html");
