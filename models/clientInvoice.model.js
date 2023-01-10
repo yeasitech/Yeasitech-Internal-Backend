@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true,
     },
     item: DataTypes.STRING,
-    description: DataTypes.STRING,
+    //description: DataTypes.STRING,
     unitCost: DataTypes.BIGINT,
     quantity: DataTypes.INTEGER,
     amount: DataTypes.BIGINT,

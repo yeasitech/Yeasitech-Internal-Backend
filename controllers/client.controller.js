@@ -218,7 +218,6 @@ exports.createClientInvoice = async (request, response) => {
       body.invoice.map(async (e) => {
         return await clientInvoice.create({
           item: e.item,
-          description: e.description,
           unitCost: e.unitCost,
           quantity: e.quantity,
           amount: e.amount,
