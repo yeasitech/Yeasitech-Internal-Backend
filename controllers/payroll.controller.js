@@ -378,7 +378,7 @@ exports.editIsProcess = async (request, response) => {
             where: { id },
           }
         );
-        // const salarySlip = await generateSalarySlip(payrollData.id);
+        //const salarySlip = await generateSalarySlip(payrollData.id);
         response
           .status(200)
           .json({ ack: 1, msg: `Successfully Updated payroll`, salarySlip });

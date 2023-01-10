@@ -43,7 +43,7 @@ const createClientInvoiceSchema = Joi.object({
 });
 const updateClientInvoiceSchema = Joi.object({
   item: Joi.string().optional().label(" Item").min(0),
-  description: Joi.string().optional().label("Description").min(0),
+  // description: Joi.string().optional().label("Description").min(0),
   dueDate: Joi.date().optional().label("Due Date").min(0),
   unitCost: Joi.number().optional().label("Unit Cost").min(0),
   quantity: Joi.number().optional().label("Quantity").min(0),
